@@ -14,4 +14,4 @@ There are no in-game options, so if you wish to add a buff you will need to edit
 
 By default, all immunity and damage reduction abilities have been added.
 
-Where to Download: [CURSEFORGE](https://wow.curseforge.com/projects/buff-overlay)
+Where to Download: **[CURSEFORGE](https://www.curseforge.com/wow/addons/buff-overlay)**
