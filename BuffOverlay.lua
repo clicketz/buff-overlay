@@ -1,6 +1,6 @@
 local indicators = {}
 local buffs = {}
-local_, class = UnitClass("player")
+local _, class = UnitClass("player")
 
 buffs = {
 --Death Knight
