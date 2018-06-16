@@ -7,4 +7,4 @@ manual-changelog:
 
 ignore:
  - README.md
- - change.txt
+ - changelog.txt
