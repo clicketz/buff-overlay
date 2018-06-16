@@ -2,7 +2,6 @@
 
 Please report issues here: https://wow.curseforge.com/projects/buff-overlay/issues
 
-Download: [Curseforge](https://wow.curseforge.com/projects/buff-overlay)
 
 This addon was created for people to quickly and easily see active defenses on other players so they can adjust their gameplay accordingly.
 
@@ -14,3 +13,5 @@ There are no in-game options, so if you wish to add a buff you will need to edit
 
 
 By default, all immunity and damage reduction abilities have been added.
+
+Where to Download: [CURSEFORGE](https://wow.curseforge.com/projects/buff-overlay)
