@@ -1,1 +1,10 @@
 package-as: BuffOverlay
+
+enable-nolib-creation: no
+
+manual-changelog:
+ filename: change.txt
+
+ignore:
+ - README.md
+ - change.txt
