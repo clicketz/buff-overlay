@@ -64,8 +64,6 @@ buffs = {
 ["Food & Drink"] = true,
 }
 
-
-
 local function getIndicator(frame)
 local indicator = indicators[frame:GetName()]
 	if not indicator then
