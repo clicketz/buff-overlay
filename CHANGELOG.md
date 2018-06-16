@@ -1,3 +1,4 @@
 **v1.3.1**
 
-- Various fixes
+- Fixed local issue
+- Cleaned up code
