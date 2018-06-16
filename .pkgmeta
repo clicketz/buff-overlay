@@ -3,7 +3,7 @@ package-as: BuffOverlay
 enable-nolib-creation: no
 
 manual-changelog:
- filename: change.txt
+ filename: changelog.txt
 
 ignore:
  - README.md
