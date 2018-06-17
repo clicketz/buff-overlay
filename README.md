@@ -1,17 +1,18 @@
 # Buff Overlay
 
-Please report issues here: https://wow.curseforge.com/projects/buff-overlay/issues
-
-
-This addon was created for people to quickly and easily see active defenses on other players so they can adjust their gameplay accordingly.
-
-
-It is intended to be as lightweight as possible, and only works with the default Blizzard raid frames.
-
-
-There are no in-game options, so if you wish to add a buff you will need to edit BuffOverlay.lua.
-
+This extremely lightweight addon was created for people to quickly and easily see defensive cooldowns active on other players so they can adjust their gameplay accordingly.
 
 By default, all immunity and damage reduction abilities have been added.
 
-Where to Download: **[CURSEFORGE](https://www.curseforge.com/wow/addons/buff-overlay)**
+**Notes:**
+- Only Blizzard frames are currently supported.
+- No in-game options. See BuffOverlay.lua to add/remove buffs.
+
+**Contribution:**
+- [Report bugs](https://wow.curseforge.com/projects/buff-overlay/issues)
+
+**Download:**
+
+[WoWInterface](https://www.wowinterface.com/downloads/info24683-BuffOverlay.html)
+
+[Curseforge](https://www.curseforge.com/wow/addons/buff-overlay)
