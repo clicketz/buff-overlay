@@ -59,6 +59,7 @@ buffs = {
 ["Spell Reflection"] = true,
 ["Die by the Sword"] = true,
 --Other
+["Food"] = true,
 ["Drink"] = true,
 ["Food & Drink"] = true,
 ["Refreshment"] = true,
