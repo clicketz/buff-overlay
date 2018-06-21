@@ -72,7 +72,7 @@ local indicator = indicators[frame:GetName()]
 		indicator:ClearAllPoints()
 		indicator:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
 		indicator:SetSize(22, 22)
-		indicator:SetAlpha(0.7)
+		indicator:SetAlpha(0.75)
 		indicators[frame:GetName()] = indicator
 	end
 	return indicator
