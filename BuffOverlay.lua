@@ -1,6 +1,5 @@
 local indicators = {}
 local buffs = {}
-local _, class = UnitClass("player")
 
 buffs = {
 --Death Knight
@@ -62,6 +61,7 @@ buffs = {
 --Other
 ["Drink"] = true,
 ["Food & Drink"] = true,
+["Refreshment"] = true,
 }
 
 local function getIndicator(frame)
@@ -69,7 +69,7 @@ local indicator = indicators[frame:GetName()]
 	if not indicator then
 		indicator = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
 		indicator:ClearAllPoints()
-		indicator:SetPoint("CENTER", frame, "CENTER", 0, 10)
+		indicator:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
 		indicator:SetSize(22, 22)
 		indicator:SetAlpha(0.7)
 		indicators[frame:GetName()] = indicator
@@ -93,7 +93,8 @@ local function updateBuffs(frame)
 			if not frame.buffFrames then -- fix for personal resource bar
 				return
 			end
-			indicator:SetSize(frame.buffFrames[1]:GetSize()) -- scale
+			indicator:SetSize(frame.buffFrames[1]:GetSize())
+			indicator:SetScale(1.2)
 			CompactUnitFrame_UtilSetBuff(indicator, frame.displayedUnit, i, nil)
 		return
 		end
