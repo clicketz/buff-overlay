@@ -1,5 +1,4 @@
-**v1.4**
+**v1.5**
 
-- Made icon slightly bigger
-- Updated anchors to better scale to different sizes in raid frames
-- Added a few drinking buffs
+- Updated to use spell IDs rather than spell names for universal locale compatibility
+  - Left functionality for spell names in case a buff with many spell ids has the same name (e.g. Drink buff)
