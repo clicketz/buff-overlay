@@ -86,6 +86,7 @@ local function updateOverlay(frame)
 
 	local overlay = getOverlay(frame)
 	local spellId = nil
+	local buffName = nil
 	for i = 1, 40 do
 		local buffName, _, _, _, _, _, _, _, _, _, spellId = UnitBuff(frame.displayedUnit, i)
 		if not spellId then
