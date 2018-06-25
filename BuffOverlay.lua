@@ -1,63 +1,64 @@
-local indicators = {}
+local overlays = {}
 local buffs = {}
 
 buffs = {
 --Death Knight
-["Icebound Fortitude"] = true,
-["Vampiric Blood"] = true,
-["Rune Tap"] = true,
-["Anti-Magic Shell"] = true,
-["Anti-Magic Zone"] = true,
-["Dancing Rune Weapon"] = true,
+[48792] = true, --Icebound Fortitude
+[55233] = true, --Vampiric Blood
+[194679] = true, --Rune Tap
+[48707] = true, --Anti-Magic Shell
+[145629] = true, --Anti-Magic Zone
+[81256] = true, --Dancing Rune Weapon
 --Demon Hunter
-["Blur"] = true,
-["Netherwalk"] = true,
+[212800] = true, --Blur
+[196555] = true, --Netherwalk
 --Druid
-["Prowl"] = true,
-["Ironbark"] = true,
-["Barkskin"] = true,
-["Survival Instincts"] = true,
+[5215] = true, --Prowl
+[102342] = true, --Ironbark
+[22812] = true, --Barkskin
+[61336] = true, --Survival Instincts
 --Hunter
-["Roar of Sacrifice"] = true,
-["Aspect of the Turtle"] = true,
+[53480] = true, --Roar of Sacrifice
+[186265] = true, --Aspect of the Turtle
 --Mage
-["Ice Block"] = true,
-["Temporal Shield"] = true,
-["Ice Form"] = true,
+[45438] = true, --Ice Block
+[198111] = true, --Temporal Shield
+[198144] = true, --Ice Form
 --Monk
-["Fortifying Brew"] = true,
-["Zen Meditation"] = true,
-["Life Cocoon"] = true,
-["Dampen Harm"] = true,
-["Touch of Karma"] = true,
+[120954] = true, --Fortifying Brew (Brewmaster)
+[243435] = true, --Fortifying Brew (Mistweaver)
+[201318] = true, --Fortifying Brew (Windwalker)
+[115176] = true, --Zen Meditation
+[116849] = true, --Life Cocoon
+[122278] = true, --Dampen Harm
+[125174] = true, --Touch of Karma
 --Paladin
-["Divine Protection"] = true,
-["Blessing of Protection"] = true,
-["Divine Shield"] = true,
-["Ardent Defender"] = true,
-["Guardian of Ancient Kings"] = true,
+[498] = true, --Divine Protection
+[1022] = true, --Blessing of Protection
+[642] = true, --Divine Shield
+[31850] = true, --Ardent Defender
+[86659] = true, --Guardian of Ancient Kings
 --Priest
-["Pain Suppression"] = true,
-["Dispersion"] = true,
-["Power Word: Barrier"] = true,
-["Luminous Barrier"] = true,
+[33206] = true, --Pain Suppression
+[47585] = true, --Dispersion
+[81782] = true, --Power Word: Barrier
+[271466] = true, --Luminous Barrier
 --Rogue
-["Evasion"] = true,
-["Cloak of Shadows"] = true,
-["Riposte"] = true,
-["Stealth"] = true,
+[5277] = true, --Evasion
+[31224] = true, --Cloak of Shadows
+[199754] = true, --Riposte
+[1784] = true, --Stealth
 --Shaman
-["Astral Shift"] = true,
-["Ethereal Form"] = true,
+[108271] = true, --Astral Shift
+[210918] = true, --Ethereal Form
 --Warlock
-["Unending Resolve"] = true,
-["Nether Ward"] = true,
+[104773] = true, --Unending Resolve
 --Warrior
-["Shield Wall"] = true,
-["Rallying Cry"] = true,
-["Last Stand"] = true,
-["Spell Reflection"] = true,
-["Die by the Sword"] = true,
+[184364] = true, --Enraged Regeneration
+[871] = true, --Shield Wall
+[97463] = true, --Rallying Cry
+[12975] = true, --Last Stand
+[118038] = true, --Die by the Sword
 --Other
 ["Food"] = true,
 ["Drink"] = true,
@@ -65,41 +66,41 @@ buffs = {
 ["Refreshment"] = true,
 }
 
-local function getIndicator(frame)
-local indicator = indicators[frame:GetName()]
-	if not indicator then
-		indicator = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
-		indicator:ClearAllPoints()
-		indicator:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
-		indicator:SetSize(22, 22)
-		indicator:SetAlpha(0.75)
-		indicators[frame:GetName()] = indicator
+local function getOverlay(frame)
+local overlay = overlays[frame:GetName()]
+	if not overlay then
+		overlay = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
+		overlay:ClearAllPoints()
+		overlay:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
+		overlay:SetSize(22, 22)
+		overlay:SetAlpha(0.75)
+		overlays[frame:GetName()] = overlay
 	end
-	return indicator
+	return overlay
 end
 
-local function updateBuffs(frame)
+local function updateOverlay(frame)
 	if frame:IsForbidden() or (not frame:IsVisible()) then
 		return
 	end
 
-	local indicator = getIndicator(frame)
-	local buffName = nil
+	local overlay = getOverlay(frame)
+	local spellId = nil
 	for i = 1, 40 do
-		local buffName = UnitBuff(frame.displayedUnit, i)
-		if not buffName then
+		local buffName, _, _, _, _, _, _, _, _, _, spellId = UnitBuff(frame.displayedUnit, i)
+		if not spellId then
 			break
 		end
-		if buffs[buffName] then
+		if buffs[spellId] or buffs[buffName] then
 			if not frame.buffFrames then -- fix for personal resource bar
 				return
 			end
-			indicator:SetSize(frame.buffFrames[1]:GetSize())
-			indicator:SetScale(1.2)
-			CompactUnitFrame_UtilSetBuff(indicator, frame.displayedUnit, i, nil)
+			overlay:SetSize(frame.buffFrames[1]:GetSize())
+			overlay:SetScale(1.2)
+			CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
 		return
 		end
 	end
-	indicator:Hide()
+	overlay:Hide()
 end
-hooksecurefunc("CompactUnitFrame_UpdateBuffs", updateBuffs)
+hooksecurefunc("CompactUnitFrame_UpdateBuffs", updateOverlay)
