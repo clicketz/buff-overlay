@@ -72,7 +72,7 @@ local overlay = overlays[frame:GetName()]
 		overlay = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
 		overlay:ClearAllPoints()
 		overlay:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
-		overlay:SetSize(22, 22)
+		overlay:SetSize(7, 7)
 		overlay:SetAlpha(0.75)
 		overlays[frame:GetName()] = overlay
 	end
@@ -85,21 +85,21 @@ local function updateOverlay(frame)
 	end
 
 	local overlay = getOverlay(frame)
-	local spellId = nil
-	local buffName = nil
 	for i = 1, 40 do
 		local buffName, _, _, _, _, _, _, _, _, _, spellId = UnitBuff(frame.displayedUnit, i)
 		if not spellId then
 			break
 		end
-		if buffs[spellId] or buffs[buffName] then
-			if not frame.buffFrames then -- fix for personal resource bar
-				return
+		for _, v in pairs({spellId, buffName}) do
+			if buffs[v] then
+				if not frame.buffFrames then -- fix for personal resource bar
+					return
+				end
+				overlay:SetSize(frame.buffFrames[1]:GetSize())
+				overlay:SetScale(1.2)
+				CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
+			return
 			end
-			overlay:SetSize(frame.buffFrames[1]:GetSize())
-			overlay:SetScale(1.2)
-			CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
-		return
 		end
 	end
 	overlay:Hide()
