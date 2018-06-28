@@ -89,13 +89,11 @@ local function updateOverlay(frame)
 		if not spellId then
 			break
 		end
-		for _, v in pairs({spellId, buffName}) do
-			if buffs[v] then
-				overlay:SetSize(frame.buffFrames[1]:GetSize())
-				overlay:SetScale(1.2)
-				CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
-				return
-			end
+		if buffs[spellId] or buffs[buffName] then
+			overlay:SetSize(frame.buffFrames[1]:GetSize())
+			overlay:SetScale(1.2)
+			CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
+			return
 		end
 	end
 	overlay:Hide()
