@@ -80,7 +80,7 @@ local overlay = overlays[frame:GetName()]
 end
 
 local function updateOverlay(frame)
-	if frame:IsForbidden() or (not frame:IsVisible()) then
+	if frame:IsForbidden() or not frame:IsVisible() or not frame.buffFrames then
 		return
 	end
 
@@ -90,17 +90,13 @@ local function updateOverlay(frame)
 		if not spellId then
 			break
 		end
-		if frame.buffFrames then
-			for _, v in pairs({spellId, buffName}) do
-				if buffs[v] then
-					overlay:SetSize(frame.buffFrames[1]:GetSize())
-					overlay:SetScale(1.2)
-					CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
-					return
-				end
+		for _, v in pairs({spellId, buffName}) do
+			if buffs[v] then
+				overlay:SetSize(frame.buffFrames[1]:GetSize())
+				overlay:SetScale(1.2)
+				CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
+				return
 			end
-		else
-			return
 		end
 	end
 	overlay:Hide()
