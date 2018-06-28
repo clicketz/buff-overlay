@@ -90,16 +90,17 @@ local function updateOverlay(frame)
 		if not spellId then
 			break
 		end
-		for _, v in pairs({spellId, buffName}) do
-			if buffs[v] then
-				if not frame.buffFrames then -- fix for personal resource bar
+		if frame.buffFrames then
+			for _, v in pairs({spellId, buffName}) do
+				if buffs[v] then
+					overlay:SetSize(frame.buffFrames[1]:GetSize())
+					overlay:SetScale(1.2)
+					CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
 					return
 				end
-				overlay:SetSize(frame.buffFrames[1]:GetSize())
-				overlay:SetScale(1.2)
-				CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
-			return
 			end
+		else
+			return
 		end
 	end
 	overlay:Hide()
