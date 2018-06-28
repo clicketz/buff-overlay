@@ -72,7 +72,6 @@ local overlay = overlays[frame:GetName()]
 		overlay = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
 		overlay:ClearAllPoints()
 		overlay:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
-		overlay:SetSize(7, 7)
 		overlay:SetAlpha(0.75)
 		overlays[frame:GetName()] = overlay
 	end
