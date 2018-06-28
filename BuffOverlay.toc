@@ -2,6 +2,6 @@
 ## Interface: 70300
 ## Notes: Sets a Buff Icon Over Default Raid Frames
 ## Author: Click @ Tichondrius
-## Version: 1.5
+## Version: 1.6
 
 BuffOverlay.lua
