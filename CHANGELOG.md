@@ -1,3 +1,4 @@
-**v1.6**
+**v2.0**
 
-- Cleanup
+- Changed spellList table.
+- Improved code readability and efficiency.
