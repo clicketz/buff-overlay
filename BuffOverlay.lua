@@ -1,70 +1,86 @@
 local overlays = {}
 local buffs = {}
 
-buffs = {
+local spellList = {
 --Death Knight
-[48792] = true, --Icebound Fortitude
-[55233] = true, --Vampiric Blood
-[194679] = true, --Rune Tap
-[48707] = true, --Anti-Magic Shell
-[145629] = true, --Anti-Magic Zone
-[81256] = true, --Dancing Rune Weapon
+48792,	--Icebound Fortitude
+55233,	--Vampiric Blood
+194679,	--Rune Tap
+48707,	--Anti-Magic Shell
+145629,	--Anti-Magic Zone
+81256,	--Dancing Rune Weapon
+
 --Demon Hunter
-[212800] = true, --Blur
-[196555] = true, --Netherwalk
+212800,	--Blur
+196555,	--Netherwalk
+
 --Druid
-[5215] = true, --Prowl
-[102342] = true, --Ironbark
-[22812] = true, --Barkskin
-[61336] = true, --Survival Instincts
+5215,	--Prowl
+102342,	--Ironbark
+22812,	--Barkskin
+61336,	--Survival Instincts
+
 --Hunter
-[53480] = true, --Roar of Sacrifice
-[186265] = true, --Aspect of the Turtle
+53480,	--Roar of Sacrifice
+186265,	--Aspect of the Turtle
+
 --Mage
-[45438] = true, --Ice Block
-[198111] = true, --Temporal Shield
-[198144] = true, --Ice Form
+45438,	--Ice Block
+198111,	--Temporal Shield
+198144,	--Ice Form
+
 --Monk
-[120954] = true, --Fortifying Brew (Brewmaster)
-[243435] = true, --Fortifying Brew (Mistweaver)
-[201318] = true, --Fortifying Brew (Windwalker)
-[115176] = true, --Zen Meditation
-[116849] = true, --Life Cocoon
-[122278] = true, --Dampen Harm
-[125174] = true, --Touch of Karma
+120954,	--Fortifying Brew (Brewmaster)
+243435,	--Fortifying Brew (Mistweaver)
+201318,	--Fortifying Brew (Windwalker)
+115176,	--Zen Meditation
+116849,	--Life Cocoon
+122278,	--Dampen Harm
+125174,	--Touch of Karma
+
 --Paladin
-[498] = true, --Divine Protection
-[1022] = true, --Blessing of Protection
-[642] = true, --Divine Shield
-[31850] = true, --Ardent Defender
-[86659] = true, --Guardian of Ancient Kings
+498,	--Divine Protection
+1022,	--Blessing of Protection
+642,	--Divine Shield
+31850,	--Ardent Defender
+86659,	--Guardian of Ancient Kings
+
 --Priest
-[33206] = true, --Pain Suppression
-[47585] = true, --Dispersion
-[81782] = true, --Power Word: Barrier
-[271466] = true, --Luminous Barrier
+33206,	--Pain Suppression
+47585,	--Dispersion
+81782,	--Power Word: Barrier
+271466,	--Luminous Barrier
+
 --Rogue
-[5277] = true, --Evasion
-[31224] = true, --Cloak of Shadows
-[199754] = true, --Riposte
-[1784] = true, --Stealth
+5277,	--Evasion
+31224,	--Cloak of Shadows
+199754,	--Riposte
+1784,	--Stealth
+
 --Shaman
-[108271] = true, --Astral Shift
-[210918] = true, --Ethereal Form
+108271,	--Astral Shift
+210918,	--Ethereal Form
+
 --Warlock
-[104773] = true, --Unending Resolve
+104773,	--Unending Resolve
+
 --Warrior
-[184364] = true, --Enraged Regeneration
-[871] = true, --Shield Wall
-[97463] = true, --Rallying Cry
-[12975] = true, --Last Stand
-[118038] = true, --Die by the Sword
+184364,	--Enraged Regeneration
+871,	--Shield Wall
+97463,	--Rallying Cry
+12975,	--Last Stand
+118038,	--Die by the Sword
+
 --Other
-["Food"] = true,
-["Drink"] = true,
-["Food & Drink"] = true,
-["Refreshment"] = true,
+"Food",
+"Drink",
+"Food & Drink",
+"Refreshment",
 }
+
+for k, v in ipairs(spellList) do
+	buffs[v] = k
+end
 
 local function getOverlay(frame)
 local overlay = overlays[frame:GetName()]
