@@ -86,6 +86,8 @@ local function getOverlay(frame)
 local overlay = overlays[frame:GetName()]
 	if not overlay then
 		overlay = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
+		overlay.cooldown:SetHideCountdownNumbers(false)
+		overlay.cooldown:SetScale(.5)
 		overlay:ClearAllPoints()
 		overlay:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
 		overlay:SetAlpha(0.75)
