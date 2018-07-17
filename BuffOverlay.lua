@@ -86,6 +86,8 @@ local function getOverlay(frame)
 local overlay = overlays[frame:GetName()]
 	if not overlay then
 		overlay = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
+		-- overlay.cooldown:SetHideCountdownNumbers(false)
+		-- overlay.cooldown:SetScale(.45)
 		overlay:ClearAllPoints()
 		overlay:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
 		overlay:SetAlpha(0.75)
@@ -101,7 +103,7 @@ local function updateOverlay(frame)
 
 	local overlay = getOverlay(frame)
 	for i = 1, 40 do
-		local buffName, _, _, _, _, _, _, _, _, _, spellId = UnitBuff(frame.displayedUnit, i)
+		local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(frame.displayedUnit, i)
 		if not spellId then
 			break
 		end
