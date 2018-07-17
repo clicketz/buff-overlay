@@ -1,5 +1,5 @@
 ## Title: Buff Overlay
-## Interface: 70300
+## Interface: 80000
 ## Notes: Sets a Buff Icon Over Default Raid Frames
 ## Author: Click @ Tichondrius
 ## Version: 2.0
