@@ -11,6 +11,7 @@ local spellList = {
 81256,	--Dancing Rune Weapon
 
 --Demon Hunter
+187827,	--Metamorphosis (Vengeance)
 212800,	--Blur
 196555,	--Netherwalk
 
