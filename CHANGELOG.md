@@ -1,5 +1,3 @@
-**v2.0**
+**v2.1**
 
-- BfA Compatibility.
-- Changed spellList table.
-- Improved code readability and efficiency.
+- Added Vengeance Metamorphosis
