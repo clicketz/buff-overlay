@@ -83,36 +83,40 @@ for k, v in ipairs(spellList) do
 	buffs[v] = k
 end
 
-local function getOverlay(frame)
-local overlay = overlays[frame:GetName()]
-	if not overlay then
-		overlay = CreateFrame("Button", nil, frame, "CompactAuraTemplate")
-		overlay:ClearAllPoints()
-		overlay:SetPoint("BOTTOM", frame, "CENTER", 0, 0)
-		overlay:SetAlpha(0.75)
-		overlays[frame:GetName()] = overlay
-	end
-	return overlay
-end
-
-local function updateOverlay(frame)
-	if frame:IsForbidden() or not frame:IsVisible() or not frame.buffFrames then
+hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(self)
+	if self:IsForbidden() or not self:IsVisible() or not self.buffFrames then
 		return
 	end
 
-	local overlay = getOverlay(frame)
-	for i = 1, 40 do
-		local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(frame.displayedUnit, i)
-		if not spellId then
-			break
+	local unit, index = self.displayedUnit, 1
+	repeat
+		local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, index)
+		if spellId then
+			if buffs[spellId] or buffs[buffName] then
+				break
+			end
+			index = index + 1
+		else
+			index = nil
 		end
-		if buffs[spellId] or buffs[buffName] then
-			overlay:SetSize(frame.buffFrames[1]:GetSize())
-			overlay:SetScale(1.2)
-			CompactUnitFrame_UtilSetBuff(overlay, frame.displayedUnit, i, nil)
+	until not spellId
+
+	local overlay = overlays[self]
+	if not overlay then
+		if not index then
 			return
 		end
+		overlay = CreateFrame("Button", nil, self, "CompactAuraTemplate")
+		overlay:ClearAllPoints()
+		overlay:SetPoint("BOTTOM", self, "CENTER")
+		overlay:SetAlpha(0.75)
+		overlays[self] = overlay
 	end
-	overlay:Hide()
-end
-hooksecurefunc("CompactUnitFrame_UpdateBuffs", updateOverlay)
+
+	if index then
+		overlay:SetSize(self.buffFrames[1]:GetSize())
+		overlay:SetScale(1.2)
+		CompactUnitFrame_UtilSetBuff(overlay, unit, index, nil)
+	end
+	overlay:SetShown(index and true or false)
+end)
