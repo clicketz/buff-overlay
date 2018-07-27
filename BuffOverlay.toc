@@ -1,7 +1,7 @@
 ## Title: Buff Overlay
 ## Interface: 80000
 ## Notes: Sets a Buff Icon Over Default Raid Frames
-## Author: Click @ Tichondrius
+## Author: Click / Clicc @ Tichondrius
 ## Version: 2.1
 
 BuffOverlay.lua
