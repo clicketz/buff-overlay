@@ -37,6 +37,7 @@ local spellList = {
 115176,	--Zen Meditation
 116849,	--Life Cocoon
 122278,	--Dampen Harm
+122783,	--Diffuse Magic
 125174,	--Touch of Karma
 
 --Paladin
