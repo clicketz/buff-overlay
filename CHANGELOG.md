@@ -1,4 +1,4 @@
-**v2.1**
+**v2.2**
 
-- Added Vengeance Metamorphosis
-- Complete code overhaul
+- Implemented spell list priority
+- Added Diffuse Magic (Monk)
