@@ -7,6 +7,7 @@ By default, all immunity and damage reduction abilities have been added.
 **Notes:**
 - Only Blizzard frames are currently supported.
 - No in-game options. See BuffOverlay.lua to add/remove buffs.
+- Which buff gets shown is based on priority now. The higher in the spellList table the buff is, the higher its shown priority will be. Immunity buffs are highest priority by default.
 
 **Contribution:**
 - [Report bugs](https://wow.curseforge.com/projects/buff-overlay/issues)
