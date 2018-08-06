@@ -1,32 +1,56 @@
 local overlays = {}
 local buffs = {}
 
-local spellList = {
+local prioritySpellList = { --The higher on the list, the higher priority the buff has.
+
+--//Immunities (High Priority)
+
+--Demon Hunter
+196555,	--Netherwalk
+
+--Hunter
+186265,	--Aspect of the Turtle
+
+--Mage
+45438,	--Ice Block
+
+--Monk
+125174,	--Touch of Karma
+
+--Paladin
+642,	--Divine Shield
+1022,	--Blessing of Protection
+
+--Rogue
+31224,	--Cloak of Shadows
+
+--Shaman
+210918,	--Ethereal Form
+
+--//Damage Reduction+
+
 --Death Knight
+48707,	--Anti-Magic Shell
 48792,	--Icebound Fortitude
 55233,	--Vampiric Blood
 194679,	--Rune Tap
-48707,	--Anti-Magic Shell
 145629,	--Anti-Magic Zone
 81256,	--Dancing Rune Weapon
 
 --Demon Hunter
 187827,	--Metamorphosis (Vengeance)
 212800,	--Blur
-196555,	--Netherwalk
 
 --Druid
-5215,	--Prowl
 102342,	--Ironbark
 22812,	--Barkskin
 61336,	--Survival Instincts
+5215,	--Prowl
 
 --Hunter
 53480,	--Roar of Sacrifice
-186265,	--Aspect of the Turtle
 
 --Mage
-45438,	--Ice Block
 198111,	--Temporal Shield
 198144,	--Ice Form
 
@@ -38,49 +62,45 @@ local spellList = {
 116849,	--Life Cocoon
 122278,	--Dampen Harm
 122783,	--Diffuse Magic
-125174,	--Touch of Karma
 
 --Paladin
 498,	--Divine Protection
-1022,	--Blessing of Protection
-642,	--Divine Shield
 31850,	--Ardent Defender
 86659,	--Guardian of Ancient Kings
 
 --Priest
-33206,	--Pain Suppression
 47585,	--Dispersion
+33206,	--Pain Suppression
 81782,	--Power Word: Barrier
 271466,	--Luminous Barrier
 
 --Rogue
 5277,	--Evasion
-31224,	--Cloak of Shadows
 199754,	--Riposte
 1784,	--Stealth
 
 --Shaman
 108271,	--Astral Shift
-210918,	--Ethereal Form
 
 --Warlock
 104773,	--Unending Resolve
 
 --Warrior
+118038,	--Die by the Sword
 184364,	--Enraged Regeneration
 871,	--Shield Wall
 97463,	--Rallying Cry
 12975,	--Last Stand
-118038,	--Die by the Sword
 
---Other
+--//Other
+
 "Food",
 "Drink",
 "Food & Drink",
 "Refreshment",
 }
 
-for k, v in ipairs(spellList) do
+for k, v in ipairs(prioritySpellList) do
 	buffs[v] = k
 end
 
@@ -89,18 +109,23 @@ hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(self)
 		return
 	end
 
-	local unit, index = self.displayedUnit, 1
-	repeat
-		local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, index)
-		if spellId then
-			if buffs[spellId] or buffs[buffName] then
-				break
+	local unit, index, buff = self.displayedUnit
+	for i = 1, 32 do --BUFF_MAX_DISPLAY
+		local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
+		local display = buffs[spellId] or buffs[buffName]
+
+		if spellId and display then
+			if not buff or display < buffs[buff] then
+				buff = spellId
+				index = i
 			end
-			index = index + 1
-		else
-			index = nil
 		end
-	until not spellId
+
+		if not spellId then
+			break
+		end
+	end
+
 
 	local overlay = overlays[self]
 	if not overlay then
