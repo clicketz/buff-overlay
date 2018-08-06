@@ -49,6 +49,8 @@ local prioritySpellList = { --The higher on the list, the higher priority the bu
 
 --Hunter
 53480,	--Roar of Sacrifice
+264735,	--Survival of the Fittest (Pet Ability)
+281195,	--Survival of the Fittest (Lone Wolf)
 
 --Mage
 198111,	--Temporal Shield
@@ -109,13 +111,13 @@ hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(self)
 		return
 	end
 
-	local unit, index, buff = self.displayedUnit
+	local unit, index, buff = self.displayedUnit, index, buff
 	for i = 1, 32 do --BUFF_MAX_DISPLAY
 		local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
 		local display = buffs[spellId] or buffs[buffName]
 
 		if spellId and display then
-			if not buff or display < buffs[buff] then
+			if not buff or display < (buffs[buff] or buffs[buffName]) then
 				buff = spellId
 				index = i
 			end
@@ -126,16 +128,17 @@ hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(self)
 		end
 	end
 
-
 	local overlay = overlays[self]
 	if not overlay then
 		if not index then
 			return
 		end
-		overlay = CreateFrame("Button", nil, self, "CompactAuraTemplate")
+		overlay = CreateFrame("Button", "$parentBuffOverlay", self, "CompactAuraTemplate")
 		overlay:ClearAllPoints()
 		overlay:SetPoint("BOTTOM", self, "CENTER")
 		overlay:SetAlpha(0.75)
+		overlay:EnableMouse(false)
+		overlay:RegisterForClicks()
 		overlays[self] = overlay
 	end
 
