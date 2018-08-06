@@ -1,4 +1,5 @@
-**v2.2**
+**v2.3**
 
-- Implemented spell list priority
-- Added Diffuse Magic (Monk)
+- Resolved issue with clicking the BuffOverlay icon in combat in certain situations
+- Fixed priority nil issues relating to buffs that use spellName rather than spellId
+- Added Survival of the Fittest (Pet and LoneWolf)
