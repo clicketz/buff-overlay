@@ -21,6 +21,9 @@ local prioritySpellList = { --The higher on the list, the higher priority the bu
 642,	--Divine Shield
 1022,	--Blessing of Protection
 
+--Priest
+47788,	--Guardian Spirit
+
 --Rogue
 31224,	--Cloak of Shadows
 
@@ -114,16 +117,19 @@ hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(self)
 	local unit, index, buff = self.displayedUnit, index, buff
 	for i = 1, 32 do --BUFF_MAX_DISPLAY
 		local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
-		local display = buffs[spellId] or buffs[buffName]
 
-		if spellId and display then
-			if not buff or display < (buffs[buff] or buffs[buffName]) then
-				buff = spellId
-				index = i
+		if spellId then
+			if buffs[buffName] then
+				buffs[spellId] = buffs[buffName]
 			end
-		end
 
-		if not spellId then
+			if buffs[spellId] then
+				if not buff or buffs[spellId] < buffs[buff] then
+					buff = spellId
+					index = i
+				end
+			end
+		else
 			break
 		end
 	end
