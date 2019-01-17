@@ -1,16 +1,16 @@
 --//User Options
 
-local iconCount = 4
-local iconScale = 1.0
-local iconAlpha = .75
-local iconPosition = "TOPLEFT"
-local growDirection = "RIGHT"
+local iconCount = 3
+local iconScale = 1.2
+local iconAlpha = 0.75
+local iconPosition = "HIGHCENTER"
+local growDirection = "LEFT"
 local showCooldownNumbers = false
-local cooldownNumberScale = .5
+local cooldownNumberScale = 0.5
 
 --[[ Notes
 
-iconCount: Number of icons you want to display.
+iconCount: Number of icons you want to display (per frame).
 iconScale: The scale of the icon based on the size of the default icons on raidframe.
 iconAlpha: Icon transparency.
 iconPosition: "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "TOP", "BOTTOM", "RIGHT", "LEFT", "CENTER", "HIGHCENTER"
@@ -98,8 +98,7 @@ local spellList = {
 97463,  --Rallying Cry
 12975,  --Last Stand
 
---//Other
-
+--Other
 "Food",
 "Drink",
 "Food & Drink",
@@ -164,7 +163,7 @@ hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(self)
     while overlayNum <= iconCount do
         local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, index)
         if spellId then
-            if buffs[buffName] then
+            if buffs[buffName] and not buffs[spellId] then
                 buffs[spellId] = buffs[buffName]
             end
             
