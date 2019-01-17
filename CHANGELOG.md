@@ -1,7 +1,7 @@
 **v3.0.1**
 
--Defaults changed to match original locations (can still change manually).
--Minor code updates
+- Defaults changed to match original locations (can still change manually).
+- Minor code updates
 
 **v3.0**
 
