@@ -1,6 +1,6 @@
 ## Title: Buff Overlay
 ## Interface: 80100
-## Notes: Sets a Buff Icon Over Default Raid Frames
+## Notes: Overlays chosen buffs on top of the raidframe.
 ## Author: Click @ Tichondrius
 ## Version: 3.1
 
