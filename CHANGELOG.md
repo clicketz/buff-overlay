@@ -1,3 +1,22 @@
+**v3.2**
+
+- Re-added priority sorting.  Buffs that are higher in the spell list will have a higher shown priority.
+- Resorted spells for better default priorities.
+- Added Lichborne (Death Knight).
+- Added Rain from Above (Demon Hunter, PVP).
+- Added Soul Barrier (Demon Hunter).
+- Added Greater Invisibility (Mage).
+- Added Eye for an Eye (Paladin).
+- Added Divine Shield (Paladin, PVP).
+- Added Ultimate Sacrifice (Paladin, PVP).
+- Added Greater Fade (Priest, PVP).
+- Added Feint (Rogue).
+- Added Harden Skin (Shaman).
+- Added Nether Ward (Warlock, PVP).
+- Added Ignore Pain (Warrior).
+- Added Spell Reflection (Warrior).
+- Added Mass Spell Reflection (Warrior, PVP).
+
 **v3.1**
 
 - Added horizontal and vertical centering for grow directions.
