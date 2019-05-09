@@ -1,3 +1,7 @@
+**v4.0.1**
+
+- Added a temporary welcome message that can be toggled.
+
 **v4.0**
 
 - Added an in-game interface so icon layout management is easier.
