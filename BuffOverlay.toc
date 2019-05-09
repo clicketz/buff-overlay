@@ -2,7 +2,7 @@
 ## Interface: 80100
 ## Notes: Overlays chosen buffs on top of the raidframe.
 ## Author: Click @ Tichondrius
-## Version: 4.0
+## Version: 4.0.1
 ## SavedVariables: BuffOverlayDB
 
 #@no-lib-strip@
