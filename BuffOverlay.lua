@@ -117,6 +117,7 @@ local defaultSettings = {
         cooldownNumberScale = 0.5,
         iconXOff = 0,
         iconYOff = 0,
+        welcomeMessage = true,
         buffs = {}
     },
 }
@@ -143,6 +144,10 @@ function BuffOverlay:OnInitialize()
 
     self:Options()
 
+    if self.db.profile.welcomeMessage then
+        self.print("Type /buffoverlay or /bo to open the options panel or /bo help for more commands.  (This message can be disabled in options).")
+    end
+
     self.frames = {}
     self.overlays = {}
     self.priority = {}
@@ -160,15 +165,16 @@ function BuffOverlay:OnInitialize()
     SLASH_BuffOverlay2 = "/buffoverlay"
     SlashCmdList.BuffOverlay = function(msg)
         if msg == "help" or msg =="?" then
-            self.print("Commands that can be used:")
-            self.print("Test (Displays test icons on raidframe.)")
-            self.print("Default (Sets profile to default values.)")
+            self.print("Command List")
+            print("|cffff0000/buffoverlay|r or |cffff0000/bo|r: Opens options panel.")
+            print("|cffff0000/buffoverlay|r |cffFFFF00test|r: Shows test icons on raidframe.")
+            print("|cffff0000/buffoverlay|r |cffFFFF00default|r: Resets current profile to default values.")
         elseif msg == "test" then
             self:Test()
         elseif msg == "default" then
             self.db:ResetProfile()
         else
-            LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 600, 450)
+            LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 600, 470)
             LibStub("AceConfigDialog-3.0"):Open("BuffOverlay")
         end
     end
