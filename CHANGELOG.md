@@ -1,3 +1,11 @@
+**v4.0**
+
+- Added an in-game interface so icon layout management is easier.
+- Added x/y offsets.
+- Added a much more typical, flexible anchoring system.
+- Added test mode.
+- Added profiles.
+
 **v3.2**
 
 - Re-added priority sorting.  Buffs that are higher in the spell list will have a higher shown priority.
