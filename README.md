@@ -4,9 +4,10 @@ This extremely lightweight addon was created for people to quickly and easily se
 
 By default, all immunity and damage reduction abilities have been added.
 
+Type /bo or /buffoverlay to open the options panel.
+
 **Notes:**
 - Only Blizzard frames are currently supported.
-- No in-game options. See BuffOverlay.lua to add/remove buffs.
 - No taint.
 
 **Contribution:**
