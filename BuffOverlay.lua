@@ -1,36 +1,9 @@
---//User Options
+--BuffOverlay by Click @ Tichondrius
 
-local iconCount = 4
-local iconScale = 1.2
-local iconAlpha = 0.75
-local iconPosition = "HIGHCENTER"
-local growDirection = "HORIZONTAL"
-local showCooldownSpiral = true
-local showCooldownNumbers = false
-local cooldownNumberScale = 0.5
-
---[[ Notes
-
-iconCount: Number of icons you want to display (per frame).
-
-iconScale: The scale of the icon based on the size of the default icons on raidframe.
-
-iconAlpha: Icon transparency.
-
-iconPosition: "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT", "TOP", "BOTTOM", "RIGHT", "LEFT", "CENTER", "HIGHCENTER"
-
-growDirection: "DOWN", "UP", "LEFT", "RIGHT", "HORIZONTAL", "VERTICAL"
-
-showCooldownSpiral: Enable or disable showing the grey cooldown spiral.
-
-showCooldownNumbers: Show or hide cooldown text (must have it enabled in blizzard settings or use an addon).
-
-cooldownNumberScale: Scale the icon's cooldown text size.
-
-]]
+BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
 --Higher in spellList = higher shown priority
-local spellList = {
+BuffOverlay.buffs = {
 --Immunities (High Priority)
 196555, --Netherwalk (Demon Hunter)
 186265, --Aspect of the Turtle (Hunter)
@@ -63,7 +36,6 @@ local spellList = {
 102342, --Ironbark
 22812,  --Barkskin
 61336,  --Survival Instincts
-5215,   --Prowl
 
 --Hunter
 53480,  --Roar of Sacrifice
@@ -73,7 +45,6 @@ local spellList = {
 --Mage
 198111, --Temporal Shield
 113862, --Greater Invisibility
-198144, --Ice Form
 
 --Monk
 120954, --Fortifying Brew (Brewmaster)
@@ -104,7 +75,6 @@ local spellList = {
 5277,   --Evasion
 199754, --Riposte
 1966,   --Feint
-1784,   --Stealth
 
 --Shaman
 108271, --Astral Shift
@@ -127,108 +97,257 @@ local spellList = {
 12975,  --Last Stand
 
 --Other
+185710, --Sugar-Crusted Fish Feast
 "Food",
 "Drink",
 "Food & Drink",
 "Refreshment"
 }
 
-local buffs = {}
-local overlays = {}
-local priority = {}
+local defaultSettings = {
+    profile = {
+        iconCount = 4,
+        iconScale = 1.2,
+        iconAlpha = 1.0,
+        iconAnchor = "BOTTOM",
+        iconRelativePoint = "CENTER",
+        growDirection = "HORIZONTAL",
+        showCooldownSpiral = true,
+        showCooldownNumbers = false,
+        cooldownNumberScale = 0.5,
+        iconXOff = 0,
+        iconYOff = 0,
+        buffs = {}
+    },
+}
 
-for k, v in ipairs(spellList) do
-    buffs[v] = k
+local TestBuffs = {}
+
+local function InsertTestBuff(spellId)
+    local tex = GetSpellTexture(spellId)
+    rawset(TestBuffs, #TestBuffs+1, {spellId, tex})
 end
 
-if iconPosition == "HIGHCENTER" then
-    anchor = "BOTTOM"
-    iconPosition = "CENTER"
-else
-    anchor = iconPosition
+local function UnitBuffTest(unit, index)
+    local buff = TestBuffs[index]
+    if not buff then return end
+    return "TestBuff", buff[2], 0, nil, 60, GetTime() + 60, nil, nil, nil, buff[1]
 end
 
-hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(self)
-    if self:IsForbidden() or not self:IsVisible() or not self.buffFrames then
+function BuffOverlay:OnInitialize()
+    self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
+
+    self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
+    self.db.RegisterCallback(self, "OnProfileCopied", "Refresh")
+    self.db.RegisterCallback(self, "OnProfileReset", "Refresh")
+
+    self:Options()
+
+    self.frames = {}
+    self.overlays = {}
+    self.priority = {}
+
+    for i = 1, #self.buffs do
+        InsertTestBuff(self.buffs[i])
+    end
+
+    for k, v in ipairs(self.buffs) do
+        self.buffs[v] = k
+        self.buffs[k] = nil
+    end
+
+    SLASH_BuffOverlay1 = "/bo"
+    SLASH_BuffOverlay2 = "/buffoverlay"
+    SlashCmdList.BuffOverlay = function(msg)
+        if msg == "help" or msg =="?" then
+            self.print("Commands that can be used:")
+            self.print("Test (Displays test icons on raidframe.)")
+            self.print("Default (Sets profile to default values.)")
+        elseif msg == "test" then
+            self:Test()
+        elseif msg == "default" then
+            self.db:ResetProfile()
+        else
+            LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 600, 450)
+            LibStub("AceConfigDialog-3.0"):Open("BuffOverlay")
+        end
+    end
+end
+
+
+function BuffOverlay:Refresh()
+    for k, _ in pairs(self.overlays) do
+        self.overlays[k]:Hide()
+        self.overlays[k] = nil
+    end
+
+    for frame, _ in pairs(self.frames) do
+        if frame:IsShown() then CompactUnitFrame_UpdateBuffs(frame) end
+    end
+end
+
+function BuffOverlay.print(msg)
+    print("|cffff0000BuffOverlay|r: "..msg)
+end
+
+function BuffOverlay:Test()
+    if InCombatLockdown() then
+        self.print("You are in combat.")
         return
     end
 
-    local unit = self.displayedUnit
-    local frame = self:GetName() .. "BuffOverlay"
+    if not self.test and not (GetCVarBool("useCompactPartyFrames") and CompactRaidFrameManager_GetSetting("IsShown")) then
+        self.print("Please enable raid-style party frames in Blizzard settings or join a raid to see test icons.")
+    end
+
+    self.test = not self.test
+
+    if not test then
+        test = CreateFrame("Frame", "BuffOverlayTest", UIParent)
+        test.bg = test:CreateTexture()
+        test.bg:SetAllPoints(true)
+        test.bg:SetColorTexture(1, 0, 0, 0.6)
+        test.text = test:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        test.text:SetPoint("CENTER", 0, 0)
+        test.text:SetText("Test")
+        test:SetSize(test.text:GetWidth()+20, test.text:GetHeight()+2)
+        test:EnableMouse(false)
+        test:SetPoint("BOTTOM", CompactRaidFrame1, "TOP", 0, 0)
+        test:Hide()
+    end
+
+    if not self.test then
+        if GetNumGroupMembers() == 0 or not IsInRaid() and not select(2, IsInInstance())=="arena" and GetCVarBool("useCompactPartyFrames") then
+            CompactRaidFrameManager:Hide()
+            CompactRaidFrameContainer:Hide()
+        end
+        test:Hide()
+        self:Refresh()
+        return
+    end
+
+    if GetNumGroupMembers() == 0 then
+        CompactRaidFrameManager:Show()
+        CompactRaidFrameContainer:Show()
+    end
+    test:Show()
+    self:Refresh()
+end
+
+local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
+
+    local UnitBuff = BuffOverlay.test and UnitBuffTest or UnitBuff
+
+    local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura = UnitBuff(unit, index, filter)
+    buffFrame.icon:SetTexture(icon)
+    if ( count > 1 ) then
+        local countText = count
+        if ( count >= 100 ) then
+            countText = BUFF_STACKS_OVERFLOW
+        end
+        buffFrame.count:Show()
+        buffFrame.count:SetText(countText)
+    else
+        buffFrame.count:Hide()
+    end
+    buffFrame:SetID(index)
+    local enabled = expirationTime and expirationTime ~= 0
+    if enabled then
+        local startTime = expirationTime - duration
+        CooldownFrame_Set(buffFrame.cooldown, startTime, duration, true)
+    else
+        CooldownFrame_Clear(buffFrame.cooldown)
+    end
+    buffFrame:Show()
+end
+
+function BuffOverlay:ApplyOverlay(frame)
+    if frame:IsForbidden() or not frame.buffFrames then
+        return
+    end
+
+    local unit = frame.displayedUnit
+    local bFrame = frame:GetName() .. "BuffOverlay"
     local overlayNum = 1
 
-    for i = 1, iconCount do
-        local overlay = overlays[frame .. i]
+    local UnitBuff = self.test and UnitBuffTest or UnitBuff
+
+    for i = 1, self.db.profile.iconCount do
+        local overlay = self.overlays[bFrame .. i]
         if not overlay then
-            if not self or not unit then return end
-            overlay = _G[frame .. i] or CreateFrame("Button", frame .. i, self, "CompactAuraTemplate")
-            overlay.cooldown:SetDrawSwipe(showCooldownSpiral)
-            overlay.cooldown:SetHideCountdownNumbers(not showCooldownNumbers)
-            overlay.cooldown:SetScale(cooldownNumberScale)
+            overlay = _G[bFrame .. i] or CreateFrame("Button", bFrame .. i, frame, "CompactAuraTemplate")
+            overlay.cooldown:SetDrawSwipe(self.db.profile.showCooldownSpiral)
+            overlay.cooldown:SetHideCountdownNumbers(not self.db.profile.showCooldownNumbers)
+            overlay.cooldown:SetScale(self.db.profile.cooldownNumberScale)
             overlay:ClearAllPoints()
             if i == 1 then
-                overlay:SetPoint(anchor, self, iconPosition)
+                overlay:SetPoint(self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint, self.db.profile.iconXOff, self.db.profile.iconYOff)
             else
-                if growDirection == "DOWN" then
-                    overlay:SetPoint("TOP", _G[frame .. i - 1], "BOTTOM")
-                elseif growDirection == "LEFT" then
-                    overlay:SetPoint("BOTTOMRIGHT", _G[frame .. i - 1], "BOTTOMLEFT")
-                elseif growDirection == "UP" or growDirection == "VERTICAL" then
-                    overlay:SetPoint("BOTTOM", _G[frame .. i - 1], "TOP")
+                if self.db.profile.growDirection == "DOWN" then
+                    overlay:SetPoint("TOP", _G[bFrame .. i - 1], "BOTTOM")
+                elseif self.db.profile.growDirection == "LEFT" then
+                    overlay:SetPoint("BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT")
+                elseif self.db.profile.growDirection == "UP" or self.db.profile.growDirection == "VERTICAL" then
+                    overlay:SetPoint("BOTTOM", _G[bFrame .. i - 1], "TOP")
                 else
-                    overlay:SetPoint("BOTTOMLEFT", _G[frame .. i - 1], "BOTTOMRIGHT")
+                    overlay:SetPoint("BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT")
                 end
             end
-            overlay:SetScale(iconScale)
-            overlay:SetAlpha(iconAlpha)
+            overlay:SetScale(self.db.profile.iconScale)
+            overlay:SetAlpha(self.db.profile.iconAlpha)
             overlay:EnableMouse(false)
             overlay:RegisterForClicks()
-            overlays[frame .. i] = overlay
+            self.overlays[bFrame .. i] = overlay
         end
         overlay:Hide()
     end
 
-    if #priority > 0 then
-        for i = 1, #priority do
-            priority[i] = nil
+    if #self.priority > 0 then
+        for i = 1, #self.priority do
+            self.priority[i] = nil
         end
     end
 
     for i = 1, 40 do
         local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
         if spellId then
-            if buffs[buffName] and not buffs[spellId] then
-                buffs[spellId] = buffs[buffName]
+            if self.buffs[buffName] and not self.buffs[spellId] then
+                self.buffs[spellId] = self.buffs[buffName]
             end
 
-            if buffs[spellId] then
-                rawset(priority, #priority+1, {i, buffs[spellId]})
+            if self.buffs[spellId] then
+                rawset(self.priority, #self.priority+1, {i, self.buffs[spellId]})
             end
         else
             break
         end
     end
 
-    if #priority > 1 then
-        table.sort(priority, function(a, b)
+    if #self.priority > 1 then
+        table.sort(self.priority, function(a, b)
             return a[2] < b[2]
         end)
     end
 
-    while overlayNum <= iconCount do
-        if priority[overlayNum] then
-            CompactUnitFrame_UtilSetBuff(overlays[frame .. overlayNum], unit, priority[overlayNum][1], nil)
-            overlays[frame .. overlayNum]:SetSize(self.buffFrames[1]:GetSize())
+    while overlayNum <= self.db.profile.iconCount do
+        if self.priority[overlayNum] then
+            CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil, false, false, self.test)
+            self.overlays[bFrame .. overlayNum]:SetSize(frame.buffFrames[1]:GetSize())
 
-            local point, relativeTo, relativePoint, xOfs, yOfs = overlays[frame .. 1]:GetPoint()
-            if growDirection == "HORIZONTAL" then
-                overlays[frame .. 1]:SetPoint(point, relativeTo, relativePoint, -(overlays[frame .. 1]:GetWidth()/2)*(overlayNum-1), yOfs)
-            elseif growDirection == "VERTICAL" then
-                overlays[frame .. 1]:SetPoint(point, relativeTo, relativePoint, xOfs, -(overlays[frame .. 1]:GetHeight()/2)*(overlayNum-1))
+            local point, relativeTo, relativePoint, xOfs, yOfs = self.overlays[bFrame .. 1]:GetPoint()
+            if self.db.profile.growDirection == "HORIZONTAL" then
+                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, -(self.overlays[bFrame .. 1]:GetWidth()/2)*(overlayNum-1)+self.db.profile.iconXOff, yOfs)
+            elseif self.db.profile.growDirection == "VERTICAL" then
+                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, xOfs, -(self.overlays[bFrame .. 1]:GetHeight()/2)*(overlayNum-1)+self.db.profile.iconYOff)
             end
             overlayNum = overlayNum + 1
         else
             break
         end
     end
+    self.frames[frame] = true
+end
+
+hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(frame)
+    BuffOverlay:ApplyOverlay(frame)
 end)

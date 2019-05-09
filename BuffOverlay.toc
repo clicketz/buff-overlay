@@ -1,7 +1,13 @@
-## Title: Buff Overlay
+## Title: BuffOverlay
 ## Interface: 80100
 ## Notes: Overlays chosen buffs on top of the raidframe.
 ## Author: Click @ Tichondrius
-## Version: 3.2
+## Version: 4.0
+## SavedVariables: BuffOverlayDB
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
 
 BuffOverlay.lua
+Options.lua
