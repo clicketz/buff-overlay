@@ -1,3 +1,7 @@
+**v4.0.2**
+
+- Fixed missing library issue.
+
 **v4.0.1**
 
 - Added a temporary welcome message that can be toggled.
