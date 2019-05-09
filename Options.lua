@@ -28,7 +28,7 @@ function BuffOverlay:Options()
                 handler = BuffOverlay
             },
             layout = {
-                name = "Layout",
+                name = "Settings",
                 order = 4,
                 type = "group",
                 get = function(info) return self.db.profile[info[#info]] end,
@@ -164,6 +164,13 @@ function BuffOverlay:Options()
                         type = "toggle",
                         width = "full",
                         desc = "Toggle showing of the cooldown text."
+                    },
+                    welcomeMessage = {
+                        order = 12,
+                        name = "Welcome Message",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the welcome message on login."
                     }
                 }
             },
