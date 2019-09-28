@@ -3,105 +3,110 @@
 BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
 --Higher in spellList = higher shown priority
-BuffOverlay.buffs = {
---Immunities (High Priority)
-196555, --Netherwalk (Demon Hunter)
-186265, --Aspect of the Turtle (Hunter)
-45438,  --Ice Block (Mage)
-125174, --Touch of Karma (Monk)
-228050, --Divine Shield (Prot Paladin PVP)
-642,    --Divine Shield (Paladin)
-199448, --Blessing of Ultimate Sacrifice (Paladin)
-1022,   --Blessing of Protection (Paladin)
-47788,  --Guardian Spirit (Priest)
-31224,  --Cloak of Shadows (Rogue)
-210918, --Ethereal Form (Shaman)
 
---Death Knight
-48707,  --Anti-Magic Shell
-48792,  --Icebound Fortitude
-287081, --Lichborne
-55233,  --Vampiric Blood
-194679, --Rune Tap
-145629, --Anti-Magic Zone
-81256,  --Dancing Rune Weapon
+BuffOverlay.spells = {
+    --High Priority
+    203554, --Focused Growth (Druid)
+    -- 279793, --Grove Tending (Druid)
 
---Demon Hunter
-206804, --Rain from Above
-187827, --Metamorphosis (Vengeance)
-212800, --Blur
-263648, --Soul Barrier
+    --Immunities
+    196555, --Netherwalk (Demon Hunter)
+    186265, --Aspect of the Turtle (Hunter)
+    45438,  --Ice Block (Mage)
+    125174, --Touch of Karma (Monk)
+    228050, --Divine Shield (Prot Paladin PVP)
+    642,    --Divine Shield (Paladin)
+    199448, --Blessing of Ultimate Sacrifice (Paladin)
+    1022,   --Blessing of Protection (Paladin)
+    47788,  --Guardian Spirit (Priest)
+    31224,  --Cloak of Shadows (Rogue)
+    210918, --Ethereal Form (Shaman)
 
---Druid
-102342, --Ironbark
-22812,  --Barkskin
-61336,  --Survival Instincts
+    --Death Knight
+    48707,  --Anti-Magic Shell
+    48792,  --Icebound Fortitude
+    287081, --Lichborne
+    55233,  --Vampiric Blood
+    194679, --Rune Tap
+    145629, --Anti-Magic Zone
+    81256,  --Dancing Rune Weapon
 
---Hunter
-53480,  --Roar of Sacrifice
-264735, --Survival of the Fittest (Pet Ability)
-281195, --Survival of the Fittest (Lone Wolf)
+    --Demon Hunter
+    206804, --Rain from Above
+    187827, --Metamorphosis (Vengeance)
+    212800, --Blur
+    263648, --Soul Barrier
 
---Mage
-198111, --Temporal Shield
-113862, --Greater Invisibility
+    --Druid
+    102342, --Ironbark
+    22812,  --Barkskin
+    61336,  --Survival Instincts
 
---Monk
-120954, --Fortifying Brew (Brewmaster)
-243435, --Fortifying Brew (Mistweaver)
-201318, --Fortifying Brew (Windwalker)
-115176, --Zen Meditation
-116849, --Life Cocoon
-122278, --Dampen Harm
-122783, --Diffuse Magic
+    --Hunter
+    53480,  --Roar of Sacrifice
+    264735, --Survival of the Fittest (Pet Ability)
+    281195, --Survival of the Fittest (Lone Wolf)
 
---Paladin
-204018, --Blessing of Spellwarding
-6940,   --Blessing of Sacrifice
-498,    --Divine Protection
-31850,  --Ardent Defender
-86659,  --Guardian of Ancient Kings
-205191, --Eye for an Eye
+    --Mage
+    198111, --Temporal Shield
+    113862, --Greater Invisibility
 
---Priest
-47585,  --Dispersion
-33206,  --Pain Suppression
-213602, --Greater Fade
-81782,  --Power Word: Barrier
-271466, --Luminous Barrier
+    --Monk
+    120954, --Fortifying Brew (Brewmaster)
+    243435, --Fortifying Brew (Mistweaver)
+    201318, --Fortifying Brew (Windwalker)
+    115176, --Zen Meditation
+    116849, --Life Cocoon
+    122278, --Dampen Harm
+    122783, --Diffuse Magic
 
---Rogue
-45182,  --Cheating Death
-5277,   --Evasion
-199754, --Riposte
-1966,   --Feint
+    --Paladin
+    204018, --Blessing of Spellwarding
+    6940,   --Blessing of Sacrifice
+    498,    --Divine Protection
+    31850,  --Ardent Defender
+    86659,  --Guardian of Ancient Kings
+    205191, --Eye for an Eye
 
---Shaman
-108271, --Astral Shift
-118337, --Harden Skin
+    --Priest
+    47585,  --Dispersion
+    33206,  --Pain Suppression
+    213602, --Greater Fade
+    81782,  --Power Word: Barrier
+    271466, --Luminous Barrier
 
---Warlock
-212195, --Nether Ward
-104773, --Unending Resolve
-108416, --Dark Pact
+    --Rogue
+    45182,  --Cheating Death
+    5277,   --Evasion
+    199754, --Riposte
+    1966,   --Feint
 
---Warrior
-190456, --Ignore Pain
-118038, --Die by the Sword
-871,    --Shield Wall
-213915, --Mass Spell Reflection
-23920,  --Spell Reflection (Prot)
-216890, --Spell Reflection (Arms/Fury)
-184364, --Enraged Regeneration
-97463,  --Rallying Cry
-12975,  --Last Stand
+    --Shaman
+    108271, --Astral Shift
+    118337, --Harden Skin
 
---Other
-185710, --Sugar-Crusted Fish Feast
-"Food",
-"Drink",
-"Food & Drink",
-"Refreshment"
+    --Warlock
+    212195, --Nether Ward
+    104773, --Unending Resolve
+    108416, --Dark Pact
+
+    --Warrior
+    190456, --Ignore Pain
+    118038, --Die by the Sword
+    871,    --Shield Wall
+    213915, --Mass Spell Reflection
+    23920,  --Spell Reflection (Prot)
+    216890, --Spell Reflection (Arms/Fury)
+    184364, --Enraged Regeneration
+    97463,  --Rallying Cry
+    12975,  --Last Stand
+
+    --Other
+    185710, --Sugar-Crusted Fish Feast
+    "Food",
+    "Drink",
+    "Food & Drink",
+    "Refreshment"
 }
 
 local defaultSettings = {
@@ -136,6 +141,7 @@ local function UnitBuffTest(unit, index)
 end
 
 function BuffOverlay:OnInitialize()
+
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
 
     self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
@@ -151,14 +157,14 @@ function BuffOverlay:OnInitialize()
     self.frames = {}
     self.overlays = {}
     self.priority = {}
+    self.buffs = {}
 
-    for i = 1, #self.buffs do
-        InsertTestBuff(self.buffs[i])
+    for i = 1, #self.spells do
+        InsertTestBuff(self.spells[i])
     end
 
-    for k, v in ipairs(self.buffs) do
+    for k, v in ipairs(self.spells) do
         self.buffs[v] = k
-        self.buffs[k] = nil
     end
 
     SLASH_BuffOverlay1 = "/bo"
@@ -188,7 +194,7 @@ function BuffOverlay:Refresh()
     end
 
     for frame, _ in pairs(self.frames) do
-        if frame:IsShown() then CompactUnitFrame_UpdateBuffs(frame) end
+        if frame:IsShown() then CompactUnitFrame_UpdateAuras(frame) end
     end
 end
 
@@ -203,7 +209,7 @@ function BuffOverlay:Test()
     end
 
     if not self.test and not (GetCVarBool("useCompactPartyFrames") and CompactRaidFrameManager_GetSetting("IsShown")) then
-        self.print("Please enable raid-style party frames in Blizzard settings or join a raid to see test icons.")
+        self.print("Please enable raid-style party frames in Blizzard settings or join a 6+ player raid to see test icons.")
     end
 
     self.test = not self.test
@@ -244,7 +250,7 @@ local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
 
     local UnitBuff = BuffOverlay.test and UnitBuffTest or UnitBuff
 
-    local name, icon, count, debuffType, duration, expirationTime, unitCaster, canStealOrPurge, _, spellId, canApplyAura = UnitBuff(unit, index, filter)
+    local _, icon, count, _, duration, expirationTime = UnitBuff(unit, index, filter)
     buffFrame.icon:SetTexture(icon)
     if ( count > 1 ) then
         local countText = count
@@ -285,6 +291,8 @@ function BuffOverlay:ApplyOverlay(frame)
             overlay.cooldown:SetDrawSwipe(self.db.profile.showCooldownSpiral)
             overlay.cooldown:SetHideCountdownNumbers(not self.db.profile.showCooldownNumbers)
             overlay.cooldown:SetScale(self.db.profile.cooldownNumberScale)
+            overlay.count:SetPoint("BOTTOMRIGHT", bFrame .. i, "BOTTOMRIGHT")
+            overlay.count:SetScale(0.8)
             overlay:ClearAllPoints()
             if i == 1 then
                 overlay:SetPoint(self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint, self.db.profile.iconXOff, self.db.profile.iconYOff)
@@ -337,7 +345,7 @@ function BuffOverlay:ApplyOverlay(frame)
 
     while overlayNum <= self.db.profile.iconCount do
         if self.priority[overlayNum] then
-            CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil, false, false, self.test)
+            CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil)
             self.overlays[bFrame .. overlayNum]:SetSize(frame.buffFrames[1]:GetSize())
 
             local point, relativeTo, relativePoint, xOfs, yOfs = self.overlays[bFrame .. 1]:GetPoint()
@@ -354,6 +362,6 @@ function BuffOverlay:ApplyOverlay(frame)
     self.frames[frame] = true
 end
 
-hooksecurefunc("CompactUnitFrame_UpdateBuffs", function(frame)
+hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     BuffOverlay:ApplyOverlay(frame)
 end)
