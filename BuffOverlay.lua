@@ -1,4 +1,4 @@
---BuffOverlay by Click @ Tichondrius
+--Buff Overlay by Click @ Tichondrius
 
 BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
