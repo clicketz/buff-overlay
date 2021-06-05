@@ -14,8 +14,12 @@ if isBC then
         --Immunities
         45438,  --Ice Block (Mage)
         642,    --Divine Shield (Paladin)
-        498,    --Divine Protection (Paladin)
+            498,
+            1020,
+            5573,
         1022,   --Blessing of Protection (Paladin)
+            5599,
+            10278,
 
         --Druid
         22812,  --Barkskin
@@ -25,10 +29,19 @@ if isBC then
 
         --Mage
         543,    --Fire Ward
+            8457,
+            8458,
+            10223,
+            10225,
         6143,   --Frost Ward
+            8461,
+            8462,
+            10177,
+            28609,
 
         --Paladin
         6940,   --Blessing of Sacrifice
+            20729,
 
         --Priest
         33206,  --Pain Suppression
@@ -37,13 +50,22 @@ if isBC then
         45182,  --Cheating Death
         31224,  --Cloak of Shadows
         5277,   --Evasion
+            26669,
 
         --Shaman
         30823,  --Shamanistic Rage
 
         --Warlock
         6229,   --Shadow Ward
-        19443,  --Sacrifice (Voidwalker)
+            11739,
+            11740,
+            28610,
+        7812,  --Sacrifice (Voidwalker)
+            19438,
+            19440,
+            19441,
+            19442,
+            19443,
 
         --Warrior
         12975,  --Last Stand
@@ -57,7 +79,12 @@ if isBC then
 
         --Other
         1784,   --Stealth
+            1785,
+            1786,
+            1787,
         5215,   --Prowl
+            6783,
+            9913,
         "Food",
         "Drink",
         "Food & Drink",
