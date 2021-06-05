@@ -1,8 +1,8 @@
 std = "lua51"
 max_line_length = false
 exclude_files = {
-    ".luacheckrc",
-    "Libs/",
+	".luacheckrc",
+	"Libs/",
 }
 ignore = {
 	"11./SLASH_.*", -- slash handler
