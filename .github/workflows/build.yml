@@ -15,14 +15,19 @@ jobs:
       GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - name: Clone project
-        uses: actions/checkout@v1  # note: checkout@v2 breaks git history, so generating a changelog and
-                                   # file naming for non-tagged builds will not work properly
+      - uses: actions/checkout@v1
+        
+      - uses: nebularg/actions-luacheck@v1
+        with:
+          args: "--no-color -q"
+          annotate: warning
+        
+      - run: ./generate_changelog.sh
 
-      - name: Package and release
+      - name: Retail
         uses: BigWigsMods/packager@v1
 
-      - name: Package and release for TBC
+      - name: Burning Crusade
         uses: BigWigsMods/packager@v1
         with:
-          args: -g bcc -m .pkgmeta-bcc
+          args: -g bcc
