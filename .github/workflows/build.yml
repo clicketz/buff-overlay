@@ -16,18 +16,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-        
-      - uses: nebularg/actions-luacheck@v1
+         
+      - name: Lua check
+        uses: nebularg/actions-luacheck@v1
         with:
           args: "--no-color -q"
           annotate: warning
         
-      - run: ./generate_changelog.sh
+      - name: Generate Changelog
+        run: ./generate_changelog.sh
 
-      - name: Retail
+      - name: Retail Package
         uses: BigWigsMods/packager@v1
 
-      - name: Burning Crusade
+      - name: Burning Crusade Package
         uses: BigWigsMods/packager@v1
         with:
           args: -g bcc
