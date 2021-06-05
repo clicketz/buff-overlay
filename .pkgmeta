@@ -2,9 +2,9 @@ package-as: BuffOverlay
 
 enable-nolib-creation: no
 
-manual-changelog:
- filename: CHANGELOG.md
- markup-type: markdown
+#manual-changelog:
+# filename: CHANGELOG.md
+# markup-type: markdown
 
 ignore:
  - README.md
