@@ -15,3 +15,5 @@ jobs:
         with:
           args: "--no-color --codes -q"
           annotate: warning
+          
+      - run: git update-index --chmod=+x ./generate_changelog.sh
