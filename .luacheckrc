@@ -25,7 +25,7 @@ globals = {
     "UIParent",
     "IsInRaid",
     "IsInInstance",
-    "GetNumGroupMembers"
+    "GetNumGroupMembers",
     "CompactRaidFrameManager",
     "CompactRaidFrameContainer",
     "UnitBuff",
