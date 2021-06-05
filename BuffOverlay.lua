@@ -319,7 +319,7 @@ function BuffOverlay:Test()
         test.text:SetText("Test")
         test:SetSize(test.text:GetWidth()+20, test.text:GetHeight()+2)
         test:EnableMouse(false)
-        test:SetPoint("BOTTOM", CompactRaidFrame1, "TOP", 0, 0)
+        test:SetPoint("BOTTOM", _G[CompactRaidFrame1], "TOP", 0, 0)
         test:Hide()
     end
 
