@@ -1,113 +1,173 @@
---Buff Overlay by Click @ Tichondrius
+--Buff Overlay by clicket
 
 BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
+local isBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
+
 --Higher in spellList = higher shown priority
 
-BuffOverlay.spells = {
-    --High Priority
-    203554, --Focused Growth (Druid)
-    -- 279793, --Grove Tending (Druid)
+if isBC then
+    BuffOverlay.defaultSpells = {
+        --High Priority
 
-    --Immunities
-    196555, --Netherwalk (Demon Hunter)
-    186265, --Aspect of the Turtle (Hunter)
-    45438,  --Ice Block (Mage)
-    125174, --Touch of Karma (Monk)
-    228050, --Divine Shield (Prot Paladin PVP)
-    642,    --Divine Shield (Paladin)
-    199448, --Blessing of Ultimate Sacrifice (Paladin)
-    1022,   --Blessing of Protection (Paladin)
-    47788,  --Guardian Spirit (Priest)
-    31224,  --Cloak of Shadows (Rogue)
-    210918, --Ethereal Form (Shaman)
+        --Immunities
+        45438,  --Ice Block (Mage)
+        642,    --Divine Shield (Paladin)
+        498,    --Divine Protection (Paladin)
+        1022,   --Blessing of Protection (Paladin)
 
-    --Death Knight
-    48707,  --Anti-Magic Shell
-    48792,  --Icebound Fortitude
-    287081, --Lichborne
-    55233,  --Vampiric Blood
-    194679, --Rune Tap
-    145629, --Anti-Magic Zone
-    81256,  --Dancing Rune Weapon
+        --Druid
+        22812,  --Barkskin
+        61336,  --Survival Instincts
 
-    --Demon Hunter
-    206804, --Rain from Above
-    187827, --Metamorphosis (Vengeance)
-    212800, --Blur
-    263648, --Soul Barrier
+        --Hunter
+        19263,  --Deterrence
 
-    --Druid
-    102342, --Ironbark
-    22812,  --Barkskin
-    61336,  --Survival Instincts
+        --Mage
+        543,    --Fire Ward
+        6143,   --Frost Ward
+        11426,  --Ice Barrier
 
-    --Hunter
-    53480,  --Roar of Sacrifice
-    264735, --Survival of the Fittest (Pet Ability)
-    281195, --Survival of the Fittest (Lone Wolf)
+        --Paladin
+        6940,   --Blessing of Sacrifice
 
-    --Mage
-    198111, --Temporal Shield
-    113862, --Greater Invisibility
+        --Priest
+        33206,  --Pain Suppression
 
-    --Monk
-    120954, --Fortifying Brew (Brewmaster)
-    243435, --Fortifying Brew (Mistweaver)
-    201318, --Fortifying Brew (Windwalker)
-    115176, --Zen Meditation
-    116849, --Life Cocoon
-    122278, --Dampen Harm
-    122783, --Diffuse Magic
+        --Rogue
+        31224,  --Cloak of Shadows
+        5277,   --Evasion
 
-    --Paladin
-    204018, --Blessing of Spellwarding
-    6940,   --Blessing of Sacrifice
-    498,    --Divine Protection
-    31850,  --Ardent Defender
-    86659,  --Guardian of Ancient Kings
-    205191, --Eye for an Eye
+        --Shaman
+        30823,  --Shamanistic Rage
 
-    --Priest
-    47585,  --Dispersion
-    33206,  --Pain Suppression
-    213602, --Greater Fade
-    81782,  --Power Word: Barrier
-    271466, --Luminous Barrier
+        --Warlock
+        6229,   --Shadow Ward
 
-    --Rogue
-    45182,  --Cheating Death
-    5277,   --Evasion
-    199754, --Riposte
-    1966,   --Feint
+        --Warrior
+        12975,  --Last Stand
+        871,    --Shield Wall
+        23920,  --Spell Reflection
+        3411,   --Intervene
 
-    --Shaman
-    108271, --Astral Shift
-    118337, --Harden Skin
+        --Racials
+        20594,  --Stoneform
+        20580,  --Shadowmeld
 
-    --Warlock
-    212195, --Nether Ward
-    104773, --Unending Resolve
-    108416, --Dark Pact
+        --Other
+        1784,   --Stealth
+        5215,   --Prowl
+        "Food",
+        "Drink",
+        "Food & Drink",
+        "Refreshment",
+    }
+else
+    BuffOverlay.defaultSpells = {
+        --High Priority
+        203554, --Focused Growth (Druid)
+        -- 279793, --Grove Tending (Druid)
 
-    --Warrior
-    190456, --Ignore Pain
-    118038, --Die by the Sword
-    871,    --Shield Wall
-    213915, --Mass Spell Reflection
-    23920,  --Spell Reflection (Prot)
-    216890, --Spell Reflection (Arms/Fury)
-    184364, --Enraged Regeneration
-    97463,  --Rallying Cry
-    12975,  --Last Stand
+        --Immunities
+        196555, --Netherwalk (Demon Hunter)
+        186265, --Aspect of the Turtle (Hunter)
+        45438,  --Ice Block (Mage)
+        125174, --Touch of Karma (Monk)
+        228050, --Divine Shield (Prot Paladin PVP)
+        642,    --Divine Shield (Paladin)
+        199448, --Blessing of Ultimate Sacrifice (Paladin)
+        1022,   --Blessing of Protection (Paladin)
+        47788,  --Guardian Spirit (Priest)
+        31224,  --Cloak of Shadows (Rogue)
+        210918, --Ethereal Form (Shaman)
 
-    --Other
-    185710, --Sugar-Crusted Fish Feast
-    "Food",
-    "Drink",
-    "Food & Drink",
-    "Refreshment"
-}
+        --Death Knight
+        48707,  --Anti-Magic Shell
+        48792,  --Icebound Fortitude
+        287081, --Lichborne
+        55233,  --Vampiric Blood
+        194679, --Rune Tap
+        145629, --Anti-Magic Zone
+        81256,  --Dancing Rune Weapon
+
+        --Demon Hunter
+        206804, --Rain from Above
+        187827, --Metamorphosis (Vengeance)
+        212800, --Blur
+        263648, --Soul Barrier
+
+        --Druid
+        102342, --Ironbark
+        22812,  --Barkskin
+        61336,  --Survival Instincts
+
+        --Hunter
+        53480,  --Roar of Sacrifice
+        264735, --Survival of the Fittest (Pet Ability)
+        281195, --Survival of the Fittest (Lone Wolf)
+
+        --Mage
+        198111, --Temporal Shield
+        113862, --Greater Invisibility
+
+        --Monk
+        120954, --Fortifying Brew (Brewmaster)
+        243435, --Fortifying Brew (Mistweaver)
+        201318, --Fortifying Brew (Windwalker)
+        115176, --Zen Meditation
+        116849, --Life Cocoon
+        122278, --Dampen Harm
+        122783, --Diffuse Magic
+
+        --Paladin
+        204018, --Blessing of Spellwarding
+        6940,   --Blessing of Sacrifice
+        498,    --Divine Protection
+        31850,  --Ardent Defender
+        86659,  --Guardian of Ancient Kings
+        205191, --Eye for an Eye
+
+        --Priest
+        47585,  --Dispersion
+        33206,  --Pain Suppression
+        213602, --Greater Fade
+        81782,  --Power Word: Barrier
+        271466, --Luminous Barrier
+
+        --Rogue
+        45182,  --Cheating Death
+        5277,   --Evasion
+        199754, --Riposte
+        1966,   --Feint
+
+        --Shaman
+        108271, --Astral Shift
+        118337, --Harden Skin
+
+        --Warlock
+        212195, --Nether Ward
+        104773, --Unending Resolve
+        108416, --Dark Pact
+
+        --Warrior
+        190456, --Ignore Pain
+        118038, --Die by the Sword
+        871,    --Shield Wall
+        213915, --Mass Spell Reflection
+        23920,  --Spell Reflection (Prot)
+        216890, --Spell Reflection (Arms/Fury)
+        184364, --Enraged Regeneration
+        97463,  --Rallying Cry
+        12975,  --Last Stand
+
+        --Other
+        185710, --Sugar-Crusted Fish Feast
+        "Food",
+        "Drink",
+        "Food & Drink",
+        "Refreshment",
+    }
+end
 
 local defaultSettings = {
     profile = {
@@ -123,7 +183,7 @@ local defaultSettings = {
         iconXOff = 0,
         iconYOff = 0,
         welcomeMessage = true,
-        buffs = {}
+        buffs = BuffOverlay.defaultSpells,
     },
 }
 
@@ -134,7 +194,7 @@ local function InsertTestBuff(spellId)
     rawset(TestBuffs, #TestBuffs+1, {spellId, tex})
 end
 
-local function UnitBuffTest(unit, index)
+local function UnitBuffTest(_, index)
     local buff = TestBuffs[index]
     if not buff then return end
     return "TestBuff", buff[2], 0, nil, 60, GetTime() + 60, nil, nil, nil, buff[1]
@@ -144,26 +204,32 @@ function BuffOverlay:OnInitialize()
 
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
 
-    self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
-    self.db.RegisterCallback(self, "OnProfileCopied", "Refresh")
-    self.db.RegisterCallback(self, "OnProfileReset", "Refresh")
+    self.index = 1
 
-    self:Options()
+    if not self.registered then
+        self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
+        self.db.RegisterCallback(self, "OnProfileCopied", "Refresh")
+        self.db.RegisterCallback(self, "OnProfileReset", "Refresh")
+
+        self:Options()
+        self.registered = true
+    end
 
     if self.db.profile.welcomeMessage then
-        self.print("Type /buffoverlay or /bo to open the options panel or /bo help for more commands.  (This message can be disabled in options).")
+        self.print("Type /buffoverlay or /bo to open the options panel or /bo help for more commands.")
     end
 
     self.frames = {}
     self.overlays = {}
     self.priority = {}
     self.buffs = {}
+    self.bars = {}
 
-    for i = 1, #self.spells do
-        InsertTestBuff(self.spells[i])
+    for i = 1, #self.defaultSpells do
+        InsertTestBuff(self.defaultSpells[i])
     end
 
-    for k, v in ipairs(self.spells) do
+    for k, v in ipairs(self.defaultSpells) do
         self.buffs[v] = k
     end
 
@@ -185,7 +251,6 @@ function BuffOverlay:OnInitialize()
         end
     end
 end
-
 
 function BuffOverlay:Refresh()
     for k, _ in pairs(self.overlays) do
@@ -359,7 +424,10 @@ function BuffOverlay:ApplyOverlay(frame)
             break
         end
     end
-    self.frames[frame] = true
+
+    if not self.frames[frame] then
+        self.frames[frame] = true
+    end
 end
 
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
