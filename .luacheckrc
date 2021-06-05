@@ -10,6 +10,7 @@ ignore = {
 	"113/NUM_LE_.*", -- Accessing an undefined (Lua ENUM type) global variable
 }
 globals = {
+	"_G",
 	"BuffOverlay",
 	"LibStub",
 	"WOW_PROJECT_ID",
@@ -23,4 +24,10 @@ globals = {
 	"CompactRaidFrameManager_GetSetting",
 	"CreateFrame",
 	"UIParent",
+	"IsInRaid",
+	"IsInInstance",
+	"GetNumGroupMembers"
+	"CompactRaidFrameManager",
+	"CompactRaidFrameContainer",
+	"UnitBuff",
 }
