@@ -10,12 +10,17 @@ ignore = {
 	"113/NUM_LE_.*", -- Accessing an undefined (Lua ENUM type) global variable
 }
 globals = {
-  "BuffOverlay",
-  "LibStub",
-  "WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
+	"BuffOverlay",
+	"LibStub",
 	"WOW_PROJECT_ID",
-  "GetSpellTexture",
-  "GetTime",
-  "CompactUnitFrame_UpdateAuras",
-  "InCombatLockdown",
+	"WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
+	"GetSpellTexture",
+	"GetTime",
+	"CompactUnitFrame_UpdateAuras",
+	"InCombatLockdown",
+	"SlashCmdList",
+	"GetCVarBool",
+	"CompactRaidFrameManager_GetSetting",
+	"CreateFrame",
+	"UIParent",
 }
