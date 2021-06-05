@@ -29,4 +29,9 @@ globals = {
     "CompactRaidFrameManager",
     "CompactRaidFrameContainer",
     "UnitBuff",
+    "BUFF_STACKS_OVERFLOW",
+    "CooldownFrame_Set",
+    "CooldownFrame_Clear",
+    "hooksecurefunc",
+    "GetAddOnMetadata",
 }
