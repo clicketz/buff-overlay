@@ -1,8 +1,11 @@
 ## Title: BuffOverlay
 ## Interface: 90005
+## Interface-BCC: 20501
 ## Notes: Overlays chosen buffs on top of the raidframe.
-## Author: Click @ Tichondrius
-## Version: 9.0.5.1
+## Author: clicket
+## Version: @project-version@
+## X-Curse-Project-ID: 296067
+## X-WoWI-ID: 24683
 ## SavedVariables: BuffOverlayDB
 
 #@no-lib-strip@
