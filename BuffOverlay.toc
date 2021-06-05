@@ -4,13 +4,13 @@
 ## Notes: Overlays chosen buffs on top of the raidframe.
 ## Author: clicket
 ## Version: @project-version@
+## X-Website: https://www.curseforge.com/wow/addons/buff-overlay
 ## X-Curse-Project-ID: 296067
 ## X-WoWI-ID: 24683
+## DefaultState: Enabled
 ## SavedVariables: BuffOverlayDB
 
-#@no-lib-strip@
 embeds.xml
-#@end-no-lib-strip@
 
 BuffOverlay.lua
 Options.lua
