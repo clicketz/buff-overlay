@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+      - "!**-alpha**"
+
+# a workflow is built up as jobs, and within these jobs are steps
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    env:
+      CF_API_KEY: ${{ secrets.CF_API_KEY }}
+      WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
+      GITHUB_OAUTH: ${{ secrets.GITHUB_TOKEN }}  # "GITHUB_TOKEN" is a secret always provided to the workflow
+                                                 # for your own token, the name cannot start with "GITHUB_"
+
+    # "steps" holds a list of all the steps needed to package and release our AddOn
+    steps:
+
+      # we first have to clone the AddOn project, this is a required step
+      - name: Clone project
+        uses: actions/checkout@v1  # note: checkout@v2 breaks git history, so generating a changelog and
+                                   # file naming for non-tagged builds will not work properly
+
+      # once cloned, we just run the GitHub Action for the packager project
+      - name: Package and release
+        uses: BigWigsMods/packager@v1
+
+      # another example where we supply additional arguments, this example is specifically to release
+      # for the Classic version of the game
+      - name: Package and release for TBC
+        uses: BigWigsMods/packager@v1
+        with:
+          args: -g bcc -m .pkgmeta-bcc
