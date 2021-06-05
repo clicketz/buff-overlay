@@ -18,7 +18,6 @@ if isBC then
 
         --Druid
         22812,  --Barkskin
-        61336,  --Survival Instincts
 
         --Hunter
         19263,  --Deterrence
