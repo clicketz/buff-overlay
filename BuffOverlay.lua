@@ -7,6 +7,7 @@ local isBC = WOW_PROJECT_ID == WOW_PROJECT_BURNING_CRUSADE_CLASSIC
 --Higher in spellList = higher shown priority
 
 if isBC then
+    -- Burning Crusade Spell List
     BuffOverlay.defaultSpells = {
         --High Priority
 
@@ -25,7 +26,6 @@ if isBC then
         --Mage
         543,    --Fire Ward
         6143,   --Frost Ward
-        11426,  --Ice Barrier
 
         --Paladin
         6940,   --Blessing of Sacrifice
@@ -34,6 +34,7 @@ if isBC then
         33206,  --Pain Suppression
 
         --Rogue
+        45182,  --Cheating Death
         31224,  --Cloak of Shadows
         5277,   --Evasion
 
@@ -42,6 +43,7 @@ if isBC then
 
         --Warlock
         6229,   --Shadow Ward
+        19443,  --Sacrifice (Voidwalker)
 
         --Warrior
         12975,  --Last Stand
@@ -62,6 +64,7 @@ if isBC then
         "Refreshment",
     }
 else
+    -- Retail Spell List
     BuffOverlay.defaultSpells = {
         --High Priority
         203554, --Focused Growth (Druid)
