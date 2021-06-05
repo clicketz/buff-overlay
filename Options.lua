@@ -10,29 +10,48 @@ function BuffOverlay:Options()
         args = {
             author = {
                 order = 1,
-                type = "description",
                 name = "|cffffd700".."Author:".."|r "..GetAddOnMetadata("BuffOverlay", "Author").."\n",
+                type = "description",
                 cmdHidden = true
             },
             vers = {
                 order = 2,
+                name = "|cffffd700".."Version:".."|r "..GetAddOnMetadata("BuffOverlay", "Version").."\n\n",
                 type = "description",
-                name = "|cffffd700".."Version:".."|r "..GetAddOnMetadata("BuffOverlay", "Version").."\n",
                 cmdHidden = true
             },
             test = {
-                type = "execute",
-                name = "Toggle Test Buffs",
                 order = 3,
+                name = "Toggle Test Buffs",
+                type = "execute",
                 func = "Test",
                 handler = BuffOverlay
             },
-            layout = {
-                name = "Settings",
+            welcomeMessage = {
                 order = 4,
+                name = "Welcome Message",
+                type = "toggle",
+                width = "full",
+                desc = "Toggle showing of the welcome message on login.",
+                get = function(info) return self.db.profile[info[#info]] end,
+                set = function(info, val)
+                    self.db.profile[info[#info]] = val
+                    self:Refresh()
+                end,
+            },
+            layout = {
+                order = 5,
+                name = "Settings",
                 type = "group",
                 get = function(info) return self.db.profile[info[#info]] end,
-				set = function(info, val) if InCombatLockdown() then self.print("Cannot change settings in combat.") return end self.db.profile[info[#info]] = val self:Refresh() end,
+                set = function(info, val)
+                    if InCombatLockdown() then
+                        self.print("Cannot change settings in combat.")
+                        return
+                    end
+                    self.db.profile[info[#info]] = val
+                    self:Refresh()
+                end,
                 args = {
                     iconCount = {
                         order = 1,
@@ -165,27 +184,20 @@ function BuffOverlay:Options()
                         width = "full",
                         desc = "Toggle showing of the cooldown text."
                     },
-                    welcomeMessage = {
-                        order = 12,
-                        name = "Welcome Message",
-                        type = "toggle",
-                        width = "full",
-                        desc = "Toggle showing of the welcome message on login."
-                    }
                 }
             },
-            -- spells = {
-            --     name = "Spells [NYI]",
-            --     order = 5,
-            --     type = "group",
-            --     args = {
-            --         buffs = {
-            --             name = "--todo: Add / remove / manage spell list",
-            --             type = "description",
-            --             width = "full",
-            --         }
-            --     }
-            -- }
+            spells = {
+                order = 6,
+                name = "Spells",
+                type = "group",
+                args = {
+                    buffs = {
+                        name = "--todo: Add / remove / manage spell list",
+                        type = "description",
+                        width = "full",
+                    }
+                }
+            }
         }
     }
 
