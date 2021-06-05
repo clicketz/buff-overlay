@@ -20,7 +20,7 @@ jobs:
       - name: Lua check
         uses: nebularg/actions-luacheck@v1
         with:
-          args: "--no-color -q"
+          args: "--no-color --codes -q"
           annotate: warning
         
       - name: Generate Changelog
