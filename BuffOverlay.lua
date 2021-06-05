@@ -217,6 +217,7 @@ local defaultSettings = {
 }
 
 local TestBuffs = {}
+local test
 
 local function InsertTestBuff(spellId)
     local tex = GetSpellTexture(spellId)
