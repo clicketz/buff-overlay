@@ -17,10 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v1
          
-      - name: Lua check
+      - name: Luacheck
         uses: nebularg/actions-luacheck@v1
         with:
-          args: "--no-color --codes -q"
+          args: "--no-color -q"
           annotate: warning
         
       - name: Generate Changelog
