@@ -253,7 +253,6 @@ function BuffOverlay:OnInitialize()
     self.overlays = {}
     self.priority = {}
     self.buffs = {}
-    self.bars = {}
 
     for i = 1, #self.defaultSpells do
         InsertTestBuff(self.defaultSpells[i])
