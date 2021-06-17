@@ -20,6 +20,7 @@ if isBC then
         1022,   --Blessing of Protection (Paladin)
             5599,
             10278,
+        19753,  --Divine Intervention
 
         --Druid
         22812,  --Barkskin
