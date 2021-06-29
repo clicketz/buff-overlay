@@ -41,7 +41,6 @@ if isBC then
         --Paladin
         6940,   --Blessing of Sacrifice
             20729,
-        19753,  --Divine Intervention
 
         --Priest
         33206,  --Pain Suppression
