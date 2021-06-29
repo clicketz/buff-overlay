@@ -1,4 +1,4 @@
---Buff Overlay by clicket
+local AddOnName, NS = ...
 
 BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
@@ -43,6 +43,7 @@ if isBC then
         --Paladin
         6940,   --Blessing of Sacrifice
             20729,
+        19753,  --Divine Intervention
 
         --Priest
         33206,  --Pain Suppression

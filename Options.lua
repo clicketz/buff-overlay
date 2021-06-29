@@ -186,18 +186,18 @@ function BuffOverlay:Options()
                     },
                 }
             },
-            spells = {
-                order = 6,
-                name = "Spells",
-                type = "group",
-                args = {
-                    buffs = {
-                        name = "--todo: Add / remove / manage spell list",
-                        type = "description",
-                        width = "full",
-                    }
-                }
-            }
+            -- spells = {
+                -- order = 6,
+                -- name = "Spells",
+                -- type = "group",
+                -- args = {
+                    -- buffs = {
+                        -- name = "--todo: Add / remove / manage spell list",
+                        -- type = "description",
+                        -- width = "full",
+                    -- }
+                -- }
+            -- }
         }
     }
 
