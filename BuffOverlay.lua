@@ -137,6 +137,7 @@ else
         --Mage
         198111, --Temporal Shield
         113862, --Greater Invisibility
+        342246, --Alter Time
 
         --Monk
         120954, --Fortifying Brew (Brewmaster)
