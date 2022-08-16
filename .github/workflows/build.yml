@@ -4,11 +4,11 @@ on:
   push:
     tags:
       - '**'
-      
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     env:
       CF_API_KEY: ${{ secrets.CF_API_KEY }}
       WOWI_API_TOKEN: ${{ secrets.WOWI_API_TOKEN }}
@@ -16,20 +16,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-         
+
       - name: Luacheck
         uses: nebularg/actions-luacheck@v1
         with:
           args: "--no-color -q"
           annotate: warning
-        
+
       - name: Generate Changelog
         run: ./generate_changelog.sh
 
-      - name: Retail Package
-        uses: BigWigsMods/packager@v1
-
-      - name: Burning Crusade Package
-        uses: BigWigsMods/packager@v1
-        with:
-          args: -g bcc
+      - name: Package
+        uses: BigWigsMods/packager@v2
