@@ -1,6 +1,5 @@
+## Interface: 90205
 ## Title: BuffOverlay
-## Interface: 90100
-## Interface-BCC: 20501
 ## Notes: Overlays chosen buffs on top of the raidframe.
 ## Author: clicket
 ## Version: @project-version@
@@ -12,5 +11,6 @@
 
 embeds.xml
 
+Spells\spellList_Mainline.lua
 BuffOverlay.lua
 Options.lua

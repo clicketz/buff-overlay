@@ -1,0 +1,16 @@
+## Interface: 20504
+## Title: BuffOverlay
+## Notes: Overlays chosen buffs on top of the raidframe.
+## Author: clicket
+## Version: @project-version@
+## X-Website: https://www.curseforge.com/wow/addons/buff-overlay
+## X-Curse-Project-ID: 296067
+## X-WoWI-ID: 24683
+## DefaultState: Enabled
+## SavedVariables: BuffOverlayDB
+
+embeds.xml
+
+Spells\spellList_TBC.lua
+BuffOverlay.lua
+Options.lua
