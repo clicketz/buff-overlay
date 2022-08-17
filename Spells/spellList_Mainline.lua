@@ -1,117 +1,112 @@
 BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
---Higher in spellList = higher shown priority
-
+-- Lower prio = shown above other buffs
 BuffOverlay.defaultSpells = {
-    --High Priority
-    203554, --Focused Growth (Druid)
-    -- 279793, --Grove Tending (Druid)
+    -- Death Knight
+    [48707] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Shell
+    [48792] = { class = "DEATHKNIGHT", prio = 50 }, --Icebound Fortitude
+    [287081] = { class = "DEATHKNIGHT", prio = 50 }, --Lichborne
+    [55233] = { class = "DEATHKNIGHT", prio = 50 }, --Vampiric Blood
+    [194679] = { class = "DEATHKNIGHT", prio = 50 }, --Rune Tap
+    [145629] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Zone
+    [81256] = { class = "DEATHKNIGHT", prio = 50 }, --Dancing Rune Weapon
 
-    --Immunities
-    196555, --Netherwalk (Demon Hunter)
-    186265, --Aspect of the Turtle (Hunter)
-    45438,  --Ice Block (Mage)
-    125174, --Touch of Karma (Monk)
-    228050, --Divine Shield (Prot Paladin PVP)
-    642,    --Divine Shield (Paladin)
-    199448, --Blessing of Ultimate Sacrifice (Paladin)
-    1022,   --Blessing of Protection (Paladin)
-    47788,  --Guardian Spirit (Priest)
-    31224,  --Cloak of Shadows (Rogue)
-    210918, --Ethereal Form (Shaman)
-    362486, --Tranquility (Druid PVP)
+    -- Demon Hunter
+    [196555] = { class = "DEMONHUNTER", prio = 10 }, --Netherwalk
+    [206804] = { class = "DEMONHUNTER", prio = 50 }, --Rain from Above
+    [187827] = { class = "DEMONHUNTER", prio = 50 }, --Metamorphosis (Vengeance)
+    [212800] = { class = "DEMONHUNTER", prio = 50 }, --Blur
+    [263648] = { class = "DEMONHUNTER", prio = 50 }, --Soul Barrier
 
-    --Death Knight
-    48707,  --Anti-Magic Shell
-    48792,  --Icebound Fortitude
-    287081, --Lichborne
-    55233,  --Vampiric Blood
-    194679, --Rune Tap
-    145629, --Anti-Magic Zone
-    81256,  --Dancing Rune Weapon
+    -- Druid
+    [203554] = { class = "DRUID", prio = 5 }, --Focused Growth
+    [362486] = { class = "DRUID", prio = 10 }, --Tranquility (Druid PVP)
+    -- [279793] = { class = "DRUID", prio = 50 }, --Grove Tending
+    [102342] = { class = "DRUID", prio = 50 }, --Ironbark
+    [22812] = { class = "DRUID", prio = 50 }, --Barkskin
+    [61336] = { class = "DRUID", prio = 50 }, --Survival Instincts
+    [5215] = { class = "DRUID", prio = 70 }, --Prowl
 
-    --Demon Hunter
-    206804, --Rain from Above
-    187827, --Metamorphosis (Vengeance)
-    212800, --Blur
-    263648, --Soul Barrier
+    -- Hunter
+    [186265] = { class = "HUNTER", prio = 10 }, --Aspect of the Turtle
+    [53480] = { class = "HUNTER", prio = 50 }, --Roar of Sacrifice
+    [264735] = { class = "HUNTER", prio = 50 }, --Survival of the Fittest (Pet Ability)
+    [281195] = { parent = 264735 }, --Survival of the Fittest (Lone Wolf)
 
-    --Druid
-    102342, --Ironbark
-    22812,  --Barkskin
-    61336,  --Survival Instincts
+    -- Mage
+    [45438] = { class = "MAGE", prio = 10 }, --Ice Block
+    [66] = { class = "MAGE", prio = 50 }, --Invisibility
+    [198111] = { class = "MAGE", prio = 50 }, --Temporal Shield
+    [113862] = { class = "MAGE", prio = 50 }, --Greater Invisibility
+    [342246] = { class = "MAGE", prio = 50 }, --Alter Time
+    [110909] = { parent = 342246 },
+    [108978] = { parent = 342246 },
 
-    --Hunter
-    53480,  --Roar of Sacrifice
-    264735, --Survival of the Fittest (Pet Ability)
-    281195, --Survival of the Fittest (Lone Wolf)
+    -- Monk
+    [125174] = { class = "MONK", prio = 10 }, --Touch of Karma
+    [120954] = { class = "MONK", prio = 50 }, --Fortifying Brew (Brewmaster)
+    [243435] = { class = "MONK", prio = 50 }, --Fortifying Brew (Mistweaver)
+    [201318] = { class = "MONK", prio = 50 }, --Fortifying Brew (Windwalker)
+    [115176] = { class = "MONK", prio = 50 }, --Zen Meditation
+    [116849] = { class = "MONK", prio = 50 }, --Life Cocoon
+    [122278] = { class = "MONK", prio = 50 }, --Dampen Harm
+    [122783] = { class = "MONK", prio = 50 }, --Diffuse Magic
 
-    --Mage
-    66,     --Invisibility
-    198111, --Temporal Shield
-    113862, --Greater Invisibility
-    342246, --Alter Time (Arcane)
-    110909, --Alter Time (Frost/Fire)
-        108978,
+    -- Paladin
+    [204018] = { class = "PALADIN", prio = 10 }, --Blessing of Spellwarding
+    [642] = { class = "PALADIN", prio = 10 }, --Divine Shield
+    [228050] = { parent = 642 }, --Divine Shield (Protection)
+    [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
+    [6940] = { class = "PALADIN", prio = 40 }, --Blessing of Sacrifice
+    [199448] = { parent = 6940 }, --Blessing of Ultimate Sacrifice
+    [498] = { class = "PALADIN", prio = 50 }, --Divine Protection
+    [31850] = { class = "PALADIN", prio = 50 }, --Ardent Defender
+    [86659] = { class = "PALADIN", prio = 50 }, --Guardian of Ancient Kings
+    [205191] = { class = "PALADIN", prio = 50 }, --Eye for an Eye
 
-    --Monk
-    120954, --Fortifying Brew (Brewmaster)
-    243435, --Fortifying Brew (Mistweaver)
-    201318, --Fortifying Brew (Windwalker)
-    115176, --Zen Meditation
-    116849, --Life Cocoon
-    122278, --Dampen Harm
-    122783, --Diffuse Magic
+    -- Priest
+    [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
+    [47585] = { class = "PRIEST", prio = 50 }, --Dispersion
+    [33206] = { class = "PRIEST", prio = 50 }, --Pain Suppression
+    [213602] = { class = "PRIEST", prio = 10 }, --Greater Fade
+    [81782] = { class = "PRIEST", prio = 50 }, --Power Word: Barrier
+    [271466] = { class = "PRIEST", prio = 50 }, --Luminous Barrier
+    [20711] = { class = "PRIEST", prio = 50 }, --Spirit of Redemption
 
-    --Paladin
-    204018, --Blessing of Spellwarding
-    6940,   --Blessing of Sacrifice
-    498,    --Divine Protection
-    31850,  --Ardent Defender
-    86659,  --Guardian of Ancient Kings
-    205191, --Eye for an Eye
+    -- Rogue
+    [31224] = { class = "ROGUE", prio = 10 }, --Cloak of Shadows
+    [45182] = { class = "ROGUE", prio = 50 }, --Cheating Death
+    [5277] = { class = "ROGUE", prio = 50 }, --Evasion
+    [199754] = { class = "ROGUE", prio = 50 }, --Riposte
+    [1966] = { class = "ROGUE", prio = 50 }, --Feint
+    [1784] = { class = "ROGUE", prio = 70 }, --Stealth
 
-    --Priest
-    47585,  --Dispersion
-    33206,  --Pain Suppression
-    213602, --Greater Fade
-    81782,  --Power Word: Barrier
-    271466, --Luminous Barrier
-    20711,  --Spirit of Redemption
+    -- Shaman
+    [210918] = { class = "SHAMAN", prio = 10 }, --Ethereal Form
+    [108271] = { class = "SHAMAN", prio = 50 }, --Astral Shift
+    [118337] = { class = "SHAMAN", prio = 50 }, --Harden Skin
 
-    --Rogue
-    45182,  --Cheating Death
-    5277,   --Evasion
-    199754, --Riposte
-    1966,   --Feint
+    -- Warlock
+    [212195] = { class = "WARLOCK", prio = 50 }, --Nether Ward
+    [104773] = { class = "WARLOCK", prio = 50 }, --Unending Resolve
+    [108416] = { class = "WARLOCK", prio = 50 }, --Dark Pact
 
-    --Shaman
-    108271, --Astral Shift
-    118337, --Harden Skin
+    -- Warrior
+    [871] = { class = "WARRIOR", prio = 50 }, --Shield Wall
+    [118038] = { class = "WARRIOR", prio = 50 }, --Die by the Sword
+    [147833] = { class = "WARRIOR", prio = 50 }, --Intervene
+    [213915] = { class = "WARRIOR", prio = 50 }, --Mass Spell Reflection
+    [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection (Prot)
+    [216890] = { parent = 23920 }, --Spell Reflection (Arms/Fury)
+    [184364] = { class = "WARRIOR", prio = 50 }, --Enraged Regeneration
+    [97463] = { class = "WARRIOR", prio = 50 }, --Rallying Cry
+    [12975] = { class = "WARRIOR", prio = 50 }, --Last Stand
+    [190456] = { class = "WARRIOR", prio = 50 }, --Ignore Pain
 
-    --Warlock
-    212195, --Nether Ward
-    104773, --Unending Resolve
-    108416, --Dark Pact
-
-    --Warrior
-    147833, --Intervene
-    118038, --Die by the Sword
-    871,    --Shield Wall
-    213915, --Mass Spell Reflection
-    23920,  --Spell Reflection (Prot)
-    216890, --Spell Reflection (Arms/Fury)
-    184364, --Enraged Regeneration
-    97463,  --Rallying Cry
-    12975,  --Last Stand
-    190456, --Ignore Pain
-
-    --Other
-    1784,   --Stealth
-    5215,   --Prowl
-    185710, --Sugar-Crusted Fish Feast
-    "Food",
-    "Drink",
-    "Food & Drink",
-    "Refreshment",
+    -- Misc
+    [185710] = { class = "MISC", prio = 70 }, --Sugar-Crusted Fish Feast
+    ["Food"] = { class = "MISC", prio = 70 }, --Food
+    ["Drink"] = { class = "MISC", prio = 70 }, --Drink
+    ["Food & Drink"] = { class = "MISC", prio = 70 }, --Food & Drink
+    ["Refreshment"] = { class = "MISC", prio = 70 }, --Refreshment
 }

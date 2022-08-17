@@ -14,7 +14,10 @@ local defaultSettings = {
         iconXOff = 0,
         iconYOff = 0,
         welcomeMessage = true,
-        buffs = BuffOverlay.defaultSpells,
+        buffs = nil,
+    },
+    global = {
+        customBuffs = {},
     },
 }
 
@@ -23,7 +26,9 @@ local test
 
 local function InsertTestBuff(spellId)
     local tex = GetSpellTexture(spellId)
-    rawset(TestBuffs, #TestBuffs+1, {spellId, tex})
+    if tex then
+        rawset(TestBuffs, #TestBuffs + 1, { spellId, tex })
+    end
 end
 
 local function UnitBuffTest(_, index)
@@ -32,11 +37,33 @@ local function UnitBuffTest(_, index)
     return "TestBuff", buff[2], 0, nil, 60, GetTime() + 60, nil, nil, nil, buff[1]
 end
 
+function BuffOverlay:InsertBuff(spellId)
+    if not C_Spell.DoesSpellExist(spellId) then return end
+
+    local custom = self.db.global.customBuffs
+    if not custom[spellId] and not self.db.profile.buffs[spellId] then
+        custom[spellId] = { class = "MISC", prio = 100, enabled = true }
+        LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+        return true
+    end
+    return false
+end
+
+function BuffOverlay:UpdateCustomBuffs()
+    for spellId, v in pairs(self.db.global.customBuffs) do
+        self.db.profile.buffs[spellId] = v
+        if not self.db.profile.buffs[spellId].custom then
+            self.db.profile.buffs[spellId].custom = true
+        end
+    end
+    self.options.args.spells.args = BuffOverlay_GetClasses()
+    -- self:Refresh()
+    LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+end
+
 function BuffOverlay:OnInitialize()
 
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
-
-    self.index = 1
 
     if not self.registered then
         self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
@@ -54,20 +81,25 @@ function BuffOverlay:OnInitialize()
     self.frames = {}
     self.overlays = {}
     self.priority = {}
-    self.buffs = {}
 
-    for i = 1, #self.defaultSpells do
-        InsertTestBuff(self.defaultSpells[i])
+    -- TODO: add this to db so it's not called every login
+    for k, v in pairs(self.defaultSpells) do
+        if not v.parent then
+            InsertTestBuff(k)
+        end
     end
 
-    for k, v in ipairs(self.defaultSpells) do
-        self.buffs[v] = k
+    -- Remove invalid custom cooldowns
+    for k, _ in pairs(self.db.global.customBuffs) do
+        if (not GetSpellInfo(k)) then
+            self.db.global.customBuffs[k] = nil
+        end
     end
 
     SLASH_BuffOverlay1 = "/bo"
     SLASH_BuffOverlay2 = "/buffoverlay"
     SlashCmdList.BuffOverlay = function(msg)
-        if msg == "help" or msg =="?" then
+        if msg == "help" or msg == "?" then
             self.print("Command List")
             print("|cffff0000/buffoverlay|r or |cffff0000/bo|r: Opens options panel.")
             print("|cffff0000/buffoverlay|r |cffFFFF00test|r: Shows test icons on raidframe.")
@@ -81,6 +113,20 @@ function BuffOverlay:OnInitialize()
             LibStub("AceConfigDialog-3.0"):Open("BuffOverlay")
         end
     end
+
+    self:Refresh()
+end
+
+function BuffOverlay:ConsolidateChildren()
+    for k, v in pairs(self.db.profile.buffs) do
+        if v.parent then
+            local parent = self.db.profile.buffs[v.parent]
+            if not parent.children then
+                parent.children = {}
+            end
+            parent.children[k] = true
+        end
+    end
 end
 
 function BuffOverlay:Refresh()
@@ -89,13 +135,33 @@ function BuffOverlay:Refresh()
         self.overlays[k] = nil
     end
 
+    self.index = 1
+
+    -- If the current profile doesn't have any buffs saved use default list and save it
+    if not self.db.profile.buffs then
+        self.db.profile.buffs = {}
+        for k, v in pairs(self.defaultSpells) do
+            if v.parent then
+                self.db.profile.buffs[k] = v
+                table.insert(self.db.profile.buffs[k], self.defaultSpells[v.parent])
+            else
+                self.db.profile.buffs[k] = v
+            end
+            self.db.profile.buffs[k].enabled = true
+        end
+
+        self:ConsolidateChildren()
+    end
+
     for frame, _ in pairs(self.frames) do
         if frame:IsShown() then CompactUnitFrame_UpdateAuras(frame) end
     end
+
+    self:UpdateCustomBuffs()
 end
 
 function BuffOverlay.print(msg)
-    print("|cffff0000BuffOverlay|r: "..msg)
+    print("|cffff0000BuffOverlay|r: " .. msg)
 end
 
 function BuffOverlay:Test()
@@ -118,14 +184,15 @@ function BuffOverlay:Test()
         test.text = test:CreateFontString(nil, "ARTWORK", "GameFontNormal")
         test.text:SetPoint("CENTER", 0, 0)
         test.text:SetText("Test")
-        test:SetSize(test.text:GetWidth()+20, test.text:GetHeight()+2)
+        test:SetSize(test.text:GetWidth() + 20, test.text:GetHeight() + 2)
         test:EnableMouse(false)
         test:SetPoint("BOTTOM", _G["CompactRaidFrame1"], "TOP", 0, 0)
         test:Hide()
     end
 
     if not self.test then
-        if GetNumGroupMembers() == 0 or not IsInRaid() and not select(2, IsInInstance())=="arena" and GetCVarBool("useCompactPartyFrames") then
+        if GetNumGroupMembers() == 0 or
+            not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
             CompactRaidFrameManager:Hide()
             CompactRaidFrameContainer:Hide()
         end
@@ -148,9 +215,9 @@ local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
 
     local _, icon, count, _, duration, expirationTime = UnitBuff(unit, index, filter)
     buffFrame.icon:SetTexture(icon)
-    if ( count > 1 ) then
+    if (count > 1) then
         local countText = count
-        if ( count >= 100 ) then
+        if (count >= 100) then
             countText = BUFF_STACKS_OVERFLOW
         end
         buffFrame.count:Show()
@@ -191,7 +258,8 @@ function BuffOverlay:ApplyOverlay(frame)
             overlay.count:SetScale(0.8)
             overlay:ClearAllPoints()
             if i == 1 then
-                overlay:SetPoint(self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint, self.db.profile.iconXOff, self.db.profile.iconYOff)
+                overlay:SetPoint(self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint,
+                    self.db.profile.iconXOff, self.db.profile.iconYOff)
             else
                 if self.db.profile.growDirection == "DOWN" then
                     overlay:SetPoint("TOP", _G[bFrame .. i - 1], "BOTTOM")
@@ -221,12 +289,12 @@ function BuffOverlay:ApplyOverlay(frame)
     for i = 1, 40 do
         local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
         if spellId then
-            if self.buffs[buffName] and not self.buffs[spellId] then
-                self.buffs[spellId] = self.buffs[buffName]
+            if self.db.profile.buffs[buffName] and not self.db.profile.buffs[spellId] then
+                self.db.profile.buffs[spellId] = self.db.profile.buffs[buffName]
             end
 
-            if self.buffs[spellId] then
-                rawset(self.priority, #self.priority+1, {i, self.buffs[spellId]})
+            if self.db.profile.buffs[spellId] and self.db.profile.buffs[spellId].enabled then
+                rawset(self.priority, #self.priority + 1, { i, self.db.profile.buffs[spellId].prio })
             end
         else
             break
@@ -246,9 +314,11 @@ function BuffOverlay:ApplyOverlay(frame)
 
             local point, relativeTo, relativePoint, xOfs, yOfs = self.overlays[bFrame .. 1]:GetPoint()
             if self.db.profile.growDirection == "HORIZONTAL" then
-                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, -(self.overlays[bFrame .. 1]:GetWidth()/2)*(overlayNum-1)+self.db.profile.iconXOff, yOfs)
+                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint,
+                    -(self.overlays[bFrame .. 1]:GetWidth() / 2) * (overlayNum - 1) + self.db.profile.iconXOff, yOfs)
             elseif self.db.profile.growDirection == "VERTICAL" then
-                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, xOfs, -(self.overlays[bFrame .. 1]:GetHeight()/2)*(overlayNum-1)+self.db.profile.iconYOff)
+                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, xOfs,
+                    -(self.overlays[bFrame .. 1]:GetHeight() / 2) * (overlayNum - 1) + self.db.profile.iconYOff)
             end
             overlayNum = overlayNum + 1
         else
