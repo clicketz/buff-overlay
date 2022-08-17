@@ -87,7 +87,7 @@ BuffOverlay.defaultSpells = {
     [118337] = { class = "SHAMAN", prio = 50 }, --Harden Skin
 
     -- Warlock
-    [212195] = { class = "WARLOCK", prio = 50 }, --Nether Ward
+    [212295] = { class = "WARLOCK", prio = 50 }, --Nether Ward
     [104773] = { class = "WARLOCK", prio = 50 }, --Unending Resolve
     [108416] = { class = "WARLOCK", prio = 50 }, --Dark Pact
 
