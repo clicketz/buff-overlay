@@ -1,5 +1,11 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
+local GetSpellInfo = GetSpellInfo
+local format = format
+local Spell = Spell
+local MAX_CLASSES = MAX_CLASSES
+local CLASS_SORT_ORDER = CLASS_SORT_ORDER
+
 local function GetSpells(class)
     local spells = {}
     local descr = {}
