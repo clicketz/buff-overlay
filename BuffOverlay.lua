@@ -1,7 +1,6 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
 local C_Spell = C_Spell
--- local BuffOverlay_GetClasses = BuffOverlay_GetClasses
 local GetSpellInfo = GetSpellInfo
 
 local defaultSettings = {

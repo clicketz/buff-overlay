@@ -1,5 +1,3 @@
-local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
-
 local GetSpellInfo = GetSpellInfo
 local format = format
 local Spell = Spell
@@ -31,7 +29,7 @@ local function GetSpells(class)
                     get = function()
                         return BuffOverlay.db.profile.buffs[k].enabled or false
                     end,
-                    set = function(info, value)
+                    set = function(_, value)
                         BuffOverlay.db.profile.buffs[k].enabled = value
                         if BuffOverlay.db.profile.buffs[k].children then
                             for child, _ in pairs(BuffOverlay.db.profile.buffs[k].children) do
