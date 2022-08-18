@@ -60,8 +60,39 @@ function BuffOverlay:UpdateCustomBuffs()
         end
     end
     self.options.args.spells.args = BuffOverlay_GetClasses()
-    -- self:Refresh()
     LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+end
+
+function BuffOverlay:ConsolidateChildren()
+    for k, v in pairs(self.db.profile.buffs) do
+        if v.parent then
+            local parent = self.db.profile.buffs[v.parent]
+            if not parent.children then
+                parent.children = {}
+            end
+            parent.children[k] = true
+        end
+    end
+end
+
+function BuffOverlay:RefreshBuffs()
+    local newdb = false
+    -- If the current profile doesn't have any buffs saved use default list and save it
+    if not self.db.profile.buffs then
+        self.db.profile.buffs = {}
+        for k, v in pairs(self.defaultSpells) do
+            self.db.profile.buffs[k] = v
+            self.db.profile.buffs[k].enabled = true
+
+            if v.parent then
+                table.insert(self.db.profile.buffs[k], self.defaultSpells[v.parent])
+            end
+        end
+        newdb = true
+        self:ConsolidateChildren()
+    end
+
+    return newdb
 end
 
 function BuffOverlay:OnInitialize()
@@ -85,17 +116,39 @@ function BuffOverlay:OnInitialize()
     self.overlays = {}
     self.priority = {}
 
-    -- TODO: add this to db so it's not called every login
-    for k, v in pairs(self.defaultSpells) do
-        if not v.parent then
-            InsertTestBuff(k)
+    if not self:RefreshBuffs() then
+        -- Update buffs if any user changes are made to lua file
+        for k, v in pairs(self.defaultSpells) do
+            if not self.db.profile.buffs[k] then
+                self.db.profile.buffs[k] = v
+                self.db.profile.buffs[k].enabled = true
+
+                if v.parent then
+                    table.insert(self.db.profile.buffs[k], self.defaultSpells[v.parent])
+                end
+            else
+                local enabled = self.db.profile.buffs[k].enabled
+                self.db.profile.buffs[k] = v
+                self.db.profile.buffs[k].enabled = enabled
+            end
         end
+        self:ConsolidateChildren()
     end
 
     -- Remove invalid custom cooldowns
     for k, _ in pairs(self.db.global.customBuffs) do
-        if (not GetSpellInfo(k)) then
+        if (not GetSpellInfo(k)) or self.defaultSpells[k] then
             self.db.global.customBuffs[k] = nil
+        end
+    end
+
+    -- Validate Spells and add them to Test Buffs
+    for k, v in pairs(self.db.profile.buffs) do
+        if (not self.defaultSpells[k]) and (not self.db.global.customBuffs[k]) then
+            self.db.profile.buffs[k] = nil
+        end
+        if not v.parent then
+            InsertTestBuff(k)
         end
     end
 
@@ -120,47 +173,19 @@ function BuffOverlay:OnInitialize()
     self:Refresh()
 end
 
-function BuffOverlay:ConsolidateChildren()
-    for k, v in pairs(self.db.profile.buffs) do
-        if v.parent then
-            local parent = self.db.profile.buffs[v.parent]
-            if not parent.children then
-                parent.children = {}
-            end
-            parent.children[k] = true
-        end
-    end
-end
-
 function BuffOverlay:Refresh()
     for k, _ in pairs(self.overlays) do
         self.overlays[k]:Hide()
         self.overlays[k] = nil
     end
 
-    self.index = 1
-
-    -- If the current profile doesn't have any buffs saved use default list and save it
-    if not self.db.profile.buffs then
-        self.db.profile.buffs = {}
-        for k, v in pairs(self.defaultSpells) do
-            if v.parent then
-                self.db.profile.buffs[k] = v
-                table.insert(self.db.profile.buffs[k], self.defaultSpells[v.parent])
-            else
-                self.db.profile.buffs[k] = v
-            end
-            self.db.profile.buffs[k].enabled = true
-        end
-
-        self:ConsolidateChildren()
-    end
+    self:RefreshBuffs()
 
     for frame, _ in pairs(self.frames) do
         if frame:IsShown() then CompactUnitFrame_UpdateAuras(frame) end
     end
 
-    self:UpdateCustomBuffs()
+    self.options.args.spells.args = BuffOverlay_GetClasses()
 end
 
 function BuffOverlay.print(msg)

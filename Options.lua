@@ -170,13 +170,15 @@ local customSpells = {
 
 function BuffOverlay:Options()
     for spellId, _ in pairs(BuffOverlay.db.global.customBuffs) do
-        customSpells[tostring(spellId)] = {
-            name = GetSpellInfo(spellId),
-            type = "group",
-            childGroups = "tab",
-            args = customSpellInfo,
-            icon = GetSpellTexture(spellId),
-        }
+        if not BuffOverlay.defaultSpells[spellId] then
+            customSpells[tostring(spellId)] = {
+                name = GetSpellInfo(spellId),
+                type = "group",
+                childGroups = "tab",
+                args = customSpellInfo,
+                icon = GetSpellTexture(spellId),
+            }
+        end
     end
     self.options = {
         name = "BuffOverlay",
