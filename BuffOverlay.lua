@@ -85,7 +85,9 @@ function BuffOverlay:RefreshBuffs()
             self.db.profile.buffs[k].enabled = true
 
             if v.parent then
-                table.insert(self.db.profile.buffs[k], self.defaultSpells[v.parent])
+                for key, val in pairs(self.db.profile.buffs[v.parent]) do
+                    self.db.profile.buffs[k][key] = val
+                end
             end
         end
         newdb = true
@@ -122,14 +124,16 @@ function BuffOverlay:OnInitialize()
             if not self.db.profile.buffs[k] then
                 self.db.profile.buffs[k] = v
                 self.db.profile.buffs[k].enabled = true
-
-                if v.parent then
-                    table.insert(self.db.profile.buffs[k], self.defaultSpells[v.parent])
-                end
             else
                 local enabled = self.db.profile.buffs[k].enabled
                 self.db.profile.buffs[k] = v
                 self.db.profile.buffs[k].enabled = enabled
+            end
+
+            if v.parent then
+                for key, val in pairs(self.db.profile.buffs[v.parent]) do
+                    self.db.profile.buffs[k][key] = val
+                end
             end
         end
         self:ConsolidateChildren()

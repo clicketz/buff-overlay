@@ -10,7 +10,7 @@ local function GetSpells(class)
 
     if BuffOverlay.db.profile.buffs then
         for k, v in pairs(BuffOverlay.db.profile.buffs) do
-            if not v.child and (v.class == class) then
+            if not v.parent and (v.class == class) then
                 local spellName, _, icon = GetSpellInfo(k)
                 local formattedName = spellName and format("|T%s:0|t %s", icon, spellName) or tostring(k)
 

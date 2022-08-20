@@ -21,7 +21,6 @@ BuffOverlay.defaultSpells = {
     -- Druid
     [203554] = { class = "DRUID", prio = 5 }, --Focused Growth
     [362486] = { class = "DRUID", prio = 10 }, --Tranquility (Druid PVP)
-    -- [279793] = { class = "DRUID", prio = 50 }, --Grove Tending
     [102342] = { class = "DRUID", prio = 50 }, --Ironbark
     [22812] = { class = "DRUID", prio = 50 }, --Barkskin
     [61336] = { class = "DRUID", prio = 50 }, --Survival Instincts
