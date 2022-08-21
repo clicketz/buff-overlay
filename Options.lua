@@ -32,7 +32,7 @@ local function GetSpells(class)
                     set = function(_, value)
                         BuffOverlay.db.profile.buffs[k].enabled = value
                         if BuffOverlay.db.profile.buffs[k].children then
-                            for child, _ in pairs(BuffOverlay.db.profile.buffs[k].children) do
+                            for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
                                 BuffOverlay.db.profile.buffs[child].enabled = value
                             end
                         end
@@ -169,7 +169,7 @@ local customSpells = {
 }
 
 function BuffOverlay:Options()
-    for spellId, _ in pairs(BuffOverlay.db.global.customBuffs) do
+    for spellId in pairs(BuffOverlay.db.global.customBuffs) do
         if not BuffOverlay.defaultSpells[spellId] then
             customSpells[tostring(spellId)] = {
                 name = GetSpellInfo(spellId),

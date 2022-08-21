@@ -140,7 +140,7 @@ function BuffOverlay:OnInitialize()
     end
 
     -- Remove invalid custom cooldowns
-    for k, _ in pairs(self.db.global.customBuffs) do
+    for k in pairs(self.db.global.customBuffs) do
         if (not GetSpellInfo(k)) or self.defaultSpells[k] then
             self.db.global.customBuffs[k] = nil
         end
@@ -178,14 +178,14 @@ function BuffOverlay:OnInitialize()
 end
 
 function BuffOverlay:Refresh()
-    for k, _ in pairs(self.overlays) do
+    for k in pairs(self.overlays) do
         self.overlays[k]:Hide()
         self.overlays[k] = nil
     end
 
     self:RefreshBuffs()
 
-    for frame, _ in pairs(self.frames) do
+    for frame in pairs(self.frames) do
         if frame:IsShown() then CompactUnitFrame_UpdateAuras(frame) end
     end
 
