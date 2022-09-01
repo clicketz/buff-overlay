@@ -1,7 +1,10 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
+local LGF = LibStub("LibGetFrame-1.0")
 
 local C_Spell = C_Spell
 local GetSpellInfo = GetSpellInfo
+local TestBuffs = {}
+local test
 
 local defaultSettings = {
     profile = {
@@ -24,8 +27,30 @@ local defaultSettings = {
     },
 }
 
-local TestBuffs = {}
-local test
+local defaultFrames = {
+    "^Vd1",
+    "^HealBot",
+    "^GridLayout",
+    "^Grid2Layout",
+    "^PlexusLayout",
+    "^InvenRaidFrames3Group%dUnitButton",
+    "^ElvUF_Raid%d*Group",
+    "^oUF_.-Raid",
+    "^AshToAsh",
+    "^Cell",
+    "^LimeGroup",
+    "^SUFHeaderraid",
+    "^LUFHeaderraid",
+    "^CompactRaid",
+    "^InvenUnitFrames_Party%d",
+    "^AleaUI_GroupHeader",
+    "^SUFHeaderparty",
+    "^LUFHeaderparty",
+    "^ElvUF_PartyGroup",
+    "^oUF_.-Party",
+    "^PitBull4_Groups_Party",
+    "^CompactParty",
+}
 
 local function InsertTestBuff(spellId)
     local tex = GetSpellTexture(spellId)
@@ -63,6 +88,17 @@ function BuffOverlay:UpdateCustomBuffs()
     LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
 end
 
+function BuffOverlay:UpdateChildInfo()
+    for k, v in pairs(self.db.profile.buffs) do
+        if v.parent then
+            for key, val in pairs(self.db.profile.buffs[v.parent]) do
+                self.db.profile.buffs[k][key] = val
+            end
+        end
+    end
+    self:UpdateCustomBuffs()
+end
+
 function BuffOverlay:ConsolidateChildren()
     for k, v in pairs(self.db.profile.buffs) do
         if v.parent then
@@ -73,6 +109,7 @@ function BuffOverlay:ConsolidateChildren()
             parent.children[k] = true
         end
     end
+    self:UpdateChildInfo()
 end
 
 function BuffOverlay:RefreshBuffs()
@@ -83,12 +120,6 @@ function BuffOverlay:RefreshBuffs()
         for k, v in pairs(self.defaultSpells) do
             self.db.profile.buffs[k] = v
             self.db.profile.buffs[k].enabled = true
-
-            if v.parent then
-                for key, val in pairs(self.db.profile.buffs[v.parent]) do
-                    self.db.profile.buffs[k][key] = val
-                end
-            end
         end
         newdb = true
         self:ConsolidateChildren()
@@ -98,7 +129,6 @@ function BuffOverlay:RefreshBuffs()
 end
 
 function BuffOverlay:OnInitialize()
-
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
 
     if not self.registered then
@@ -118,6 +148,36 @@ function BuffOverlay:OnInitialize()
     self.overlays = {}
     self.priority = {}
 
+    -- Initialize LGF cache
+    LGF.GetUnitFrame("player")
+
+    LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_UPDATE", function(event, frame, unit)
+        local found = false
+        for _, v in pairs(defaultFrames) do
+            if string.find(frame:GetName(), v) then
+                found = true
+                break
+            end
+        end
+        if not found then return end
+
+        self.frames[frame] = unit
+
+        frame:RegisterUnitEvent("UNIT_AURA", unit)
+        local hooked = false
+        if not hooked then
+            frame:HookScript("OnEvent", function()
+                if not self.frames[frame] then return end
+                self:ApplyOverlay(frame, self.frames[frame])
+            end)
+            hooked = true
+        end
+    end)
+
+    LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_REMOVED", function(event, frame, unit)
+        self.frames[frame] = nil
+    end)
+
     if not self:RefreshBuffs() then
         -- Update buffs if any user changes are made to lua file
         for k, v in pairs(self.defaultSpells) do
@@ -128,12 +188,6 @@ function BuffOverlay:OnInitialize()
                 local enabled = self.db.profile.buffs[k].enabled
                 self.db.profile.buffs[k] = v
                 self.db.profile.buffs[k].enabled = enabled
-            end
-
-            if v.parent then
-                for key, val in pairs(self.db.profile.buffs[v.parent]) do
-                    self.db.profile.buffs[k][key] = val
-                end
             end
         end
         self:ConsolidateChildren()
@@ -177,16 +231,20 @@ function BuffOverlay:OnInitialize()
     self:Refresh()
 end
 
-function BuffOverlay:Refresh()
-    for k in pairs(self.overlays) do
-        self.overlays[k]:Hide()
+function BuffOverlay:HideAll()
+    for k, v in pairs(self.overlays) do
+        v:Hide()
         self.overlays[k] = nil
     end
+end
 
+function BuffOverlay:Refresh()
+    self:HideAll()
     self:RefreshBuffs()
 
-    for frame in pairs(self.frames) do
-        if frame:IsShown() then CompactUnitFrame_UpdateAuras(frame) end
+    for frame, unit in pairs(self.frames) do
+        if frame:IsShown() then BuffOverlay:ApplyOverlay(frame, unit) end
+        -- if frame.optionTable then CompactUnitFrame_UpdateAuras(frame) end
     end
 
     self.options.args.spells.args = BuffOverlay_GetClasses()
@@ -202,9 +260,9 @@ function BuffOverlay:Test()
         return
     end
 
-    if not self.test and not (GetCVarBool("useCompactPartyFrames") and CompactRaidFrameManager_GetSetting("IsShown")) then
-        self.print("Please enable raid-style party frames in Blizzard settings or join a 6+ player raid to see test icons.")
-    end
+    -- if not self.test and not (GetCVarBool("useCompactPartyFrames") and CompactRaidFrameManager_GetSetting("IsShown")) then
+    --     self.print("Please enable raid-style party frames in Blizzard settings or join a 6+ player raid to see test icons.")
+    -- end
 
     self.test = not self.test
 
@@ -215,7 +273,7 @@ function BuffOverlay:Test()
         test.bg:SetColorTexture(1, 0, 0, 0.6)
         test.text = test:CreateFontString(nil, "ARTWORK", "GameFontNormal")
         test.text:SetPoint("CENTER", 0, 0)
-        test.text:SetText("Test")
+        test.text:SetText("BuffOverlay Test")
         test:SetSize(test.text:GetWidth() + 20, test.text:GetHeight() + 2)
         test:EnableMouse(false)
         test:SetPoint("BOTTOM", _G["CompactRaidFrame1"], "TOP", 0, 0)
@@ -268,12 +326,9 @@ local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
     buffFrame:Show()
 end
 
-function BuffOverlay:ApplyOverlay(frame)
-    if frame:IsForbidden() or not frame.buffFrames then
-        return
-    end
+function BuffOverlay:ApplyOverlay(frame, unit)
+    if frame:IsForbidden() then return end
 
-    local unit = frame.displayedUnit
     local bFrame = frame:GetName() .. "BuffOverlay"
     local overlayNum = 1
 
@@ -307,6 +362,7 @@ function BuffOverlay:ApplyOverlay(frame)
             overlay:SetAlpha(self.db.profile.iconAlpha)
             overlay:EnableMouse(false)
             overlay:RegisterForClicks()
+            overlay:SetFrameLevel(999)
             self.overlays[bFrame .. i] = overlay
         end
         overlay:Hide()
@@ -342,7 +398,9 @@ function BuffOverlay:ApplyOverlay(frame)
     while overlayNum <= self.db.profile.iconCount do
         if self.priority[overlayNum] then
             CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil)
-            self.overlays[bFrame .. overlayNum]:SetSize(frame.buffFrames[1]:GetSize())
+
+            local buffSize = math.min(frame:GetHeight(), frame:GetWidth()) * 0.33
+            self.overlays[bFrame .. overlayNum]:SetSize(buffSize, buffSize)
 
             local point, relativeTo, relativePoint, xOfs, yOfs = self.overlays[bFrame .. 1]:GetPoint()
             if self.db.profile.growDirection == "HORIZONTAL" then
@@ -357,12 +415,4 @@ function BuffOverlay:ApplyOverlay(frame)
             break
         end
     end
-
-    if not self.frames[frame] then
-        self.frames[frame] = true
-    end
 end
-
-hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
-    BuffOverlay:ApplyOverlay(frame)
-end)
