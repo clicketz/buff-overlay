@@ -161,21 +161,21 @@ function BuffOverlay:OnInitialize()
         end
         if not found then return end
 
-        self.frames[frame] = unit
+        self.frames[frame] = self.frames[frame] or {}
+        self.frames[frame]["unit"] = unit
 
         frame:RegisterUnitEvent("UNIT_AURA", unit)
-        local hooked = false
-        if not hooked then
+        if not self.frames[frame]["hooked"] then
             frame:HookScript("OnEvent", function()
-                if not self.frames[frame] then return end
-                self:ApplyOverlay(frame, self.frames[frame])
+                if not self.frames[frame]["unit"] then return end
+                self:ApplyOverlay(frame, self.frames[frame]["unit"])
             end)
-            hooked = true
+            self.frames[frame].hooked = true
         end
     end)
 
     LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_REMOVED", function(event, frame, unit)
-        self.frames[frame] = nil
+        self.frames[frame]["unit"] = nil
     end)
 
     if not self:RefreshBuffs() then
@@ -242,8 +242,8 @@ function BuffOverlay:Refresh()
     self:HideAll()
     self:RefreshBuffs()
 
-    for frame, unit in pairs(self.frames) do
-        if frame:IsShown() then BuffOverlay:ApplyOverlay(frame, unit) end
+    for frame, info in pairs(self.frames) do
+        if frame:IsShown() then BuffOverlay:ApplyOverlay(frame, info["unit"]) end
         -- if frame.optionTable then CompactUnitFrame_UpdateAuras(frame) end
     end
 
