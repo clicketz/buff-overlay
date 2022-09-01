@@ -6,6 +6,7 @@ exclude_files = {
 }
 ignore = {
     "11./SLASH_.*", -- slash handler
+    "212", -- unused argument
 }
 globals = {
     "_G",
