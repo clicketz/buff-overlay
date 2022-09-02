@@ -3,6 +3,7 @@ local LGF = LibStub("LibGetFrame-1.0")
 
 local C_Spell = C_Spell
 local GetSpellInfo = GetSpellInfo
+local IsAddOnLoaded = IsAddOnLoaded
 local TestBuffs = {}
 local test
 
