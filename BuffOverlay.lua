@@ -175,13 +175,19 @@ function BuffOverlay:OnInitialize()
         if not self.frames[frame] then self.frames[frame] = {} end
         self.frames[frame]["unit"] = unit
 
-        frame:RegisterUnitEvent("UNIT_AURA", unit)
+        -- specific fix for SUF
+        if IsAddOnLoaded("ShadowedUnitFrames") then
+            -- SUF overwrites RegisterUnitEvent
+            frame:RegisterUnitEvent("UNIT_AURA", frame, "FullUpdate")
+        else
+            frame:RegisterUnitEvent("UNIT_AURA", unit)
+        end
 
         if not self.frames[frame]["hooked"] then
-            frame:HookScript("OnEvent", function(_, ev)
+            frame:HookScript("OnEvent", function(s, ev)
                 if ev == "UNIT_AURA" then
-                    if not self.frames[frame] then return end
-                    self:ApplyOverlay(frame, self.frames[frame]["unit"])
+                    if not self.frames[s] then return end
+                    self:ApplyOverlay(s, self.frames[s]["unit"])
                 end
             end)
             self.frames[frame]["hooked"] = true
@@ -260,7 +266,7 @@ function BuffOverlay:RefreshOverlays(full)
     end
 
     for frame, info in pairs(self.frames) do
-        if (frame:IsShown() and frame:IsVisible()) then BuffOverlay:ApplyOverlay(frame, info["unit"]) end
+        if (frame:IsShown() and frame:IsVisible()) then self:ApplyOverlay(frame, info["unit"]) end
     end
 end
 
@@ -457,5 +463,11 @@ end
 -- For Blizzard Frames
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     if not frame.buffFrames then return end
+
+    if not BuffOverlay.frames[frame] then
+        BuffOverlay.frames[frame] = {}
+        BuffOverlay.frames[frame]["unit"] = frame.displayedUnit
+    end
+
     BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
 end)
