@@ -324,6 +324,7 @@ function BuffOverlay:Test()
                 if not self.frames[v] and (v:IsShown() and v:IsVisible()) then
                     self.frames[v] = self.frames[v] or {}
                     self.frames[v]["unit"] = "player"
+                    test:ClearAllPoints()
                     test:SetPoint("BOTTOM", v, "TOP", 0, 0)
                 end
             end
