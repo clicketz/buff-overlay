@@ -297,6 +297,7 @@ function BuffOverlay:Test()
         test.text:SetText("BuffOverlay Test")
         test:SetSize(test.text:GetWidth() + 20, test.text:GetHeight() + 2)
         test:EnableMouse(false)
+        test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
         test:Hide()
     end
 
@@ -326,8 +327,6 @@ function BuffOverlay:Test()
                     test:SetPoint("BOTTOM", v, "TOP", 0, 0)
                 end
             end
-        else
-            test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
         end
     end
 
