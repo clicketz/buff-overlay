@@ -174,7 +174,7 @@ function BuffOverlay:OnInitialize()
         if not found then return end
 
         if not self.frames[frame] then self.frames[frame] = {} end
-        self.frames[frame]["unit"] = unit
+        self.frames[frame].unit = unit
 
         -- specific fix for SUF
         if IsAddOnLoaded("ShadowedUnitFrames") then
@@ -184,14 +184,14 @@ function BuffOverlay:OnInitialize()
             frame:RegisterUnitEvent("UNIT_AURA", unit)
         end
 
-        if not self.frames[frame]["hooked"] then
+        if not self.frames[frame].hooked then
             frame:HookScript("OnEvent", function(s, ev)
                 if ev == "UNIT_AURA" then
                     if not self.frames[s] then return end
-                    self:ApplyOverlay(s, self.frames[s]["unit"])
+                    self:ApplyOverlay(s, self.frames[s].unit)
                 end
             end)
-            self.frames[frame]["hooked"] = true
+            self.frames[frame].hooked = true
         end
         self:RefreshOverlays(false)
     end)
@@ -267,7 +267,7 @@ function BuffOverlay:RefreshOverlays(full)
     end
 
     for frame, info in pairs(self.frames) do
-        if (frame:IsShown() and frame:IsVisible()) then self:ApplyOverlay(frame, info["unit"]) end
+        if (frame:IsShown() and frame:IsVisible()) then self:ApplyOverlay(frame, info.unit) end
     end
 end
 
@@ -304,7 +304,6 @@ function BuffOverlay:Test()
         test.text:SetText("BuffOverlay Test")
         test:SetSize(test.text:GetWidth() + 20, test.text:GetHeight() + 2)
         test:EnableMouse(false)
-        test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
         test:Hide()
     end
 
@@ -326,21 +325,42 @@ function BuffOverlay:Test()
         if CompactRaidFrameManager then
             CompactRaidFrameManager:Show()
             CompactRaidFrameContainer:Show()
+        end
+    end
 
-            local pFrames = { _G["CompactRaidFrame1"], _G["CompactPartyFrameMember1"] }
-            for _, v in pairs(pFrames) do
-                if not self.frames[v] and (v:IsShown() and v:IsVisible()) then
-                    self.frames[v] = self.frames[v] or {}
-                    self.frames[v]["unit"] = "player"
-                    test:ClearAllPoints()
-                    test:SetPoint("BOTTOM", v, "TOP", 0, 0)
-                end
+    local anchor
+    if CompactRaidFrameManager then
+        local pFrames = { _G["CompactRaidFrame1"], _G["CompactPartyFrameMember1"] }
+        for _, compactFrame in pairs(pFrames) do
+            if not self.frames[compactFrame] then
+                self.frames[compactFrame] = self.frames[compactFrame] or {}
+                self.frames[compactFrame].unit = compactFrame.displayedUnit
+            end
+
+            if compactFrame:IsShown() and compactFrame:IsVisible() then
+                anchor = compactFrame
+            end
+        end
+    else
+        for frame in pairs(self.frames) do
+            if frame.unit == "player" then
+                anchor = frame
+                break
             end
         end
     end
 
     self.print("Test mode activated. Note: If you are using a non-Blizzard raid frame addon you will need to manually show your frames to see test buffs.")
+
+    test:ClearAllPoints()
+    if anchor then
+        test:SetPoint("BOTTOM", anchor, "TOP", 0, 0)
+    else
+        test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+
     test:Show()
+
     self:RefreshOverlays(false)
 end
 
@@ -470,7 +490,7 @@ hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
         BuffOverlay.frames[frame] = {}
     end
 
-    BuffOverlay.frames[frame]["unit"] = frame.displayedUnit
+    BuffOverlay.frames[frame].unit = frame.displayedUnit
 
     BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
 end)
