@@ -41,7 +41,7 @@ local defaultFrames = {
     "^LimeGroup",
     "^SUFHeaderraid",
     "^LUFHeaderraid",
-    "^CompactRaid",
+    -- "^CompactRaid",
     "^InvenUnitFrames_Party%d",
     "^AleaUI_GroupHeader",
     "^SUFHeaderparty",
@@ -49,7 +49,7 @@ local defaultFrames = {
     "^ElvUF_PartyGroup",
     "^oUF_.-Party",
     "^PitBull4_Groups_Party",
-    "^CompactParty",
+    -- "^CompactParty",
 }
 
 local function InsertTestBuff(spellId)
@@ -148,8 +148,19 @@ function BuffOverlay:OnInitialize()
     self.overlays = {}
     self.priority = {}
 
-    -- Initialize LGF cache
-    LGF.GetUnitFrame("player")
+    -- EventHandler
+    local eventHandler = CreateFrame("Frame")
+    -- TODO: Waiting for this event is kind of hacky, I'd rather a more official way to init LGF
+    eventHandler:RegisterEvent("INITIAL_CLUBS_LOADED") -- this event is fired a few seconds after addons are loaded
+    eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
+    eventHandler:SetScript("OnEvent", function(_, event)
+        if event == "INITIAL_CLUBS_LOADED" then
+            -- Init LGF. Will not init automatically, and will also break if init too early
+            LGF.GetUnitFrame("player")
+        elseif event == "GROUP_ROSTER_UPDATE" then
+            self:RefreshOverlays(false)
+        end
+    end)
 
     LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_UPDATE", function(event, frame, unit)
         local found = false
@@ -161,21 +172,25 @@ function BuffOverlay:OnInitialize()
         end
         if not found then return end
 
-        self.frames[frame] = self.frames[frame] or {}
+        if not self.frames[frame] then self.frames[frame] = {} end
         self.frames[frame]["unit"] = unit
 
         frame:RegisterUnitEvent("UNIT_AURA", unit)
+
         if not self.frames[frame]["hooked"] then
-            frame:HookScript("OnEvent", function()
-                if not self.frames[frame]["unit"] then return end
-                self:ApplyOverlay(frame, self.frames[frame]["unit"])
+            frame:HookScript("OnEvent", function(_, ev)
+                if ev == "UNIT_AURA" then
+                    if not self.frames[frame] then return end
+                    self:ApplyOverlay(frame, self.frames[frame]["unit"])
+                end
             end)
-            self.frames[frame].hooked = true
+            self.frames[frame]["hooked"] = true
         end
+        self:RefreshOverlays(false)
     end)
 
     LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_REMOVED", function(event, frame, unit)
-        self.frames[frame]["unit"] = nil
+        self:RefreshOverlays(false)
     end)
 
     if not self:RefreshBuffs() then
@@ -231,21 +246,27 @@ function BuffOverlay:OnInitialize()
     self:Refresh()
 end
 
-function BuffOverlay:HideAll()
+function BuffOverlay:RefreshOverlays(full)
+    -- fix for resetting profile with buffs active
+    if not self.db.profile.buffs then
+        self:RefreshBuffs()
+    end
+
     for k, v in pairs(self.overlays) do
         v:Hide()
-        self.overlays[k] = nil
+        if full then
+            self.overlays[k] = nil
+        end
+    end
+
+    for frame, info in pairs(self.frames) do
+        if (frame:IsShown() and frame:IsVisible()) then BuffOverlay:ApplyOverlay(frame, info["unit"]) end
     end
 end
 
 function BuffOverlay:Refresh()
-    self:HideAll()
+    self:RefreshOverlays(true)
     self:RefreshBuffs()
-
-    for frame, info in pairs(self.frames) do
-        if frame:IsShown() then BuffOverlay:ApplyOverlay(frame, info["unit"]) end
-        -- if frame.optionTable then CompactUnitFrame_UpdateAuras(frame) end
-    end
 
     self.options.args.spells.args = BuffOverlay_GetClasses()
 end
@@ -276,27 +297,43 @@ function BuffOverlay:Test()
         test.text:SetText("BuffOverlay Test")
         test:SetSize(test.text:GetWidth() + 20, test.text:GetHeight() + 2)
         test:EnableMouse(false)
-        test:SetPoint("BOTTOM", _G["CompactRaidFrame1"], "TOP", 0, 0)
         test:Hide()
     end
 
     if not self.test then
-        if GetNumGroupMembers() == 0 or
-            not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
-            CompactRaidFrameManager:Hide()
-            CompactRaidFrameContainer:Hide()
+        if GetNumGroupMembers() == 0 or not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
+            if CompactRaidFrameManager then
+                CompactRaidFrameManager:Hide()
+                CompactRaidFrameContainer:Hide()
+            end
         end
+        self.print("Exiting test mode.")
         test:Hide()
-        self:Refresh()
+        self:RefreshOverlays(false)
         return
     end
 
     if GetNumGroupMembers() == 0 then
-        CompactRaidFrameManager:Show()
-        CompactRaidFrameContainer:Show()
+        if CompactRaidFrameManager then
+            CompactRaidFrameManager:Show()
+            CompactRaidFrameContainer:Show()
+
+            local pFrames = {_G["CompactRaidFrame1"], _G["CompactPartyFrameMember1"]}
+            for _, v in pairs(pFrames) do
+                if not self.frames[v] and (v:IsShown() and v:IsVisible()) then
+                    self.frames[v] = self.frames[v] or {}
+                    self.frames[v]["unit"] = "player"
+                    test:SetPoint("BOTTOM", v, "TOP", 0, 0)
+                end
+            end
+        else
+            test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        end
     end
+
+    self.print("Test mode activated. Note: If you are using a non-Blizzard raid frame addon you will need to manually show your frames to see test buffs.")
     test:Show()
-    self:Refresh()
+    self:RefreshOverlays(false)
 end
 
 local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
@@ -416,3 +453,9 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         end
     end
 end
+
+-- For Blizzard Frames
+hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
+    if not frame.buffFrames then return end
+    BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
+end)
