@@ -328,7 +328,7 @@ function BuffOverlay:Test()
         end
     end
 
-    local anchor
+    local anchor = false
     if CompactRaidFrameManager then
         local pFrames = { _G["CompactRaidFrame1"], _G["CompactPartyFrameMember1"] }
         for _, compactFrame in pairs(pFrames) do
@@ -341,7 +341,9 @@ function BuffOverlay:Test()
                 anchor = compactFrame
             end
         end
-    else
+    end
+    
+    if not anchor then
         for frame in pairs(self.frames) do
             if frame.unit == "player" then
                 anchor = frame
