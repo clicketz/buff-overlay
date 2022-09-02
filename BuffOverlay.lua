@@ -308,7 +308,8 @@ function BuffOverlay:Test()
     end
 
     if not self.test then
-        if GetNumGroupMembers() == 0 or not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
+        if GetNumGroupMembers() == 0 or
+            not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
             if CompactRaidFrameManager then
                 CompactRaidFrameManager:Hide()
                 CompactRaidFrameContainer:Hide()
@@ -325,7 +326,7 @@ function BuffOverlay:Test()
             CompactRaidFrameManager:Show()
             CompactRaidFrameContainer:Show()
 
-            local pFrames = {_G["CompactRaidFrame1"], _G["CompactPartyFrameMember1"]}
+            local pFrames = { _G["CompactRaidFrame1"], _G["CompactPartyFrameMember1"] }
             for _, v in pairs(pFrames) do
                 if not self.frames[v] and (v:IsShown() and v:IsVisible()) then
                     self.frames[v] = self.frames[v] or {}
