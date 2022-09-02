@@ -342,7 +342,7 @@ function BuffOverlay:Test()
             end
         end
     end
-    
+
     if not anchor then
         for frame in pairs(self.frames) do
             if frame.unit == "player" then
