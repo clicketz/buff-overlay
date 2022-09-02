@@ -1,5 +1,4 @@
 # **Buff Overlay**
-==============
 
 This extremely lightweight addon was created for people to quickly and easily see defensive cooldowns active on other players so they can adjust their gameplay accordingly.
 
@@ -10,7 +9,6 @@ By default, all immunity and damage reduction abilities have been added.
 Type /bo or /buffoverlay to open the options panel.
 
 # **Multi-AddOn Support**
-==============
 
 - ElvUI
 - VuhDo
@@ -23,14 +21,17 @@ Type /bo or /buffoverlay to open the options panel.
 (Note: This list is not exhaustive. All addons supported by [LibGetFrame](https://github.com/mrbuds/LibGetFrame) should now work with BuffOverlay)
 
 # **Full In-Game UI**
-==============
 
 Now supports the ability to control your overlays completely through the in-game menu with persistent custom buffs that will stay through updates.
 
 
-![Settings](https://media.forgecdn.net/attachments/370/86/settings.png "Settings")
+<p align="center">
+    <img src="https://i.imgur.com/F7NJ45O.png" alt="Settings" />
+</p>
 
-![Spell Tab](https://media.forgecdn.net/attachments/487/880/lzf6qop.png "Spell Tab")
+<p align="center">
+    <img src="https://i.imgur.com/TwBauJT.png" alt="Spell Tab" />
+</p>
 
 
 **Contribution:**
