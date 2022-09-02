@@ -467,8 +467,9 @@ hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
 
     if not BuffOverlay.frames[frame] then
         BuffOverlay.frames[frame] = {}
-        BuffOverlay.frames[frame]["unit"] = frame.displayedUnit
     end
+
+    BuffOverlay.frames[frame]["unit"] = frame.displayedUnit
 
     BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
 end)
