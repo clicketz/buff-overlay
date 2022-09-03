@@ -1,6 +1,6 @@
 name: "Bug Report"
 description: Create a report to help me improve Buff Overlay.
-title: "[BUG] <title>"
+title: "[BUG]: "
 labels: 'bug'
 assignees:
   - clicketz
@@ -39,25 +39,25 @@ body:
   validations:
     required: true
 
-- type: checkboxes
+- type: dropdown
   id: testing
   attributes:
-    label: Tested with only Buff Overlay
+    label: Tested with only Buff Overlay?
     description: Did you try having Buff Overlay as the only enabled addon and everything else disabled?
     options:
-      - label: "Yes"
-      - label: "No"
+      - Yes
+      - No
   validations:
     required: true
 
-- type: checkboxes
+- type: dropdown
   id: edited
   attributes:
-    label: Edited a Lua File
+    label: Edited a Lua File?
     description: In older versions of Buff Overlay you had to edit lua files to add abilities. Did you manually edit any file in the BuffOverlay folder?
     options:
-      - label: "Yes"
-      - label: "No"
+      - Yes
+      - No
   validations:
     required: true
 
