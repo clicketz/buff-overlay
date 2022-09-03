@@ -30,11 +30,11 @@ body:
   id: flavor
   attributes:
     label: World of Warcraft Flavor
-    description: What version of World of Warcraft are are you running?
+    description: Which version of World of Warcraft are you running?
     options:
-      - Retail (Default)
-      - Classic
-      - The Burning Crusade
+      - Retail
+      - Vanilla Classic
+      - The Burning Crusade Classic
       - Wrath of the Lich King Classic
   validations:
     required: true
@@ -42,7 +42,7 @@ body:
 - type: dropdown
   id: testing
   attributes:
-    label: Tested with only Buff Overlay?
+    label: Sterile Testing
     description: Did you try having Buff Overlay as the only enabled addon and everything else disabled?
     options:
       - "Yes"
@@ -53,8 +53,8 @@ body:
 - type: dropdown
   id: edited
   attributes:
-    label: Edited a Lua File?
-    description: In older versions of Buff Overlay you had to edit lua files to add abilities. Did you manually edit any file in the BuffOverlay folder?
+    label: Editing Lua Files
+    description: Did you manually edit any file in the BuffOverlay folder?
     options:
       - "Yes"
       - "No"
@@ -65,7 +65,7 @@ body:
   attributes:
     label: File Edited
     description: |
-      If you did edit a lua file, please list the file(s) you edited, and the changes you made.
+      If you did edit a Lua file, please list the file(s) you edited, and the changes you made.
   validations:
     required: false
 
@@ -73,9 +73,9 @@ body:
   attributes:
     label: Frames Used
     description: |
-      Are you using Blizzard frames or are you using a third party addon like ElvUI, Shadowed Unit Frames, or something else?
+      Are you using Blizzard frames or are you using a third party addon such as ElvUI, Shadowed Unit Frames, or something else?
   validations:
-    required: false
+    required: true
 
 - type: textarea
   attributes:
@@ -99,9 +99,9 @@ body:
 
 - type: input
   attributes:
-    label: Last Good Version
+    label: Last Working Version
     description: |
-      Was it working in a previous version? If yes, which was the last good one?
+      Was it working in a previous version? If yes, which was the last good one for you?
     placeholder: "v10.0.1"
   validations:
     required: false
