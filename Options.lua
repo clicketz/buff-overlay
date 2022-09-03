@@ -143,8 +143,15 @@ local customSpellInfo = {
 }
 
 local customSpells = {
+    spellId_info = {
+        order = 1,
+        type = "description",
+        name = "Note: anything you add here will persist through addon updates and profile resets.",
+    },
     spellId = {
+        order = 2,
         name = "Spell ID",
+        desc = "Enter the spell ID of the spell you want to keep track of.",
         type = "input",
         set = function(_, state)
             local spellId = tonumber(state)
