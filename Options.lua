@@ -10,6 +10,13 @@ local function GetSpells(class)
 
     if BuffOverlay.db.profile.buffs then
         for k, v in pairs(BuffOverlay.db.profile.buffs) do
+            -- Check if spell is valid for new db structure. If not, likely from old profile. Reset needed.
+            if type(v) ~= "table" or not v.prio or not v.class then
+                BuffOverlay.db.profile.buffs = nil
+                BuffOverlay.print("Corrupted buff database found. This is likely due to updating from an older version of Buff Overlay. Resetting buff database to default. Your other settings (including custom buffs) will be preserved.")
+                return
+            end
+
             if not v.parent and (v.class == class) then
                 local spellName, _, icon = GetSpellInfo(k)
                 local formattedName = spellName and format("|T%s:0|t %s", icon, spellName) or tostring(k)
