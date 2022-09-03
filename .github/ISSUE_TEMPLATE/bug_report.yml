@@ -45,8 +45,8 @@ body:
     label: Tested with only Buff Overlay?
     description: Did you try having Buff Overlay as the only enabled addon and everything else disabled?
     options:
-      - Yes
-      - No
+      - "Yes"
+      - "No"
   validations:
     required: true
 
@@ -56,8 +56,8 @@ body:
     label: Edited a Lua File?
     description: In older versions of Buff Overlay you had to edit lua files to add abilities. Did you manually edit any file in the BuffOverlay folder?
     options:
-      - Yes
-      - No
+      - "Yes"
+      - "No"
   validations:
     required: true
 
