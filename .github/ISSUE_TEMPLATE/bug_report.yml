@@ -1,6 +1,9 @@
 name: "Bug Report"
 description: Create a report to help me improve Buff Overlay.
+title: "[BUG] <title>"
 labels: 'bug'
+assignees:
+  - clicketz
 body:
 - type: markdown
   attributes:
@@ -50,7 +53,7 @@ body:
 - type: checkboxes
   id: edited
   attributes:
-    label: Edited a lua file
+    label: Edited a Lua File
     description: In older versions of Buff Overlay you had to edit lua files to add abilities. Did you manually edit any file in the BuffOverlay folder?
     options:
       - label: "Yes"
