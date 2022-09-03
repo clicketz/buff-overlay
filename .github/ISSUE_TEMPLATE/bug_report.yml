@@ -40,7 +40,7 @@ body:
   id: testing
   attributes:
     label: Tested with only Buff Overlay
-    description: Did you try having Buff Overlay as the only enabled addon and everything else (especially something like ElvUI) disabled?
+    description: Did you try having Buff Overlay as the only enabled addon and everything else disabled?
     options:
       - label: "Yes"
       - label: "No"
@@ -63,6 +63,14 @@ body:
     label: File Edited
     description: |
       If you did edit a lua file, please list the file(s) you edited, and the changes you made.
+  validations:
+    required: false
+
+- type: textarea
+  attributes:
+    label: Frames Used
+    description: |
+      Are you using Blizzard frames or are you using a third party addon like ElvUI, Shadowed Unit Frames, or something else?
   validations:
     required: false
 
