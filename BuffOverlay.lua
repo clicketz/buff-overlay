@@ -93,7 +93,9 @@ function BuffOverlay:UpdateChildInfo()
     for k, v in pairs(self.db.profile.buffs) do
         if v.parent then
             for key, val in pairs(self.db.profile.buffs[v.parent]) do
-                self.db.profile.buffs[k][key] = val
+                if key ~= "children" then
+                    self.db.profile.buffs[k][key] = val
+                end
             end
         end
     end
