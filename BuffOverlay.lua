@@ -281,7 +281,8 @@ function BuffOverlay:Refresh()
 end
 
 function BuffOverlay.print(msg)
-    print("|cffff0000BuffOverlay|r: " .. msg)
+    local msg = "|cff83b2ffBuffOverlay|r: " .. msg
+    print(msg)
 end
 
 function BuffOverlay:Test()
@@ -354,7 +355,7 @@ function BuffOverlay:Test()
         end
     end
 
-    self.print("Test mode activated. Note: If you are using a non-Blizzard raid frame addon you will need to manually show your frames to see test buffs.")
+    self.print("Test mode activated. |cffff555eNote|r: Frames needs to be visible in order to show test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
 
     test:ClearAllPoints()
     if anchor then
