@@ -144,7 +144,7 @@ function BuffOverlay:OnInitialize()
     end
 
     if self.db.profile.welcomeMessage then
-        self.print("Type |cffff555e/buffoverlay|r or |cffff555e/bo|r to open the options panel or |cffff555e/bo help|r for more commands.")
+        self.print("Type |cff9b6ef3/buffoverlay|r or |cff9b6ef3/bo|r to open the options panel or |cff9b6ef3/bo help|r for more commands.")
     end
 
     self.frames = {}
@@ -239,9 +239,9 @@ function BuffOverlay:OnInitialize()
     SlashCmdList.BuffOverlay = function(msg)
         if msg == "help" or msg == "?" then
             self.print("Command List")
-            print("|cffff555e/buffoverlay|r or |cffff555e/bo|r: Opens options panel.")
-            print("|cffff555e/bo|r |cffffe981test|r: Shows test icons on all visible raid/party frames.")
-            print("|cffff555e/bo|r |cffffe981reset|r: Resets current profile to default values.")
+            print("|cff9b6ef3/buffoverlay|r or |cff9b6ef3/bo|r: Opens options panel.")
+            print("|cff9b6ef3/bo|r |cffffe981test|r: Shows test icons on all visible raid/party frames.")
+            print("|cff9b6ef3/bo|r |cffffe981reset|r: Resets current profile to default values.")
         elseif msg == "test" then
             self:Test()
         elseif msg == "reset" or msg == "default" then
@@ -355,7 +355,7 @@ function BuffOverlay:Test()
         end
     end
 
-    self.print("Test mode activated. |cffff555eNote|r: Frames needs to be visible in order to show test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
+    self.print("Test mode activated. |cff9b6ef3Note|r: Frames needs to be visible in order to show test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
 
     test:ClearAllPoints()
     if anchor then
