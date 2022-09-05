@@ -360,12 +360,13 @@ function BuffOverlay:Test()
         end
     end
 
-    self.print("Test mode activated. |cff9b6ef3Note|r: Frames needs to be visible in order to show test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
+    self.print("Test mode activated.")
 
     test:ClearAllPoints()
     if anchor then
         test:SetPoint("BOTTOM", anchor, "TOP", 0, 0)
     else
+        self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
         test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     end
 
