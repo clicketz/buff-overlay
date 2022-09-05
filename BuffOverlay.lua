@@ -82,6 +82,11 @@ end
 
 function BuffOverlay:UpdateCustomBuffs()
     for spellId, v in pairs(self.db.global.customBuffs) do
+        -- Fix for old database entries
+        if v.enabled then
+            v.enabled = nil
+        end
+
         if not self.db.profile.buffs[spellId] then
             self.db.profile.buffs[spellId] = {}
             self.db.profile.buffs[spellId].enabled = true
