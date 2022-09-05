@@ -353,7 +353,7 @@ function BuffOverlay:Test()
 
     if not anchor then
         for frame in pairs(self.frames) do
-            if frame.unit == "player" and frame:IsShown() and frame:IsVisible() then
+            if frame.unit and (UnitGUID("player") == UnitGUID(frame.unit)) and frame:IsShown() and frame:IsVisible() then
                 anchor = frame
                 break
             end
