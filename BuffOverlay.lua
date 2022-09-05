@@ -261,9 +261,8 @@ function BuffOverlay:RefreshOverlays(full)
         self:RefreshBuffs()
     end
 
-    for k, v in pairs(self.overlays) do
-        v:Hide()
-        if full then
+    if full then
+        for k in pairs(self.overlays) do
             self.overlays[k] = nil
         end
     end
