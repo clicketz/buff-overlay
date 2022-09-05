@@ -1,5 +1,15 @@
 BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
+--[[------------------------------------------------
+
+ If you are editing this file, you should be aware
+ that everything can now be done from the in-game
+ interface, including adding custom buffs.
+
+ Use the /buffoverlay or /bo command.
+
+------------------------------------------------]]--
+
 -- Lower prio = shown above other buffs
 BuffOverlay.defaultSpells = {
     -- Death Knight
