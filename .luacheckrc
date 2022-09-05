@@ -47,4 +47,5 @@ globals = {
     "WOW_PROJECT_MAINLINE",
     "format",
     "IsAddOnLoaded",
+    "UnitGUID",
 }

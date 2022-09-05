@@ -286,8 +286,8 @@ function BuffOverlay:FullRefresh()
 end
 
 function BuffOverlay.print(msg)
-    local msg = "|cff83b2ffBuffOverlay|r: " .. msg
-    print(msg)
+    local newMsg = "|cff83b2ffBuffOverlay|r: " .. msg
+    print(newMsg)
 end
 
 function BuffOverlay:Test()
