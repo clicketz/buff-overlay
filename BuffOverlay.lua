@@ -89,10 +89,18 @@ function BuffOverlay:UpdateCustomBuffs()
     LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
 end
 
-function BuffOverlay:UpdateChildInfo()
+function BuffOverlay:ConsolidateChildren()
     for k, v in pairs(self.db.profile.buffs) do
         if v.parent then
-            for key, val in pairs(self.db.profile.buffs[v.parent]) do
+            local parent = self.db.profile.buffs[v.parent]
+
+            if not parent.children then
+                parent.children = {}
+            end
+
+            parent.children[k] = true
+
+            for key, val in pairs(parent) do
                 if key ~= "children" then
                     self.db.profile.buffs[k][key] = val
                 end
@@ -100,19 +108,6 @@ function BuffOverlay:UpdateChildInfo()
         end
     end
     self:UpdateCustomBuffs()
-end
-
-function BuffOverlay:ConsolidateChildren()
-    for k, v in pairs(self.db.profile.buffs) do
-        if v.parent then
-            local parent = self.db.profile.buffs[v.parent]
-            if not parent.children then
-                parent.children = {}
-            end
-            parent.children[k] = true
-        end
-    end
-    self:UpdateChildInfo()
 end
 
 function BuffOverlay:RefreshBuffs()
