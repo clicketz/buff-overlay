@@ -89,10 +89,13 @@ function BuffOverlay:UpdateCustomBuffs()
     LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
 end
 
-function BuffOverlay:ConsolidateChildren()
-    for k, v in pairs(self.db.profile.buffs) do
-        if v.parent then
-            local parent = self.db.profile.buffs[v.parent]
+local function ValidateBuffData()
+    for k, v in pairs(BuffOverlay.db.profile.buffs) do
+        -- Check for old buffs from a previous DB
+        if (not BuffOverlay.defaultSpells[k]) and (not BuffOverlay.db.global.customBuffs[k]) then
+            BuffOverlay.db.profile.buffs[k] = nil
+        elseif v.parent then -- child found
+            local parent = BuffOverlay.db.profile.buffs[v.parent]
 
             if not parent.children then
                 parent.children = {}
@@ -100,14 +103,17 @@ function BuffOverlay:ConsolidateChildren()
 
             parent.children[k] = true
 
+            -- Give child the same fields as parent
             for key, val in pairs(parent) do
                 if key ~= "children" then
-                    self.db.profile.buffs[k][key] = val
+                    BuffOverlay.db.profile.buffs[k][key] = val
                 end
             end
+        else
+            InsertTestBuff(k)
         end
     end
-    self:UpdateCustomBuffs()
+    BuffOverlay:UpdateCustomBuffs()
 end
 
 function BuffOverlay:RefreshBuffs()
@@ -120,7 +126,7 @@ function BuffOverlay:RefreshBuffs()
             self.db.profile.buffs[k].enabled = true
         end
         newdb = true
-        self:ConsolidateChildren()
+        ValidateBuffData()
     end
 
     return newdb
@@ -209,23 +215,13 @@ function BuffOverlay:OnInitialize()
                 self.db.profile.buffs[k].enabled = enabled
             end
         end
-        self:ConsolidateChildren()
+        ValidateBuffData()
     end
 
     -- Remove invalid custom cooldowns
     for k in pairs(self.db.global.customBuffs) do
         if (not GetSpellInfo(k)) or self.defaultSpells[k] then
             self.db.global.customBuffs[k] = nil
-        end
-    end
-
-    -- Validate Spells and add them to Test Buffs
-    for k, v in pairs(self.db.profile.buffs) do
-        if (not self.defaultSpells[k]) and (not self.db.global.customBuffs[k]) then
-            self.db.profile.buffs[k] = nil
-        end
-        if not v.parent then
-            InsertTestBuff(k)
         end
     end
 
