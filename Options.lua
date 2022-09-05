@@ -100,7 +100,7 @@ local customSpellInfo = {
                 BuffOverlay.db.profile.buffs[spellId] = nil
             end
             info.options.args.customSpells.args[info[#info - 1]] = nil
-            BuffOverlay:UpdateCustomBuffs()
+            BuffOverlay.options.args.spells.args = BuffOverlay_GetClasses()
         end,
     },
     class = {
@@ -120,7 +120,8 @@ local customSpellInfo = {
             local spellId = info[#info - 1]
             spellId = tonumber(spellId)
             BuffOverlay.db.global.customBuffs[spellId][option] = state
-            BuffOverlay:UpdateCustomBuffs()
+            BuffOverlay.db.profile.buffs[spellId][option] = state
+            BuffOverlay.options.args.spells.args = BuffOverlay_GetClasses()
         end,
     },
     prio = {
@@ -136,7 +137,6 @@ local customSpellInfo = {
             spellId = tonumber(spellId)
             BuffOverlay.db.global.customBuffs[spellId][option] = state
             BuffOverlay.db.profile.buffs[spellId][option] = state
-            -- BuffOverlay:UpdateCustomBuffs()
         end,
         get = function(info)
             local option = info[#info]

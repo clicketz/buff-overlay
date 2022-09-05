@@ -5,6 +5,7 @@ local C_Spell = C_Spell
 local GetSpellInfo = GetSpellInfo
 local IsAddOnLoaded = IsAddOnLoaded
 local TestBuffs = {}
+local TestBuffIds = {}
 local test
 
 local defaultSettings = {
@@ -55,8 +56,9 @@ local defaultFrames = {
 
 local function InsertTestBuff(spellId)
     local tex = GetSpellTexture(spellId)
-    if tex then
+    if tex and not TestBuffIds[spellId] then
         rawset(TestBuffs, #TestBuffs + 1, { spellId, tex })
+        rawset(TestBuffIds, spellId, true)
     end
 end
 
@@ -71,7 +73,7 @@ function BuffOverlay:InsertBuff(spellId)
 
     local custom = self.db.global.customBuffs
     if not custom[spellId] and not self.db.profile.buffs[spellId] then
-        custom[spellId] = { class = "MISC", prio = 100, enabled = true }
+        custom[spellId] = { class = "MISC", prio = 100, custom = true }
         LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
         return true
     end
@@ -80,10 +82,18 @@ end
 
 function BuffOverlay:UpdateCustomBuffs()
     for spellId, v in pairs(self.db.global.customBuffs) do
-        self.db.profile.buffs[spellId] = v
-        if not self.db.profile.buffs[spellId].custom then
-            self.db.profile.buffs[spellId].custom = true
+        if not self.db.profile.buffs[spellId] then
+            self.db.profile.buffs[spellId] = {}
+            self.db.profile.buffs[spellId].enabled = true
         end
+
+        local buff = self.db.profile.buffs[spellId]
+
+        for field, value in pairs(v) do
+            buff[field] = value
+        end
+
+        InsertTestBuff(spellId)
     end
     self.options.args.spells.args = BuffOverlay_GetClasses()
     LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
@@ -116,7 +126,7 @@ local function ValidateBuffData()
     BuffOverlay:UpdateCustomBuffs()
 end
 
-function BuffOverlay:RefreshBuffs()
+function BuffOverlay:CreateBuffTable()
     local newdb = false
     -- If the current profile doesn't have any buffs saved use default list and save it
     if not self.db.profile.buffs then
@@ -136,9 +146,9 @@ function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
 
     if not self.registered then
-        self.db.RegisterCallback(self, "OnProfileChanged", "Refresh")
-        self.db.RegisterCallback(self, "OnProfileCopied", "Refresh")
-        self.db.RegisterCallback(self, "OnProfileReset", "Refresh")
+        self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
+        self.db.RegisterCallback(self, "OnProfileCopied", "FullRefresh")
+        self.db.RegisterCallback(self, "OnProfileReset", "FullRefresh")
 
         self:Options()
         self.registered = true
@@ -203,7 +213,7 @@ function BuffOverlay:OnInitialize()
         self:RefreshOverlays(false)
     end)
 
-    if not self:RefreshBuffs() then
+    if not self:CreateBuffTable() then
         -- Update buffs if any user changes are made to lua file
         for k, v in pairs(self.defaultSpells) do
             if not self.db.profile.buffs[k] then
@@ -249,11 +259,12 @@ end
 function BuffOverlay:RefreshOverlays(full)
     -- fix for resetting profile with buffs active
     if not self.db.profile.buffs then
-        self:RefreshBuffs()
+        self:CreateBuffTable()
     end
 
     if full then
         for k in pairs(self.overlays) do
+            self.overlays[k]:Hide()
             self.overlays[k] = nil
         end
     end
@@ -265,9 +276,13 @@ end
 
 function BuffOverlay:Refresh()
     self:RefreshOverlays(true)
-    self:RefreshBuffs()
-
     self.options.args.spells.args = BuffOverlay_GetClasses()
+end
+
+function BuffOverlay:FullRefresh()
+    self:CreateBuffTable()
+    ValidateBuffData()
+    self:Refresh()
 end
 
 function BuffOverlay.print(msg)
@@ -434,7 +449,8 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         end
     end
 
-    for i = 1, 40 do
+    -- This will stop long before iterating 999 times, but the number needs to be large to cover test buff table sizes.
+    for i = 1, 999 do
         local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
         if spellId then
             if self.db.profile.buffs[buffName] and not self.db.profile.buffs[spellId] then
