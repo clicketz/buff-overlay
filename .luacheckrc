@@ -48,4 +48,8 @@ globals = {
     "format",
     "IsAddOnLoaded",
     "UnitGUID",
+    "SetBorderSizes",
+    "SetVertexColor",
+    "UpdateSizes",
+    "next",
 }
