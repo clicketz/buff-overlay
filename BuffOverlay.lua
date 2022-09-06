@@ -4,6 +4,7 @@ local LGF = LibStub("LibGetFrame-1.0")
 local C_Spell = C_Spell
 local GetSpellInfo = GetSpellInfo
 local IsAddOnLoaded = IsAddOnLoaded
+local next = next
 local TestBuffs = {}
 local TestBuffIds = {}
 local test
@@ -11,8 +12,9 @@ local test
 local defaultSettings = {
     profile = {
         iconCount = 4,
-        iconScale = 1.2,
+        iconScale = 1,
         iconAlpha = 1.0,
+        iconSpacing = 1,
         iconAnchor = "BOTTOM",
         iconRelativePoint = "CENTER",
         growDirection = "HORIZONTAL",
@@ -21,8 +23,16 @@ local defaultSettings = {
         cooldownNumberScale = 0.5,
         iconXOff = 0,
         iconYOff = 0,
+        iconBorder = true,
+        iconBorderColor = {
+            r = 0,
+            g = 0,
+            b = 0,
+            a = 1,
+        },
+        iconBorderSize = 0.75,
         welcomeMessage = true,
-        buffs = nil,
+        buffs = {},
     },
     global = {
         customBuffs = {},
@@ -74,7 +84,6 @@ function BuffOverlay:InsertBuff(spellId)
     local custom = self.db.global.customBuffs
     if not custom[spellId] and not self.db.profile.buffs[spellId] then
         custom[spellId] = { class = "MISC", prio = 100, custom = true }
-        LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
         return true
     end
     return false
@@ -101,7 +110,6 @@ function BuffOverlay:UpdateCustomBuffs()
         InsertTestBuff(spellId)
     end
     self.options.args.spells.args = BuffOverlay_GetClasses()
-    LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
 end
 
 local function ValidateBuffData()
@@ -134,10 +142,12 @@ end
 function BuffOverlay:CreateBuffTable()
     local newdb = false
     -- If the current profile doesn't have any buffs saved use default list and save it
-    if not self.db.profile.buffs then
-        self.db.profile.buffs = {}
+    if next(self.db.profile.buffs) == nil then
         for k, v in pairs(self.defaultSpells) do
-            self.db.profile.buffs[k] = v
+            self.db.profile.buffs[k] = {}
+            for key, val in pairs(v) do
+                self.db.profile.buffs[k][key] = val
+            end
             self.db.profile.buffs[k].enabled = true
         end
         newdb = true
@@ -147,8 +157,31 @@ function BuffOverlay:CreateBuffTable()
     return newdb
 end
 
+function BuffOverlay:UpdateBuffs()
+    if not self:CreateBuffTable() then
+        -- Update buffs if any user changes are made to lua file
+        for k, v in pairs(self.defaultSpells) do
+            if not self.db.profile.buffs[k] then
+                self.db.profile.buffs[k] = {}
+                for key, val in pairs(v) do
+                    self.db.profile.buffs[k][key] = val
+                end
+                self.db.profile.buffs[k].enabled = true
+            else
+                local e = self.db.profile.buffs[k].enabled
+                for key, val in pairs(v) do
+                    self.db.profile.buffs[k][key] = val
+                end
+                self.db.profile.buffs[k].enabled = e
+            end
+        end
+        ValidateBuffData()
+    end
+end
+
 function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 590, 520)
 
     if not self.registered then
         self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
@@ -218,20 +251,7 @@ function BuffOverlay:OnInitialize()
         self:RefreshOverlays(false)
     end)
 
-    if not self:CreateBuffTable() then
-        -- Update buffs if any user changes are made to lua file
-        for k, v in pairs(self.defaultSpells) do
-            if not self.db.profile.buffs[k] then
-                self.db.profile.buffs[k] = v
-                self.db.profile.buffs[k].enabled = true
-            else
-                local enabled = self.db.profile.buffs[k].enabled
-                self.db.profile.buffs[k] = v
-                self.db.profile.buffs[k].enabled = enabled
-            end
-        end
-        ValidateBuffData()
-    end
+    self:UpdateBuffs()
 
     -- Remove invalid custom cooldowns
     for k in pairs(self.db.global.customBuffs) do
@@ -253,7 +273,6 @@ function BuffOverlay:OnInitialize()
         elseif msg == "reset" or msg == "default" then
             self.db:ResetProfile()
         else
-            LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 600, 470)
             LibStub("AceConfigDialog-3.0"):Open("BuffOverlay")
         end
     end
@@ -263,7 +282,7 @@ end
 
 function BuffOverlay:RefreshOverlays(full)
     -- fix for resetting profile with buffs active
-    if not self.db.profile.buffs then
+    if next(self.db.profile.buffs) == nil then
         self:CreateBuffTable()
     end
 
@@ -285,8 +304,7 @@ function BuffOverlay:Refresh()
 end
 
 function BuffOverlay:FullRefresh()
-    self:CreateBuffTable()
-    ValidateBuffData()
+    self:UpdateBuffs()
     self:Refresh()
 end
 
@@ -300,10 +318,6 @@ function BuffOverlay:Test()
         self.print("You are in combat.")
         return
     end
-
-    -- if not self.test and not (GetCVarBool("useCompactPartyFrames") and CompactRaidFrameManager_GetSetting("IsShown")) then
-    --     self.print("Please enable raid-style party frames in Blizzard settings or join a 6+ player raid to see test icons.")
-    -- end
 
     self.test = not self.test
 
@@ -407,6 +421,31 @@ local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
     buffFrame:Show()
 end
 
+local function UpdateBorder(frame)
+    -- zoomed in/out
+    if BuffOverlay.db.profile.iconBorder then
+        frame.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    else
+        frame.icon:SetTexCoord(0, 1, 0, 1)
+    end
+
+    if not frame.borderFrame then
+        frame.borderFrame = CreateFrame("Frame", nil, frame)
+        frame.borderFrame:SetFrameLevel(frame:GetFrameLevel() + 1)
+        frame.borderFrame:SetAllPoints()
+    end
+
+    local borderFrame = frame.borderFrame
+    local size = BuffOverlay.db.profile.iconBorderSize
+
+    borderFrame.border = borderFrame.border or CreateFrame("Frame", nil, frame.borderFrame, "NamePlateFullBorderTemplate")
+    borderFrame.border:SetBorderSizes(size, size, size, size)
+    borderFrame.border:SetVertexColor(BuffOverlay.db.profile.iconBorderColor.r, BuffOverlay.db.profile.iconBorderColor.g, BuffOverlay.db.profile.iconBorderColor.b, BuffOverlay.db.profile.iconBorderColor.a)
+    borderFrame.border:UpdateSizes()
+
+    borderFrame:SetShown(BuffOverlay.db.profile.iconBorder)
+end
+
 function BuffOverlay:ApplyOverlay(frame, unit)
     if frame:IsForbidden() then return end
 
@@ -424,19 +463,20 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             overlay.cooldown:SetScale(self.db.profile.cooldownNumberScale)
             overlay.count:SetPoint("BOTTOMRIGHT", bFrame .. i, "BOTTOMRIGHT")
             overlay.count:SetScale(0.8)
+            UpdateBorder(overlay)
             overlay:ClearAllPoints()
             if i == 1 then
                 overlay:SetPoint(self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint,
                     self.db.profile.iconXOff, self.db.profile.iconYOff)
             else
                 if self.db.profile.growDirection == "DOWN" then
-                    overlay:SetPoint("TOP", _G[bFrame .. i - 1], "BOTTOM")
+                    overlay:SetPoint("TOP", _G[bFrame .. i - 1], "BOTTOM", 0, -self.db.profile.iconSpacing)
                 elseif self.db.profile.growDirection == "LEFT" then
-                    overlay:SetPoint("BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT")
+                    overlay:SetPoint("BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT", -self.db.profile.iconSpacing, 0)
                 elseif self.db.profile.growDirection == "UP" or self.db.profile.growDirection == "VERTICAL" then
-                    overlay:SetPoint("BOTTOM", _G[bFrame .. i - 1], "TOP")
+                    overlay:SetPoint("BOTTOM", _G[bFrame .. i - 1], "TOP", 0, self.db.profile.iconSpacing)
                 else
-                    overlay:SetPoint("BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT")
+                    overlay:SetPoint("BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT", self.db.profile.iconSpacing, 0)
                 end
             end
             overlay:SetScale(self.db.profile.iconScale)
@@ -487,10 +527,10 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             local point, relativeTo, relativePoint, xOfs, yOfs = self.overlays[bFrame .. 1]:GetPoint()
             if self.db.profile.growDirection == "HORIZONTAL" then
                 self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint,
-                    -(self.overlays[bFrame .. 1]:GetWidth() / 2) * (overlayNum - 1) + self.db.profile.iconXOff, yOfs)
+                    -(self.overlays[bFrame .. 1]:GetWidth() / 2) * (overlayNum - 1) + self.db.profile.iconXOff - (((overlayNum - 1) / 2) * self.db.profile.iconSpacing), yOfs)
             elseif self.db.profile.growDirection == "VERTICAL" then
                 self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, xOfs,
-                    -(self.overlays[bFrame .. 1]:GetHeight() / 2) * (overlayNum - 1) + self.db.profile.iconYOff)
+                    -(self.overlays[bFrame .. 1]:GetHeight() / 2) * (overlayNum - 1) + self.db.profile.iconYOff - (((overlayNum - 1) / 2) * self.db.profile.iconSpacing))
             end
             overlayNum = overlayNum + 1
         else
