@@ -437,11 +437,11 @@ local function UpdateBorder(frame)
 
     local borderFrame = frame.borderFrame
     local size = BuffOverlay.db.profile.iconBorderSize
+    local borderColor = BuffOverlay.db.profile.iconBorderColor
 
-    borderFrame.border = borderFrame.border or CreateFrame("Frame", nil, frame.borderFrame, "BuffOverlayBorderTemplate")
+    borderFrame.border = borderFrame.border or CreateFrame("Frame", nil, borderFrame, "BuffOverlayBorderTemplate")
     borderFrame.border:SetBorderSizes(size, size, size, size)
-    borderFrame.border:SetVertexColor(BuffOverlay.db.profile.iconBorderColor.r, BuffOverlay.db.profile.iconBorderColor.g
-        , BuffOverlay.db.profile.iconBorderColor.b, BuffOverlay.db.profile.iconBorderColor.a)
+    borderFrame.border:SetVertexColor(borderColor.r, borderColor.g, borderColor.b, borderColor.a)
     borderFrame.border:UpdateSizes()
 
     borderFrame:SetShown(BuffOverlay.db.profile.iconBorder)
