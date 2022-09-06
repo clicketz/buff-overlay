@@ -52,4 +52,8 @@ globals = {
     "SetVertexColor",
     "UpdateSizes",
     "next",
+    "BuffOverlayBorderTemplateMixin",
+    "PixelUtil",
+    "DFPixelUtil",
+    
 }
