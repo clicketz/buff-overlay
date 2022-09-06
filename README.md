@@ -1,5 +1,7 @@
 # **Buff Overlay**
 
+<img src="https://i.imgur.com/NRKVqfA.png" alt="BuffOverlay" />
+
 This extremely lightweight addon was created for people to quickly and easily see defensive cooldowns active on other players so they can adjust their gameplay accordingly.
 
 
@@ -26,7 +28,7 @@ Now supports the ability to control your overlays completely through the in-game
 
 
 <p align="center">
-    <img src="https://i.imgur.com/F7NJ45O.png" alt="Settings" />
+    <img src="https://i.imgur.com/UjiXKkF.png" alt="Settings" />
 </p>
 
 <p align="center">
