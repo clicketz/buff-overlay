@@ -438,9 +438,10 @@ local function UpdateBorder(frame)
     local borderFrame = frame.borderFrame
     local size = BuffOverlay.db.profile.iconBorderSize
 
-    borderFrame.border = borderFrame.border or CreateFrame("Frame", nil, frame.borderFrame, "NamePlateFullBorderTemplate")
+    borderFrame.border = borderFrame.border or CreateFrame("Frame", nil, frame.borderFrame, "BuffOverlayBorderTemplate")
     borderFrame.border:SetBorderSizes(size, size, size, size)
-    borderFrame.border:SetVertexColor(BuffOverlay.db.profile.iconBorderColor.r, BuffOverlay.db.profile.iconBorderColor.g, BuffOverlay.db.profile.iconBorderColor.b, BuffOverlay.db.profile.iconBorderColor.a)
+    borderFrame.border:SetVertexColor(BuffOverlay.db.profile.iconBorderColor.r, BuffOverlay.db.profile.iconBorderColor.g
+        , BuffOverlay.db.profile.iconBorderColor.b, BuffOverlay.db.profile.iconBorderColor.a)
     borderFrame.border:UpdateSizes()
 
     borderFrame:SetShown(BuffOverlay.db.profile.iconBorder)
@@ -527,10 +528,12 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             local point, relativeTo, relativePoint, xOfs, yOfs = self.overlays[bFrame .. 1]:GetPoint()
             if self.db.profile.growDirection == "HORIZONTAL" then
                 self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint,
-                    -(self.overlays[bFrame .. 1]:GetWidth() / 2) * (overlayNum - 1) + self.db.profile.iconXOff - (((overlayNum - 1) / 2) * self.db.profile.iconSpacing), yOfs)
+                    -(self.overlays[bFrame .. 1]:GetWidth() / 2) * (overlayNum - 1) + self.db.profile.iconXOff -
+                    (((overlayNum - 1) / 2) * self.db.profile.iconSpacing), yOfs)
             elseif self.db.profile.growDirection == "VERTICAL" then
                 self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, xOfs,
-                    -(self.overlays[bFrame .. 1]:GetHeight() / 2) * (overlayNum - 1) + self.db.profile.iconYOff - (((overlayNum - 1) / 2) * self.db.profile.iconSpacing))
+                    -(self.overlays[bFrame .. 1]:GetHeight() / 2) * (overlayNum - 1) + self.db.profile.iconYOff -
+                    (((overlayNum - 1) / 2) * self.db.profile.iconSpacing))
             end
             overlayNum = overlayNum + 1
         else

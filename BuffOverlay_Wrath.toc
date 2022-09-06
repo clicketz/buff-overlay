@@ -9,6 +9,7 @@
 ## DefaultState: Enabled
 ## SavedVariables: BuffOverlayDB
 
+BuffOverlay.xml
 embeds.xml
 
 Spells\spellList_Wrath.lua
