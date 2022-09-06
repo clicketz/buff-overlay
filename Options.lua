@@ -1,5 +1,6 @@
 local GetSpellInfo = GetSpellInfo
 local format = format
+local next = next
 local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
@@ -8,7 +9,7 @@ local function GetSpells(class)
     local spells = {}
     local descr = {}
 
-    if BuffOverlay.db.profile.buffs then
+    if next(BuffOverlay.db.profile.buffs) ~= nil then
         for k, v in pairs(BuffOverlay.db.profile.buffs) do
             -- Check if spell is valid for new db structure. If not, likely from old profile. Reset needed.
             if type(v) ~= "table" or not v.prio or not v.class then
@@ -44,7 +45,6 @@ local function GetSpells(class)
                             end
                         end
                         BuffOverlay:Refresh()
-                        LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
                     end,
                 }
             end
@@ -271,7 +271,7 @@ function BuffOverlay:Options()
                         order = 3,
                         name = "Icon Scale",
                         type = "range",
-                        width = 1.5,
+                        width = 1,
                         desc = "The scale of the icon based on the size of the default icons on raidframe.",
                         min = 0.01,
                         max = 99,
@@ -282,15 +282,26 @@ function BuffOverlay:Options()
                         order = 4,
                         name = "Cooldown Text Scale",
                         type = "range",
-                        width = 1.5,
+                        width = 1,
                         desc = "Scale the icon's cooldown text size.",
                         min = 0.01,
                         max = 10,
                         softMax = 2,
                         step = 0.01,
                     },
-                    iconAnchor = {
+                    iconSpacing = {
                         order = 5,
+                        name = "Icon Spacing",
+                        type = "range",
+                        width = 1,
+                        desc = "Spacing between icons.",
+                        min = 0,
+                        max = 200,
+                        softMax = 20,
+                        step = 1,
+                    },
+                    iconAnchor = {
+                        order = 6,
                         name = "Icon Anchor",
                         type = "select",
                         style = "dropdown",
@@ -309,7 +320,7 @@ function BuffOverlay:Options()
                         },
                     },
                     iconRelativePoint = {
-                        order = 6,
+                        order = 7,
                         name = "Frame Attachment Point",
                         type = "select",
                         style = "dropdown",
@@ -328,7 +339,7 @@ function BuffOverlay:Options()
                         },
                     },
                     growDirection = {
-                        order = 7,
+                        order = 8,
                         name = "Grow Direction",
                         type = "select",
                         style = "dropdown",
@@ -344,7 +355,7 @@ function BuffOverlay:Options()
                         },
                     },
                     iconXOff = {
-                        order = 8,
+                        order = 9,
                         name = "X-Offset",
                         type = "range",
                         width = 1.5,
@@ -354,7 +365,7 @@ function BuffOverlay:Options()
                         step = 1,
                     },
                     iconYOff = {
-                        order = 9,
+                        order = 10,
                         name = "Y-Offset",
                         type = "range",
                         width = 1.5,
@@ -363,15 +374,50 @@ function BuffOverlay:Options()
                         max = 100,
                         step = 1,
                     },
+                    iconBorder = {
+                        order = 11,
+                        name = "Icon Border",
+                        type = "toggle",
+                        width = 0.75,
+                        desc = "Toggle the icon border.",
+                    },
+                    iconBorderColor = {
+                        order = 12,
+                        name = "Icon Border Color",
+                        type = "color",
+                        width = 0.75,
+                        desc = "Change the icon border color.",
+                        hasAlpha = true,
+                        get = function(info)
+                            local t = self.db.profile[info[#info]]
+                            return t.r, t.g, t.b, t.a
+                        end,
+                        set = function(info, r, g, b, a)
+                            local t = self.db.profile[info[#info]]
+                            t.r, t.g, t.b, t.a = r, g, b, a
+                            self:Refresh()
+                        end,
+                    },
+                    iconBorderSize = {
+                        order = 13,
+                        name = "Icon Border Size",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Change the icon border size.",
+                        min = 0,
+                        max = 20,
+                        softMax = 5,
+                        step = 0.01,
+                    },
                     showCooldownSpiral = {
-                        order = 10,
+                        order = 14,
                         name = "Cooldown Spiral",
                         type = "toggle",
                         width = "full",
                         desc = "Toggle showing of the cooldown spiral.",
                     },
                     showCooldownNumbers = {
-                        order = 11,
+                        order = 15,
                         name = "Show Blizzard Cooldown Text",
                         type = "toggle",
                         width = "full",
