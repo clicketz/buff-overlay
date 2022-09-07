@@ -215,9 +215,12 @@ function BuffOverlay:OnInitialize()
     end)
 
     LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_UPDATE", function(event, frame, unit)
+        -- TODO: Use a more performant lookup. The issue is that LGF returns all frames on FRAME_UNIT_UPDATE
+        --  including frames that we don't care about (such as nameplates).
         local found = false
+        local frameName = frame:GetName()
         for _, v in pairs(defaultFrames) do
-            if string.find(frame:GetName(), v) then
+            if string.find(frameName, v) then
                 found = true
                 break
             end
@@ -366,6 +369,7 @@ function BuffOverlay:Test()
 
             if compactFrame:IsShown() and compactFrame:IsVisible() then
                 anchor = compactFrame
+                break
             end
         end
     end
@@ -451,6 +455,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     if frame:IsForbidden() then return end
 
     local bFrame = frame:GetName() .. "BuffOverlay"
+    local frameWidth, frameHeight = frame:GetSize()
     local overlayNum = 1
 
     local UnitBuff = self.test and UnitBuffTest or UnitBuff
@@ -522,23 +527,27 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         if self.priority[overlayNum] then
             CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil)
 
-            local buffSize = math.min(frame:GetHeight(), frame:GetWidth()) * 0.33
+            local buffSize = math.min(frameHeight, frameWidth) * 0.33
             self.overlays[bFrame .. overlayNum]:SetSize(buffSize, buffSize)
 
-            local point, relativeTo, relativePoint, xOfs, yOfs = self.overlays[bFrame .. 1]:GetPoint()
-            if self.db.profile.growDirection == "HORIZONTAL" then
-                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint,
-                    -(self.overlays[bFrame .. 1]:GetWidth() / 2) * (overlayNum - 1) + self.db.profile.iconXOff -
-                    (((overlayNum - 1) / 2) * self.db.profile.iconSpacing), yOfs)
-            elseif self.db.profile.growDirection == "VERTICAL" then
-                self.overlays[bFrame .. 1]:SetPoint(point, relativeTo, relativePoint, xOfs,
-                    -(self.overlays[bFrame .. 1]:GetHeight() / 2) * (overlayNum - 1) + self.db.profile.iconYOff -
-                    (((overlayNum - 1) / 2) * self.db.profile.iconSpacing))
-            end
             overlayNum = overlayNum + 1
         else
             break
         end
+    end
+
+    overlayNum = overlayNum - 1
+
+    if overlayNum > 0 and (self.db.profile.growDirection == "HORIZONTAL" or self.db.profile.growDirection == "VERTICAL") then
+        local overlay1 = self.overlays[bFrame .. 1]
+        local width, height = overlay1:GetSize()
+        local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
+        local x = self.db.profile.growDirection == "HORIZONTAL" and (-(width / 2) * (overlayNum - 1) + self.db.profile.iconXOff -
+        (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or xOfs
+        local y = self.db.profile.growDirection == "VERTICAL" and (-(height / 2) * (overlayNum - 1) + self.db.profile.iconYOff -
+        (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or yOfs
+
+        overlay1:SetPoint(point, relativeTo, relativePoint, x, y)
     end
 end
 
