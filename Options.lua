@@ -379,7 +379,7 @@ function BuffOverlay:Options()
                         name = "Icon Border",
                         type = "toggle",
                         width = 0.75,
-                        desc = "Toggle the icon border.",
+                        desc = "Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present.",
                     },
                     iconBorderColor = {
                         order = 12,
