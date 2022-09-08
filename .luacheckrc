@@ -54,6 +54,4 @@ globals = {
     "next",
     "BuffOverlayBorderTemplateMixin",
     "PixelUtil",
-    "DFPixelUtil",
-    
 }
