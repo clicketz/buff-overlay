@@ -120,4 +120,5 @@ BuffOverlay.defaultSpells = {
     ["Drink"] = { class = "MISC", prio = 70 }, --Drink
     ["Food & Drink"] = { class = "MISC", prio = 70 }, --Food & Drink
     ["Refreshment"] = { class = "MISC", prio = 70 }, --Refreshment
+    [320224] = { class = "MISC", prio = 65 }, -- Podtender
 }
