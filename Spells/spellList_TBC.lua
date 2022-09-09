@@ -81,8 +81,9 @@ BuffOverlay.defaultSpells = {
     [3411] = { class = "WARRIOR", prio = 50 }, --Intervene
 
     -- Other
-    ["Food"] = { class = "MISC", prio = 70 },
-    ["Drink"] = { class = "MISC", prio = 70 },
-    ["Food & Drink"] = { class = "MISC", prio = 70 },
-    ["Refreshment"] = { class = "MISC", prio = 70 },
+    ["Eating/Drinking"] = { class = "MISC", prio = 100 }, -- Food umbrella
+    ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
+    ["Food"] = { parent = "Eating/Drinking" }, --Food
+    ["Drink"] = { parent = "Eating/Drinking" }, --Drink
+    ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
 }

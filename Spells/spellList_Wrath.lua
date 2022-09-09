@@ -98,9 +98,10 @@ BuffOverlay.defaultSpells = {
     [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection
 
     -- Misc
+    ["Eating/Drinking"] = { class = "MISC", prio = 100 }, -- Food umbrella
+    ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
+    ["Food"] = { parent = "Eating/Drinking" }, --Food
+    ["Drink"] = { parent = "Eating/Drinking" }, --Drink
+    ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
     [30456] = { class = "MISC", prio = 10 }, --Nigh-Invulnerability
-    ["Food"] = { class = "MISC", prio = 70 }, --Food
-    ["Drink"] = { class = "MISC", prio = 70 }, --Drink
-    ["Food & Drink"] = { class = "MISC", prio = 70 }, --Food & Drink
-    ["Refreshment"] = { class = "MISC", prio = 70 }, --Refreshment
 }
