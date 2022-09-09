@@ -122,4 +122,5 @@ BuffOverlay.defaultSpells = {
     ["Refreshment"] = { class = "MISC", prio = 70 }, --Refreshment
     [320224] = { class = "MISC", prio = 65 }, -- Podtender
     [363522] = { class = "MISC", prio = 65 }, -- Gladiator's Eternal Aegis
+    [345231] = { class = "MISC", prio = 65 }, -- Gladiator's Emblem
 }
