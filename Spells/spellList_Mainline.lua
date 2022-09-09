@@ -41,6 +41,7 @@ BuffOverlay.defaultSpells = {
     [53480] = { class = "HUNTER", prio = 50 }, --Roar of Sacrifice
     [264735] = { class = "HUNTER", prio = 50 }, --Survival of the Fittest (Pet Ability)
     [281195] = { parent = 264735 }, --Survival of the Fittest (Lone Wolf)
+    [199483] = { class = "HUNTER", prio = 70 }, --Camouflage
 
     -- Mage
     [45438] = { class = "MAGE", prio = 10 }, --Ice Block
