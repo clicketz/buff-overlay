@@ -11,6 +11,7 @@ ignore = {
 globals = {
     "_G",
     "C_Spell",
+    "C_Timer",
     "BuffOverlay",
     "LibStub",
     "GetSpellTexture",
