@@ -442,7 +442,7 @@ local function UpdateBorder(frame)
     local size = BuffOverlay.db.profile.iconBorderSize
     local borderColor = BuffOverlay.db.profile.iconBorderColor
 
-    border:SetBorderSizes(size, size, size, size)
+    border:SetBorderSizes(size, 1, size, 1)
     border:SetVertexColor(borderColor.r, borderColor.g, borderColor.b, borderColor.a)
     border:UpdateSizes()
 
