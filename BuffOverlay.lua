@@ -5,9 +5,11 @@ local C_Spell = C_Spell
 local GetSpellInfo = GetSpellInfo
 local IsAddOnLoaded = IsAddOnLoaded
 local next = next
+local CreateFrame = CreateFrame
 local TestBuffs = {}
 local TestBuffIds = {}
 local test
+local callback = CreateFrame("Frame")
 
 local defaultSettings = {
     profile = {
@@ -214,7 +216,7 @@ function BuffOverlay:OnInitialize()
         end
     end)
 
-    LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_UPDATE", function(event, frame, unit)
+    LGF.RegisterCallback(self, "FRAME_UNIT_UPDATE", function(event, frame, unit)
         -- TODO: Use a more performant lookup. The issue is that LGF returns all frames on FRAME_UNIT_UPDATE
         --  including frames that we don't care about (such as nameplates).
         local found = false
@@ -250,7 +252,7 @@ function BuffOverlay:OnInitialize()
         self:RefreshOverlays(false)
     end)
 
-    LGF.RegisterCallback("BuffOverlay", "FRAME_UNIT_REMOVED", function(event, frame, unit)
+    LGF.RegisterCallback(self, "FRAME_UNIT_REMOVED", function(event, frame, unit)
         self:RefreshOverlays(false)
     end)
 
@@ -334,8 +336,9 @@ function BuffOverlay:Test()
         test.text:SetText("BuffOverlay Test")
         test:SetSize(test.text:GetWidth() + 20, test.text:GetHeight() + 2)
         test:EnableMouse(false)
-        test:Hide()
     end
+
+    test:Hide()
 
     if not self.test then
         if GetNumGroupMembers() == 0 or
@@ -346,7 +349,6 @@ function BuffOverlay:Test()
             end
         end
         self.print("Exiting test mode.")
-        test:Hide()
         self:RefreshOverlays(false)
         return
     end
@@ -357,6 +359,9 @@ function BuffOverlay:Test()
             CompactRaidFrameContainer:Show()
         end
     end
+
+    self.print("Test mode activated.")
+    test:ClearAllPoints()
 
     local anchor = false
     if CompactRaidFrameManager then
@@ -383,17 +388,34 @@ function BuffOverlay:Test()
         end
     end
 
-    self.print("Test mode activated.")
+    if not anchor then
+        LGF.ScanForUnitFrames()
+        LGF.RegisterCallback(callback, "GETFRAME_REFRESH", function()
+            -- NOTE: Timer might be unnecessary here, but it's a failsafe
+            C_Timer.After(0.1, function()
+                local found = false
+                for frame in pairs(self.frames) do
+                    if frame.unit and (UnitGUID("player") == UnitGUID(frame.unit)) and frame:IsShown() and frame:IsVisible() then
+                        test:SetPoint("BOTTOM", frame, "TOP", 0, 0)
+                        found = true
+                        break
+                    end
+                end
 
-    test:ClearAllPoints()
-    if anchor then
-        test:SetPoint("BOTTOM", anchor, "TOP", 0, 0)
+                if not found then
+                    self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
+                    test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+                end
+            end)
+
+            test:Show()
+
+            LGF.UnregisterCallback(callback, "GETFRAME_REFRESH")
+        end)
     else
-        self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
-        test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        test:SetPoint("BOTTOM", anchor, "TOP", 0, 0)
+        test:Show()
     end
-
-    test:Show()
 
     self:RefreshOverlays(false)
 end
@@ -540,10 +562,12 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         local overlay1 = self.overlays[bFrame .. 1]
         local width, height = overlay1:GetSize()
         local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
-        local x = self.db.profile.growDirection == "HORIZONTAL" and (-(width / 2) * (overlayNum - 1) + self.db.profile.iconXOff -
-        (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or xOfs
-        local y = self.db.profile.growDirection == "VERTICAL" and (-(height / 2) * (overlayNum - 1) + self.db.profile.iconYOff -
-        (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or yOfs
+        local x = self.db.profile.growDirection == "HORIZONTAL" and
+            (-(width / 2) * (overlayNum - 1) + self.db.profile.iconXOff -
+                (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or xOfs
+        local y = self.db.profile.growDirection == "VERTICAL" and
+            (-(height / 2) * (overlayNum - 1) + self.db.profile.iconYOff -
+                (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or yOfs
 
         overlay1:SetPoint(point, relativeTo, relativePoint, x, y)
     end
