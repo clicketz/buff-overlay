@@ -115,12 +115,13 @@ BuffOverlay.defaultSpells = {
     [190456] = { class = "WARRIOR", prio = 50 }, --Ignore Pain
 
     -- Misc
-    [185710] = { class = "MISC", prio = 70 }, --Sugar-Crusted Fish Feast
-    ["Food"] = { class = "MISC", prio = 70 }, --Food
-    ["Drink"] = { class = "MISC", prio = 70 }, --Drink
-    ["Food & Drink"] = { class = "MISC", prio = 70 }, --Food & Drink
-    ["Refreshment"] = { class = "MISC", prio = 70 }, --Refreshment
-    [320224] = { class = "MISC", prio = 65 }, -- Podtender
-    [363522] = { class = "MISC", prio = 65 }, -- Gladiator's Eternal Aegis
-    [345231] = { class = "MISC", prio = 65 }, -- Gladiator's Emblem
+    ["Eating/Drinking"] = { class = "MISC", prio = 100 }, -- Food umbrella
+    ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
+    ["Food"] = { parent = "Eating/Drinking" }, --Food
+    ["Drink"] = { parent = "Eating/Drinking" }, --Drink
+    ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
+    [185710] = { parent = "Eating/Drinking" }, --Sugar-Crusted Fish Feast
+    [320224] = { class = "MISC", prio = 70 }, -- Podtender
+    [363522] = { class = "MISC", prio = 70 }, -- Gladiator's Eternal Aegis
+    [345231] = { class = "MISC", prio = 70 }, -- Gladiator's Emblem
 }
