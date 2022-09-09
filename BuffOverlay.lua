@@ -120,6 +120,11 @@ local function ValidateBuffData()
         if (not BuffOverlay.defaultSpells[k]) and (not BuffOverlay.db.global.customBuffs[k]) then
             BuffOverlay.db.profile.buffs[k] = nil
         elseif v.parent then -- child found
+            -- Fix for switching an old parent to a child
+            if v.children then
+                v.children = nil
+            end
+
             local parent = BuffOverlay.db.profile.buffs[v.parent]
 
             if not parent.children then
