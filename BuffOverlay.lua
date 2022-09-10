@@ -422,9 +422,9 @@ function BuffOverlay:Test()
                 else
                     test:SetPoint("BOTTOMLEFT", anc, "TOPLEFT", 0, 2)
                 end
-            end)
 
-            test:Show()
+                test:Show()
+            end)
 
             LGF.UnregisterCallback(callback, "GETFRAME_REFRESH")
         end)
