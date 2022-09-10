@@ -23,6 +23,7 @@ globals = {
     "CompactRaidFrameManager_GetSetting",
     "CreateFrame",
     "UIParent",
+    "ElvUF_Parent", -- ElvUI
     "IsInRaid",
     "IsInInstance",
     "GetNumGroupMembers",
@@ -55,4 +56,5 @@ globals = {
     "next",
     "BuffOverlayBorderTemplateMixin",
     "PixelUtil",
+    "UnitIsPlayer",
 }
