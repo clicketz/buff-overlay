@@ -2,8 +2,16 @@ local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local LGF = LibStub("LibGetFrame-1.0")
 
 local C_Spell = C_Spell
+local C_Timer = C_Timer
 local GetSpellInfo = GetSpellInfo
 local IsAddOnLoaded = IsAddOnLoaded
+local UnitIsPlayer = UnitIsPlayer
+local InCombatLockdown = InCombatLockdown
+local GetNumGroupMembers = GetNumGroupMembers
+local IsInRaid = IsInRaid
+local GetCVarBool = GetCVarBool
+local IsInInstance = IsInInstance
+local select = select
 local next = next
 local CreateFrame = CreateFrame
 local TestBuffs = {}
@@ -323,6 +331,25 @@ function BuffOverlay.print(msg)
     print(newMsg)
 end
 
+local function GetTestAnchor()
+    local anchor = false
+    for frame, info in pairs(BuffOverlay.frames) do
+        if UnitIsPlayer(info.unit) and frame:IsShown() and frame:IsVisible() then
+            anchor = frame
+
+            local parent = frame:GetParent()
+            while parent:GetSize() ~= UIParent:GetSize() and parent ~= ElvUF_Parent and parent:IsShown() and
+                parent:IsVisible() do
+                anchor = parent
+                parent = parent:GetParent()
+            end
+
+            break
+        end
+    end
+    return anchor
+end
+
 function BuffOverlay:Test()
     if InCombatLockdown() then
         self.print("You are in combat.")
@@ -370,27 +397,14 @@ function BuffOverlay:Test()
 
     local anchor = false
     if CompactRaidFrameManager then
-        local pFrames = { _G["CompactRaidFrame1"], _G["CompactPartyFrameMember1"] }
-        for _, compactFrame in pairs(pFrames) do
-            if not self.frames[compactFrame] then
-                self.frames[compactFrame] = self.frames[compactFrame] or {}
-                self.frames[compactFrame].unit = compactFrame.displayedUnit
-            end
-
-            if compactFrame:IsShown() and compactFrame:IsVisible() then
-                anchor = compactFrame
-                break
-            end
+        local container = _G["CompactRaidFrameContainer"]
+        if container and container:IsShown() and container:IsVisible() then
+            anchor = container
         end
     end
 
     if not anchor then
-        for frame in pairs(self.frames) do
-            if frame.unit and (UnitGUID("player") == UnitGUID(frame.unit)) and frame:IsShown() and frame:IsVisible() then
-                anchor = frame
-                break
-            end
-        end
+        anchor = GetTestAnchor()
     end
 
     if not anchor then
@@ -398,18 +412,15 @@ function BuffOverlay:Test()
         LGF.RegisterCallback(callback, "GETFRAME_REFRESH", function()
             -- NOTE: Timer might be unnecessary here, but it's a failsafe
             C_Timer.After(0.1, function()
-                local found = false
-                for frame in pairs(self.frames) do
-                    if frame.unit and (UnitGUID("player") == UnitGUID(frame.unit)) and frame:IsShown() and frame:IsVisible() then
-                        test:SetPoint("BOTTOM", frame, "TOP", 0, 0)
-                        found = true
-                        break
-                    end
-                end
+                local anc = GetTestAnchor()
 
-                if not found then
+                test:ClearAllPoints()
+
+                if not anc then
                     self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
                     test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+                else
+                    test:SetPoint("BOTTOMLEFT", anc, "TOPLEFT", 0, 0)
                 end
             end)
 
@@ -418,7 +429,7 @@ function BuffOverlay:Test()
             LGF.UnregisterCallback(callback, "GETFRAME_REFRESH")
         end)
     else
-        test:SetPoint("BOTTOM", anchor, "TOP", 0, 0)
+        test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 0)
         test:Show()
     end
 
