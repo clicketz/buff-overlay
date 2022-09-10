@@ -420,7 +420,7 @@ function BuffOverlay:Test()
                     self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
                     test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
                 else
-                    test:SetPoint("BOTTOMLEFT", anc, "TOPLEFT", 0, 0)
+                    test:SetPoint("BOTTOMLEFT", anc, "TOPLEFT", 0, 2)
                 end
             end)
 
@@ -429,7 +429,7 @@ function BuffOverlay:Test()
             LGF.UnregisterCallback(callback, "GETFRAME_REFRESH")
         end)
     else
-        test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 0)
+        test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
         test:Show()
     end
 
