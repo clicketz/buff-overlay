@@ -500,32 +500,37 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         local overlay = self.overlays[bFrame .. i]
         if not overlay then
             overlay = _G[bFrame .. i] or CreateFrame("Button", bFrame .. i, frame, "CompactAuraTemplate")
+
+            UpdateBorder(overlay)
+
             overlay.cooldown:SetDrawSwipe(self.db.profile.showCooldownSpiral)
             overlay.cooldown:SetHideCountdownNumbers(not self.db.profile.showCooldownNumbers)
             overlay.cooldown:SetScale(self.db.profile.cooldownNumberScale)
-            overlay.count:SetPoint("BOTTOMRIGHT", bFrame .. i, "BOTTOMRIGHT")
+
             overlay.count:SetScale(0.8)
-            UpdateBorder(overlay)
-            overlay:ClearAllPoints()
-            if i == 1 then
-                overlay:SetPoint(self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint,
-                    self.db.profile.iconXOff, self.db.profile.iconYOff)
-            else
-                if self.db.profile.growDirection == "DOWN" then
-                    overlay:SetPoint("TOP", _G[bFrame .. i - 1], "BOTTOM", 0, -self.db.profile.iconSpacing)
-                elseif self.db.profile.growDirection == "LEFT" then
-                    overlay:SetPoint("BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT", -self.db.profile.iconSpacing, 0)
-                elseif self.db.profile.growDirection == "UP" or self.db.profile.growDirection == "VERTICAL" then
-                    overlay:SetPoint("BOTTOM", _G[bFrame .. i - 1], "TOP", 0, self.db.profile.iconSpacing)
-                else
-                    overlay:SetPoint("BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT", self.db.profile.iconSpacing, 0)
-                end
-            end
+            overlay.count:ClearPointsOffset()
+
             overlay:SetScale(self.db.profile.iconScale)
             overlay:SetAlpha(self.db.profile.iconAlpha)
             overlay:EnableMouse(false)
             overlay:RegisterForClicks()
             overlay:SetFrameLevel(999)
+
+            overlay:ClearAllPoints()
+            if i == 1 then
+                PixelUtil.SetPoint(overlay, self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint,
+                    self.db.profile.iconXOff, self.db.profile.iconYOff)
+            else
+                if self.db.profile.growDirection == "DOWN" then
+                    PixelUtil.SetPoint(overlay, "TOP", _G[bFrame .. i - 1], "BOTTOM", 0, -self.db.profile.iconSpacing)
+                elseif self.db.profile.growDirection == "LEFT" then
+                    PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT", -self.db.profile.iconSpacing, 0)
+                elseif self.db.profile.growDirection == "UP" or self.db.profile.growDirection == "VERTICAL" then
+                    PixelUtil.SetPoint(overlay, "BOTTOM", _G[bFrame .. i - 1], "TOP", 0, self.db.profile.iconSpacing)
+                else
+                    PixelUtil.SetPoint(overlay, "BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT", self.db.profile.iconSpacing, 0)
+                end
+            end
             self.overlays[bFrame .. i] = overlay
         end
         overlay:Hide()
@@ -585,7 +590,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             (-(height / 2) * (overlayNum - 1) + self.db.profile.iconYOff -
                 (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or yOfs
 
-        overlay1:SetPoint(point, relativeTo, relativePoint, x, y)
+        PixelUtil.SetPoint(overlay1, point, relativeTo, relativePoint, x, y)
     end
 end
 
