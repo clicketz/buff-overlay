@@ -492,6 +492,8 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
     local bFrame = frame:GetName() .. "BuffOverlay"
     local frameWidth, frameHeight = frame:GetSize()
+    local overlaySize = math.min(frameHeight, frameWidth) * 0.33
+    local relativeSpacing = overlaySize * (self.db.profile.iconSpacing / self.options.args.layout.args.iconSpacing.softMax)
     local overlayNum = 1
 
     local UnitBuff = self.test and UnitBuffTest or UnitBuff
@@ -510,6 +512,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             overlay.count:SetScale(0.8)
             overlay.count:ClearPointsOffset()
 
+            overlay:SetSize(overlaySize, overlaySize)
             overlay:SetScale(self.db.profile.iconScale)
             overlay:SetAlpha(self.db.profile.iconAlpha)
             overlay:EnableMouse(false)
@@ -517,18 +520,19 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             overlay:SetFrameLevel(999)
 
             overlay:ClearAllPoints()
+
             if i == 1 then
                 PixelUtil.SetPoint(overlay, self.db.profile.iconAnchor, frame, self.db.profile.iconRelativePoint,
                     self.db.profile.iconXOff, self.db.profile.iconYOff)
             else
                 if self.db.profile.growDirection == "DOWN" then
-                    PixelUtil.SetPoint(overlay, "TOP", _G[bFrame .. i - 1], "BOTTOM", 0, -self.db.profile.iconSpacing)
+                    PixelUtil.SetPoint(overlay, "TOP", _G[bFrame .. i - 1], "BOTTOM", 0, -relativeSpacing)
                 elseif self.db.profile.growDirection == "LEFT" then
-                    PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT", -self.db.profile.iconSpacing, 0)
+                    PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT", -relativeSpacing, 0)
                 elseif self.db.profile.growDirection == "UP" or self.db.profile.growDirection == "VERTICAL" then
-                    PixelUtil.SetPoint(overlay, "BOTTOM", _G[bFrame .. i - 1], "TOP", 0, self.db.profile.iconSpacing)
+                    PixelUtil.SetPoint(overlay, "BOTTOM", _G[bFrame .. i - 1], "TOP", 0, relativeSpacing)
                 else
-                    PixelUtil.SetPoint(overlay, "BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT", self.db.profile.iconSpacing, 0)
+                    PixelUtil.SetPoint(overlay, "BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT", relativeSpacing, 0)
                 end
             end
             self.overlays[bFrame .. i] = overlay
@@ -568,8 +572,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         if self.priority[overlayNum] then
             CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil)
 
-            local buffSize = math.min(frameHeight, frameWidth) * 0.33
-            self.overlays[bFrame .. overlayNum]:SetSize(buffSize, buffSize)
+            self.overlays[bFrame .. overlayNum]:SetSize(overlaySize, overlaySize)
 
             overlayNum = overlayNum + 1
         else
@@ -583,12 +586,13 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         local overlay1 = self.overlays[bFrame .. 1]
         local width, height = overlay1:GetSize()
         local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
+
         local x = self.db.profile.growDirection == "HORIZONTAL" and
             (-(width / 2) * (overlayNum - 1) + self.db.profile.iconXOff -
-                (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or xOfs
+                (((overlayNum - 1) / 2) * relativeSpacing)) or xOfs
         local y = self.db.profile.growDirection == "VERTICAL" and
             (-(height / 2) * (overlayNum - 1) + self.db.profile.iconYOff -
-                (((overlayNum - 1) / 2) * self.db.profile.iconSpacing)) or yOfs
+                (((overlayNum - 1) / 2) * relativeSpacing)) or yOfs
 
         PixelUtil.SetPoint(overlay1, point, relativeTo, relativePoint, x, y)
     end
