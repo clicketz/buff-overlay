@@ -75,6 +75,11 @@ local defaultFrames = {
     -- "^CompactParty",
 }
 
+local function round(num, numDecimalPlaces)
+    local mult = 10 ^ (numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
+end
+
 local function InsertTestBuff(spellId)
     local tex = GetSpellTexture(spellId)
     if tex and not TestBuffIds[spellId] then
@@ -226,7 +231,7 @@ function BuffOverlay:OnInitialize()
             -- Init LGF. Will not init automatically, and will also break if init too early
             LGF.GetUnitFrame("player")
         elseif event == "GROUP_ROSTER_UPDATE" then
-            self:RefreshOverlays(false)
+            self:RefreshOverlays()
         end
     end)
 
@@ -263,11 +268,11 @@ function BuffOverlay:OnInitialize()
             end)
             self.frames[frame].hooked = true
         end
-        self:RefreshOverlays(false)
+        self:RefreshOverlays()
     end)
 
     LGF.RegisterCallback(self, "FRAME_UNIT_REMOVED", function(event, frame, unit)
-        self:RefreshOverlays(false)
+        self:RefreshOverlays()
     end)
 
     self:UpdateBuffs()
@@ -308,7 +313,7 @@ function BuffOverlay:RefreshOverlays(full)
     if full then
         for k in pairs(self.overlays) do
             self.overlays[k]:Hide()
-            self.overlays[k] = nil
+            self.overlays[k].needsUpdate = true
         end
     end
 
@@ -382,7 +387,7 @@ function BuffOverlay:Test()
             end
         end
         self.print("Exiting test mode.")
-        self:RefreshOverlays(false)
+        self:RefreshOverlays()
         return
     end
 
@@ -432,7 +437,7 @@ function BuffOverlay:Test()
         test:Show()
     end
 
-    self:RefreshOverlays(false)
+    self:RefreshOverlays()
 end
 
 local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
@@ -490,22 +495,29 @@ local function UpdateBorder(frame)
 end
 
 function BuffOverlay:ApplyOverlay(frame, unit)
-    if frame:IsForbidden() then return end
+    if frame:IsForbidden() or not (frame:IsShown() and frame:IsVisible()) then return end
 
     local bFrame = frame:GetName() .. "BuffOverlay"
     local frameWidth, frameHeight = frame:GetSize()
     local overlaySize = math.min(frameHeight, frameWidth) * 0.33
-    local relativeSpacing = overlaySize * (self.db.profile.iconSpacing / self.options.args.layout.args.iconSpacing.softMax)
+    local relativeSpacing = overlaySize *
+        (self.db.profile.iconSpacing / self.options.args.layout.args.iconSpacing.softMax)
     local overlayNum = 1
 
     local UnitBuff = self.test and UnitBuffTest or UnitBuff
 
     for i = 1, self.db.profile.iconCount do
         local overlay = self.overlays[bFrame .. i]
-        if not overlay then
+
+        if not overlay or overlay.needsUpdate or (round(overlay.spacing, 2) ~= round(relativeSpacing, 2)) or
+            (round(overlay.size, 2) ~= round(overlaySize, 2)) then
             overlay = _G[bFrame .. i] or CreateFrame("Button", bFrame .. i, frame, "CompactAuraTemplate")
 
             UpdateBorder(overlay)
+
+            overlay.spacing = relativeSpacing
+            overlay.size = overlaySize
+            overlay.needsUpdate = false
 
             overlay.cooldown:SetDrawSwipe(self.db.profile.showCooldownSpiral)
             overlay.cooldown:SetHideCountdownNumbers(not self.db.profile.showCooldownNumbers)
@@ -514,9 +526,9 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             overlay.count:SetScale(0.8)
             overlay.count:ClearPointsOffset()
 
-            overlay:SetSize(overlaySize, overlaySize)
             overlay:SetScale(self.db.profile.iconScale)
             overlay:SetAlpha(self.db.profile.iconAlpha)
+            PixelUtil.SetSize(overlay, overlaySize, overlaySize)
             overlay:EnableMouse(false)
             overlay:RegisterForClicks()
             overlay:SetFrameLevel(999)
@@ -573,9 +585,6 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     while overlayNum <= self.db.profile.iconCount do
         if self.priority[overlayNum] then
             CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil)
-
-            self.overlays[bFrame .. overlayNum]:SetSize(overlaySize, overlaySize)
-
             overlayNum = overlayNum + 1
         else
             break
