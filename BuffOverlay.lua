@@ -513,8 +513,6 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             (round(overlay.size, 2) ~= round(overlaySize, 2)) then
             overlay = _G[bFrame .. i] or CreateFrame("Button", bFrame .. i, frame, "CompactAuraTemplate")
 
-            UpdateBorder(overlay)
-
             overlay.spacing = relativeSpacing
             overlay.size = overlaySize
             overlay.needsUpdate = false
@@ -532,6 +530,8 @@ function BuffOverlay:ApplyOverlay(frame, unit)
             overlay:EnableMouse(false)
             overlay:RegisterForClicks()
             overlay:SetFrameLevel(999)
+
+            UpdateBorder(overlay)
 
             overlay:ClearAllPoints()
 
