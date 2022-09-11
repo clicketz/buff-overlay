@@ -414,8 +414,6 @@ function BuffOverlay:Test()
             C_Timer.After(0.1, function()
                 local anc = GetTestAnchor()
 
-                test:ClearAllPoints()
-
                 if not anc then
                     self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
                     test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
