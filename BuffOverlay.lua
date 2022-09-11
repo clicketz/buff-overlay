@@ -41,7 +41,7 @@ local defaultSettings = {
             b = 0,
             a = 1,
         },
-        iconBorderSize = 0.75,
+        iconBorderSize = 1,
         welcomeMessage = true,
         buffs = {},
     },
@@ -476,10 +476,13 @@ local function UpdateBorder(frame)
     end
 
     local border = frame.border
-    local size = BuffOverlay.db.profile.iconBorderSize
+    local size = BuffOverlay.db.profile.iconBorderSize - 1
     local borderColor = BuffOverlay.db.profile.iconBorderColor
 
-    border:SetBorderSizes(size, 1, size, 1)
+    local pixelFactor = PixelUtil.GetPixelToUIUnitFactor()
+    local pixelSize = (pixelFactor / 2) + (pixelFactor * size)
+
+    border:SetBorderSizes(pixelSize, 1, pixelSize, 1)
     border:SetVertexColor(borderColor.r, borderColor.g, borderColor.b, borderColor.a)
     border:UpdateSizes()
 
