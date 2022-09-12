@@ -6,13 +6,13 @@ local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
 
+local spellDescriptions = {}
 local customIcons = {
     ["Eating/Drinking"] = 134062,
 }
 
 local function GetSpells(class)
     local spells = {}
-    local descr = {}
 
     if next(BuffOverlay.db.profile.buffs) ~= nil then
         for k, v in pairs(BuffOverlay.db.profile.buffs) do
@@ -35,14 +35,14 @@ local function GetSpells(class)
                 if spellName then
                     local s = Spell:CreateFromSpellID(k)
                     s:ContinueOnSpellLoad(function()
-                        descr[k] = s:GetSpellDescription()
+                        spellDescriptions[k] = s:GetSpellDescription()
                     end)
                 end
 
                 spells[tostring(k)] = {
                     name = formattedName,
                     type = "toggle",
-                    desc = descr[k] or "",
+                    desc = spellDescriptions[k] or "",
                     width = "full",
                     get = function()
                         return BuffOverlay.db.profile.buffs[k].enabled or false
