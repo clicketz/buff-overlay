@@ -57,4 +57,5 @@ globals = {
     "BuffOverlayBorderTemplateMixin",
     "PixelUtil",
     "UnitIsPlayer",
+    "wipe",
 }
