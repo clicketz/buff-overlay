@@ -202,7 +202,7 @@ end
 
 function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 590, 520)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 590, 570)
 
     if not self.registered then
         self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
