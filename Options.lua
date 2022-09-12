@@ -1,6 +1,7 @@
 local GetSpellInfo = GetSpellInfo
 local format = format
 local next = next
+local wipe = wipe
 local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
@@ -13,7 +14,7 @@ local function GetSpells(class)
         for k, v in pairs(BuffOverlay.db.profile.buffs) do
             -- Check if spell is valid for new db structure. If not, likely from old profile. Reset needed.
             if type(v) ~= "table" or not v.prio or not v.class then
-                BuffOverlay.db.profile.buffs = nil
+                wipe(BuffOverlay.db.profile.buffs)
                 BuffOverlay.print("Corrupted buff database found. This is likely due to updating from an older version of Buff Overlay. Resetting buff database to default. Your other settings (including custom buffs) will be preserved.")
                 return
             end
