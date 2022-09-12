@@ -67,7 +67,7 @@ BuffOverlay.defaultSpells = {
     [642] = { class = "PALADIN", prio = 10 }, --Divine Shield
     [228050] = { parent = 642 }, --Divine Shield (Protection)
     [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
-    [6940] = { class = "PALADIN", prio = 40 }, --Blessing of Sacrifice
+    [6940] = { class = "PALADIN", prio = 50 }, --Blessing of Sacrifice
     [199448] = { parent = 6940 }, --Blessing of Ultimate Sacrifice
     [498] = { class = "PALADIN", prio = 50 }, --Divine Protection
     [31850] = { class = "PALADIN", prio = 50 }, --Ardent Defender
@@ -115,7 +115,7 @@ BuffOverlay.defaultSpells = {
     [190456] = { class = "WARRIOR", prio = 50 }, --Ignore Pain
 
     -- Misc
-    ["Eating/Drinking"] = { class = "MISC", prio = 100 }, -- Food umbrella
+    ["Eating/Drinking"] = { class = "MISC", prio = 90 }, -- Food umbrella
     ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
     ["Food"] = { parent = "Eating/Drinking" }, --Food
     ["Drink"] = { parent = "Eating/Drinking" }, --Drink
