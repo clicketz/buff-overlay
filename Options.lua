@@ -6,6 +6,10 @@ local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
 
+local customIcons = {
+    ["Eating/Drinking"] = 134062,
+}
+
 local function GetSpells(class)
     local spells = {}
     local descr = {}
@@ -21,7 +25,12 @@ local function GetSpells(class)
 
             if not v.parent and (v.class == class) then
                 local spellName, _, icon = GetSpellInfo(k)
-                local formattedName = spellName and format("|T%s:0|t %s", icon, spellName) or tostring(k)
+
+                if customIcons[k] then
+                    icon = customIcons[k]
+                end
+
+                local formattedName = spellName and format("|T%s:0|t %s", icon, spellName) or icon and format("|T%s:0|t %s", icon, k) or tostring(k)
 
                 if spellName then
                     local s = Spell:CreateFromSpellID(k)
