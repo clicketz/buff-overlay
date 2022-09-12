@@ -91,9 +91,10 @@ local customSpellInfo = {
     spellId = {
         order = 1,
         type = "description",
+        width = "full",
         name = function(info)
             local spellId = info[#info - 1]
-            return "|cffffd700 " .. "Spell ID" .. "|r " .. spellId .. "\n"
+            return "|cffffd700 " .. "Spell ID" .. "|r " .. spellId .. "\n\n"
         end,
     },
     delete = {
@@ -101,6 +102,7 @@ local customSpellInfo = {
         type = "execute",
         name = "Delete",
         confirm = true,
+        width = 1,
         confirmText = "Are you sure you want to delete this spell?",
         func = function(info)
             local spellId = info[#info - 1]
@@ -113,8 +115,13 @@ local customSpellInfo = {
             BuffOverlay.options.args.spells.args = BuffOverlay_GetClasses()
         end,
     },
-    class = {
+    header1 = {
         order = 3,
+        name = "",
+        type = "header",
+    },
+    class = {
+        order = 4,
         type = "select",
         name = "Class",
         values = function()
@@ -134,8 +141,14 @@ local customSpellInfo = {
             BuffOverlay.options.args.spells.args = BuffOverlay_GetClasses()
         end,
     },
+    space = {
+        order = 5,
+        name = "\n\n",
+        type = "description",
+        width = "full",
+    },
     prio = {
-        order = 4,
+        order = 6,
         type = "range",
         name = "Priority (Lower is Higher Prio)",
         min = 1,
@@ -262,7 +275,7 @@ function BuffOverlay:Options()
                         type = "range",
                         width = 1.5,
                         desc = "Number of icons you want to display (per frame).",
-                        min = 0,
+                        min = 1,
                         max = 40,
                         softMax = 10,
                         step = 1,
@@ -310,8 +323,77 @@ function BuffOverlay:Options()
                         softMax = 20,
                         step = 1,
                     },
-                    iconAnchor = {
+                    iconBorder = {
                         order = 6,
+                        name = "Icon Border",
+                        type = "toggle",
+                        width = 0.75,
+                        desc = "Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present.",
+                    },
+                    iconBorderColor = {
+                        order = 7,
+                        name = "Icon Border Color",
+                        type = "color",
+                        width = 0.75,
+                        desc = "Change the icon border color.",
+                        hasAlpha = true,
+                        disabled = function() return not self.db.profile.iconBorder end,
+                        get = function(info)
+                            local t = self.db.profile[info[#info]]
+                            return t.r, t.g, t.b, t.a
+                        end,
+                        set = function(info, r, g, b, a)
+                            local t = self.db.profile[info[#info]]
+                            t.r, t.g, t.b, t.a = r, g, b, a
+                            self:Refresh()
+                        end,
+                    },
+                    iconBorderSize = {
+                        order = 8,
+                        name = "Icon Border Size",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Change the icon border size (in pixels).",
+                        min = 1,
+                        max = 10,
+                        softMax = 5,
+                        step = 1,
+                        disabled = function() return not self.db.profile.iconBorder end,
+                    },
+                    showCooldownSpiral = {
+                        order = 9,
+                        name = "Cooldown Spiral",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the cooldown spiral.",
+                    },
+                    showCooldownNumbers = {
+                        order = 10,
+                        name = "Show Blizzard Cooldown Text",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the cooldown text. Note that you must also enable the 'Show Numbers for Cooldown' in Blizzard settings."
+                    },
+                    space2 = {
+                        order = 11,
+                        name = "\n",
+                        type = "description",
+                        width = "full",
+                    },
+                    header2 = {
+                        order = 12,
+                        name = "Anchoring",
+                        type = "header",
+                        width = "full",
+                    },
+                    space3 = {
+                        order = 13,
+                        name = "\n",
+                        type = "description",
+                        width = "full",
+                    },
+                    iconAnchor = {
+                        order = 14,
                         name = "Icon Anchor",
                         type = "select",
                         style = "dropdown",
@@ -330,7 +412,7 @@ function BuffOverlay:Options()
                         },
                     },
                     iconRelativePoint = {
-                        order = 7,
+                        order = 15,
                         name = "Frame Attachment Point",
                         type = "select",
                         style = "dropdown",
@@ -349,7 +431,7 @@ function BuffOverlay:Options()
                         },
                     },
                     growDirection = {
-                        order = 8,
+                        order = 16,
                         name = "Grow Direction",
                         type = "select",
                         style = "dropdown",
@@ -365,7 +447,7 @@ function BuffOverlay:Options()
                         },
                     },
                     iconXOff = {
-                        order = 9,
+                        order = 17,
                         name = "X-Offset",
                         type = "range",
                         width = 1.5,
@@ -375,7 +457,7 @@ function BuffOverlay:Options()
                         step = 1,
                     },
                     iconYOff = {
-                        order = 10,
+                        order = 18,
                         name = "Y-Offset",
                         type = "range",
                         width = 1.5,
@@ -383,55 +465,6 @@ function BuffOverlay:Options()
                         min = -100,
                         max = 100,
                         step = 1,
-                    },
-                    iconBorder = {
-                        order = 11,
-                        name = "Icon Border",
-                        type = "toggle",
-                        width = 0.75,
-                        desc = "Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present.",
-                    },
-                    iconBorderColor = {
-                        order = 12,
-                        name = "Icon Border Color",
-                        type = "color",
-                        width = 0.75,
-                        desc = "Change the icon border color.",
-                        hasAlpha = true,
-                        get = function(info)
-                            local t = self.db.profile[info[#info]]
-                            return t.r, t.g, t.b, t.a
-                        end,
-                        set = function(info, r, g, b, a)
-                            local t = self.db.profile[info[#info]]
-                            t.r, t.g, t.b, t.a = r, g, b, a
-                            self:Refresh()
-                        end,
-                    },
-                    iconBorderSize = {
-                        order = 13,
-                        name = "Icon Border Size",
-                        type = "range",
-                        width = 1.5,
-                        desc = "Change the icon border size (in pixels).",
-                        min = 1,
-                        max = 10,
-                        softMax = 5,
-                        step = 1,
-                    },
-                    showCooldownSpiral = {
-                        order = 14,
-                        name = "Cooldown Spiral",
-                        type = "toggle",
-                        width = "full",
-                        desc = "Toggle showing of the cooldown spiral.",
-                    },
-                    showCooldownNumbers = {
-                        order = 15,
-                        name = "Show Blizzard Cooldown Text",
-                        type = "toggle",
-                        width = "full",
-                        desc = "Toggle showing of the cooldown text. Note that you must also enable the 'Show Numbers for Cooldown' in Blizzard settings."
                     },
                 }
             },
