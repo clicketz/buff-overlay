@@ -10,6 +10,8 @@ ignore = {
 }
 globals = {
     "_G",
+    "YES", -- localization for "Yes"
+    "NO", -- localization for "No"
     "C_Spell",
     "C_Timer",
     "BuffOverlay",
@@ -20,6 +22,8 @@ globals = {
     "InCombatLockdown",
     "SlashCmdList",
     "GetCVarBool",
+    "GetCVar",
+    "SetCVar",
     "CompactRaidFrameManager_GetSetting",
     "CreateFrame",
     "UIParent",
