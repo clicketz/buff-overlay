@@ -514,7 +514,13 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
             overlay.spacing = relativeSpacing
             overlay.size = overlaySize
-            overlay.needsUpdate = false
+
+            if overlay.size <= 0 then
+                overlay.needsUpdate = true
+                return
+            else
+                overlay.needsUpdate = false
+            end
 
             overlay.cooldown:SetDrawSwipe(self.db.profile.showCooldownSpiral)
             overlay.cooldown:SetHideCountdownNumbers(not self.db.profile.showCooldownNumbers)
