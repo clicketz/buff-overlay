@@ -125,7 +125,8 @@ function BuffOverlay:UpdateCustomBuffs()
 
         InsertTestBuff(spellId)
     end
-    self.options.args.spells.args = BuffOverlay_GetClasses()
+    self:UpdateSpellOptionsTable()
+    self:RefreshOverlays()
 end
 
 local function ValidateBuffData()
@@ -299,8 +300,6 @@ function BuffOverlay:OnInitialize()
             LibStub("AceConfigDialog-3.0"):Open("BuffOverlay")
         end
     end
-
-    self:Refresh()
 end
 
 function BuffOverlay:RefreshOverlays(full)
@@ -321,14 +320,10 @@ function BuffOverlay:RefreshOverlays(full)
     end
 end
 
-function BuffOverlay:Refresh()
-    self:RefreshOverlays(true)
-    self.options.args.spells.args = BuffOverlay_GetClasses()
-end
-
 function BuffOverlay:FullRefresh()
     self:UpdateBuffs()
-    self:Refresh()
+    self:RefreshOverlays(true)
+    self:UpdateSpellOptionsTable()
 end
 
 function BuffOverlay.print(msg)
