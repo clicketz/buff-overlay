@@ -1,4 +1,6 @@
 local GetSpellInfo = GetSpellInfo
+local GetCVarBool = GetCVarBool
+local SetCVar = SetCVar
 local format = format
 local next = next
 local wipe = wipe
@@ -30,7 +32,8 @@ local function GetSpells(class)
                     icon = customIcons[k]
                 end
 
-                local formattedName = spellName and format("|T%s:0|t %s", icon, spellName) or icon and format("|T%s:0|t %s", icon, k) or tostring(k)
+                local formattedName = spellName and format("|T%s:0|t %s", icon, spellName) or
+                    icon and format("|T%s:0|t %s", icon, k) or tostring(k)
 
                 if spellName then
                     local s = Spell:CreateFromSpellID(k)
@@ -206,8 +209,8 @@ local customSpells = {
 }
 
 function BuffOverlay:Options()
-    for spellId in pairs(BuffOverlay.db.global.customBuffs) do
-        if not BuffOverlay.defaultSpells[spellId] then
+    for spellId in pairs(self.db.global.customBuffs) do
+        if not self.defaultSpells[spellId] then
             customSpells[tostring(spellId)] = {
                 name = GetSpellInfo(spellId),
                 type = "group",
@@ -311,6 +314,7 @@ function BuffOverlay:Options()
                         max = 10,
                         softMax = 2,
                         step = 0.01,
+                        disabled = function() return not self.db.profile.showCooldownNumbers end,
                     },
                     iconSpacing = {
                         order = 5,
@@ -372,7 +376,27 @@ function BuffOverlay:Options()
                         name = "Show Blizzard Cooldown Text",
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing of the cooldown text. Note that you must also enable the 'Show Numbers for Cooldown' in Blizzard settings."
+                        desc = "Toggle showing of the cooldown text. Note that this will enable Blizzard cooldown text in settings. You'll need to disable it manually.",
+                        get = function(info)
+                            if not GetCVarBool("countdownForCooldowns") and self.db.profile[info[#info]] then
+                                self.db.profile[info[#info]] = false
+                                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+                            end
+                            return self.db.profile[info[#info]]
+                        end,
+                        set = function(info, val)
+                            if InCombatLockdown() then
+                                self.print("Cannot change settings in combat.")
+                                return
+                            end
+
+                            if val and not GetCVarBool("countdownForCooldowns") then
+                                LibStub("AceConfigDialog-3.0"):Open("confirmPopup")
+                            else
+                                self.db.profile[info[#info]] = val
+                                self:Refresh()
+                            end
+                        end,
                     },
                     space2 = {
                         order = 11,
@@ -483,20 +507,67 @@ function BuffOverlay:Options()
                     local option = info[#info]
                     local spellId = info[#info - 1]
                     spellId = tonumber(spellId)
-                    BuffOverlay.db.global.customBuffs[spellId][option] = state
-                    BuffOverlay:UpdateCustomBuffs()
+                    self.db.global.customBuffs[spellId][option] = state
+                    self:UpdateCustomBuffs()
                 end,
                 get = function(info)
                     local option = info[#info]
                     local spellId = info[#info - 1]
                     spellId = tonumber(spellId)
                     if not spellId then return end
-                    return BuffOverlay.db.global.customBuffs[spellId][option]
+                    return self.db.global.customBuffs[spellId][option]
                 end,
             },
-        }
+        },
     }
 
+    -- TODO: Convert to a different dialog library.
+    self.blizzardCooldownTextSetting = {
+        order = 1,
+        type = "group",
+        name = "Confirm",
+        args = {
+            description = {
+                order = 1,
+                type = "description",
+                name = "Blizzard cooldown text is currently disabled in Blizzard settings.\n\nIn order for \"|cff83b2ffShow Blizzard Cooldown Text|r\" setting to work in Buff Overlay, you need to enable this Blizzard option.\n\nYou can find this option located in Blizzard settings at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nDo you want to enable it now?\n\n\n",
+                fontSize = "medium",
+                width = "full",
+            },
+            confirm = {
+                order = 2,
+                type = "execute",
+                name = YES,
+                func = function()
+                    SetCVar("countdownForCooldowns", true)
+                    self.db.profile.showCooldownNumbers = true
+                    self:Refresh()
+
+                    LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+                    LibStub("AceConfigDialog-3.0"):Close("confirmPopup")
+                end,
+            },
+            cancel = {
+                order = 3,
+                type = "execute",
+                name = NO,
+                func = function()
+                    self.db.profile.showCooldownNumbers = false
+                    self:Refresh()
+
+                    LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+                    LibStub("AceConfigDialog-3.0"):Close("confirmPopup")
+                end,
+            },
+        },
+    }
+
+    -- Dialog for changing Blizzard cooldown text settings.
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("confirmPopup", self.blizzardCooldownTextSetting)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("confirmPopup", 390, 270)
+
+    -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 590, 570)
 end
