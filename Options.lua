@@ -552,10 +552,6 @@ function BuffOverlay:Options()
                 type = "execute",
                 name = NO,
                 func = function()
-                    self.db.profile.showCooldownNumbers = false
-                    self:Refresh()
-
-                    LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
                     LibStub("AceConfigDialog-3.0"):Close("confirmPopup")
                 end,
             },
