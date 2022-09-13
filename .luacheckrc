@@ -39,7 +39,6 @@ globals = {
     "CooldownFrame_Clear",
     "hooksecurefunc",
     "GetAddOnMetadata",
-    "BuffOverlay_GetClasses",
     "CLASS_ICON_TCOORDS",
     "CLASS_SORT_ORDER",
     "MISC",
