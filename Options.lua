@@ -1,4 +1,5 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
+local LibDialog = LibStub("LibDialog-1.0")
 
 local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
@@ -14,6 +15,32 @@ local spellDescriptions = {}
 local customIcons = {
     ["Eating/Drinking"] = 134062,
 }
+
+LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
+    text = "Blizzard cooldown text is currently disabled in Blizzard settings.\n\nIn order for \"|cff83b2ffShow Blizzard Cooldown Text|r\" setting to work in Buff Overlay, you need to enable this Blizzard option.\n\nYou can find this option located in Blizzard settings at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nDo you want to enable it now?\n\n\n",
+    buttons = {
+        {
+            text = YES,
+            on_click = function()
+                SetCVar("countdownForCooldowns", true)
+                BuffOverlay.db.profile.showCooldownNumbers = true
+                BuffOverlay:RefreshOverlays(true)
+
+                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+            end,
+        },
+        {
+            text = NO,
+        },
+    },
+    no_close_button = true,
+    show_while_dead = true,
+    hide_on_escape = true,
+    on_show = function(self)
+        self:SetFrameStrata("FULLSCREEN_DIALOG")
+        self:Raise()
+    end,
+})
 
 local function GetSpells(class)
     local spells = {}
@@ -400,7 +427,7 @@ function BuffOverlay:Options()
                             end
 
                             if val and not GetCVarBool("countdownForCooldowns") then
-                                LibStub("AceConfigDialog-3.0"):Open("confirmPopup")
+                                LibDialog:Spawn("ConfirmEnableBlizzardCooldownText")
                             else
                                 self.db.profile[info[#info]] = val
                                 self:RefreshOverlays(true)
@@ -555,47 +582,6 @@ function BuffOverlay:Options()
             },
         },
     }
-
-    -- TODO: Convert to a different dialog library.
-    self.blizzardCooldownTextSetting = {
-        order = 1,
-        type = "group",
-        name = "Confirm",
-        args = {
-            description = {
-                order = 1,
-                type = "description",
-                name = "Blizzard cooldown text is currently disabled in Blizzard settings.\n\nIn order for \"|cff83b2ffShow Blizzard Cooldown Text|r\" setting to work in Buff Overlay, you need to enable this Blizzard option.\n\nYou can find this option located in Blizzard settings at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nDo you want to enable it now?\n\n\n",
-                fontSize = "medium",
-                width = "full",
-            },
-            confirm = {
-                order = 2,
-                type = "execute",
-                name = YES,
-                func = function()
-                    SetCVar("countdownForCooldowns", true)
-                    self.db.profile.showCooldownNumbers = true
-                    self:RefreshOverlays(true)
-
-                    LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
-                    LibStub("AceConfigDialog-3.0"):Close("confirmPopup")
-                end,
-            },
-            cancel = {
-                order = 3,
-                type = "execute",
-                name = NO,
-                func = function()
-                    LibStub("AceConfigDialog-3.0"):Close("confirmPopup")
-                end,
-            },
-        },
-    }
-
-    -- Dialog for changing Blizzard cooldown text settings.
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("confirmPopup", self.blizzardCooldownTextSetting)
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize("confirmPopup", 390, 270)
 
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
