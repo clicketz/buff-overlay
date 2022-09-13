@@ -1,3 +1,5 @@
+local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
+
 local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
 local SetCVar = SetCVar
@@ -57,7 +59,7 @@ local function GetSpells(class)
                                 BuffOverlay.db.profile.buffs[child].enabled = value
                             end
                         end
-                        BuffOverlay:Refresh()
+                        BuffOverlay:RefreshOverlays()
                     end,
                 }
             end
@@ -66,7 +68,7 @@ local function GetSpells(class)
     return spells
 end
 
-function BuffOverlay_GetClasses()
+local function GetClasses()
     local classes = {}
     classes["MISC"] = {
         name = "Miscellaneous",
@@ -88,6 +90,12 @@ function BuffOverlay_GetClasses()
         }
     end
     return classes
+end
+
+function BuffOverlay:UpdateSpellOptionsTable()
+    for k, v in pairs(GetClasses()) do
+        self.options.args.spells.args[k] = v
+    end
 end
 
 local customSpellInfo = {
@@ -115,7 +123,8 @@ local customSpellInfo = {
                 BuffOverlay.db.profile.buffs[spellId] = nil
             end
             info.options.args.customSpells.args[info[#info - 1]] = nil
-            BuffOverlay.options.args.spells.args = BuffOverlay_GetClasses()
+            BuffOverlay:UpdateSpellOptionsTable()
+            BuffOverlay:RefreshOverlays()
         end,
     },
     header1 = {
@@ -141,7 +150,7 @@ local customSpellInfo = {
             spellId = tonumber(spellId)
             BuffOverlay.db.global.customBuffs[spellId][option] = state
             BuffOverlay.db.profile.buffs[spellId][option] = state
-            BuffOverlay.options.args.spells.args = BuffOverlay_GetClasses()
+            BuffOverlay:UpdateSpellOptionsTable()
         end,
     },
     space = {
@@ -163,6 +172,7 @@ local customSpellInfo = {
             spellId = tonumber(spellId)
             BuffOverlay.db.global.customBuffs[spellId][option] = state
             BuffOverlay.db.profile.buffs[spellId][option] = state
+            BuffOverlay:RefreshOverlays()
         end,
         get = function(info)
             local option = info[#info]
@@ -255,7 +265,6 @@ function BuffOverlay:Options()
                 get = function(info) return self.db.profile[info[#info]] end,
                 set = function(info, val)
                     self.db.profile[info[#info]] = val
-                    self:Refresh()
                 end,
             },
             layout = {
@@ -269,7 +278,7 @@ function BuffOverlay:Options()
                         return
                     end
                     self.db.profile[info[#info]] = val
-                    self:Refresh()
+                    self:RefreshOverlays(true)
                 end,
                 args = {
                     iconCount = {
@@ -349,7 +358,7 @@ function BuffOverlay:Options()
                         set = function(info, r, g, b, a)
                             local t = self.db.profile[info[#info]]
                             t.r, t.g, t.b, t.a = r, g, b, a
-                            self:Refresh()
+                            self:RefreshOverlays(true)
                         end,
                     },
                     iconBorderSize = {
@@ -394,7 +403,7 @@ function BuffOverlay:Options()
                                 LibStub("AceConfigDialog-3.0"):Open("confirmPopup")
                             else
                                 self.db.profile[info[#info]] = val
-                                self:Refresh()
+                                self:RefreshOverlays(true)
                             end
                         end,
                     },
@@ -496,20 +505,46 @@ function BuffOverlay:Options()
                 order = 6,
                 name = "Spells",
                 type = "group",
-                args = BuffOverlay_GetClasses(),
+                args = {
+                    enableAll = {
+                        order = 1,
+                        name = "Enable All",
+                        type = "execute",
+                        width = 0.75,
+                        desc = "Enable all spells.",
+                        func = function()
+                            for k in pairs(self.db.profile.buffs) do
+                                self.db.profile.buffs[k].enabled = true
+                            end
+                            self:RefreshOverlays()
+                        end,
+                    },
+                    disableAll = {
+                        order = 2,
+                        name = "Disable All",
+                        type = "execute",
+                        width = 0.75,
+                        desc = "Disable all spells.",
+                        func = function()
+                            for k in pairs(self.db.profile.buffs) do
+                                self.db.profile.buffs[k].enabled = false
+                            end
+                            self:RefreshOverlays()
+                        end,
+                    },
+                    space4 = {
+                        order = 3,
+                        name = "\n",
+                        type = "description",
+                        width = "full",
+                    },
+                },
             },
             customSpells = {
                 order = 7,
                 name = "Custom Spells",
                 type = "group",
                 args = customSpells,
-                set = function(info, state)
-                    local option = info[#info]
-                    local spellId = info[#info - 1]
-                    spellId = tonumber(spellId)
-                    self.db.global.customBuffs[spellId][option] = state
-                    self:UpdateCustomBuffs()
-                end,
                 get = function(info)
                     local option = info[#info]
                     local spellId = info[#info - 1]
@@ -541,7 +576,7 @@ function BuffOverlay:Options()
                 func = function()
                     SetCVar("countdownForCooldowns", true)
                     self.db.profile.showCooldownNumbers = true
-                    self:Refresh()
+                    self:RefreshOverlays(true)
 
                     LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
                     LibStub("AceConfigDialog-3.0"):Close("confirmPopup")
