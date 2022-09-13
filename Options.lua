@@ -312,7 +312,7 @@ function BuffOverlay:Options()
                         desc = "Scale the icon's cooldown text size.",
                         min = 0.01,
                         max = 10,
-                        softMax = 2,
+                        softMax = 3,
                         step = 0.01,
                         disabled = function() return not self.db.profile.showCooldownNumbers end,
                     },

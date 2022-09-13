@@ -31,7 +31,7 @@ local defaultSettings = {
         growDirection = "HORIZONTAL",
         showCooldownSpiral = true,
         showCooldownNumbers = false,
-        cooldownNumberScale = 0.5,
+        cooldownNumberScale = 1,
         iconXOff = 0,
         iconYOff = 0,
         iconBorder = true,
@@ -518,7 +518,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
             overlay.cooldown:SetDrawSwipe(self.db.profile.showCooldownSpiral)
             overlay.cooldown:SetHideCountdownNumbers(not self.db.profile.showCooldownNumbers)
-            overlay.cooldown:SetScale(self.db.profile.cooldownNumberScale)
+            overlay.cooldown:SetScale(self.db.profile.cooldownNumberScale * overlay.size / 36)
 
             overlay.count:SetScale(0.8)
             overlay.count:ClearPointsOffset()
