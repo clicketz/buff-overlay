@@ -3,6 +3,7 @@ local LibDialog = LibStub("LibDialog-1.0")
 
 local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
+local GetSpellTexture = GetSpellTexture
 local SetCVar = SetCVar
 local format = format
 local next = next
