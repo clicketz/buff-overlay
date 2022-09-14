@@ -5,13 +5,19 @@ local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
 local GetSpellTexture = GetSpellTexture
 local SetCVar = SetCVar
+local InCombatLockdown = InCombatLockdown
 local format = format
 local next = next
 local wipe = wipe
+local pairs = pairs
+local type = type
 local tonumber = tonumber
+local tostring = tostring
 local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
+local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
+local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 
 local spellDescriptions = {}
 
