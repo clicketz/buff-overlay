@@ -255,11 +255,9 @@ local customSpells = {
         type = "input",
         set = function(_, state)
             local spellId = tonumber(state)
-            local name = GetSpellInfo(spellId)
-            local custom = BuffOverlay.db.global.customBuffs
-            if custom[spellId] then return end
+            local name, _, icon = GetSpellInfo(spellId)
 
-            if spellId and name then
+            if name then
                 if BuffOverlay:InsertBuff(spellId) then
                     BuffOverlay.options.args.customSpells.args[tostring(spellId)] = {
                         name = name,
@@ -269,7 +267,11 @@ local customSpells = {
                         icon = GetSpellTexture(spellId),
                     }
                     BuffOverlay:UpdateCustomBuffs()
+                else
+                    BuffOverlay.print(format("|T%s:0|t %s is already being tracked.", icon or 134400, name))
                 end
+            else
+                BuffOverlay.print("Invalid Spell ID")
             end
         end,
     }
