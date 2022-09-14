@@ -297,7 +297,7 @@ function BuffOverlay:OnInitialize()
             self.print("Command List")
             print("|cff9b6ef3/buffoverlay|r or |cff9b6ef3/bo|r: Opens options panel.")
             print("|cff9b6ef3/bo|r |cffffe981test|r: Shows test icons on all visible raid/party frames.")
-            print("|cff9b6ef3/bo|r |cffffe981reset|r: Resets current profile to default values.")
+            print("|cff9b6ef3/bo|r |cffffe981reset|r: Resets current profile to default settings. This does not remove any custom buffs.")
         elseif msg == "test" then
             self:Test()
         elseif msg == "reset" or msg == "default" then
