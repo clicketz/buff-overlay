@@ -60,7 +60,7 @@ local deleteSpellDelegate = {
 }
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
-    text = "Blizzard cooldown text is currently disabled in Blizzard settings.\n\nIn order for \"|cff83b2ffShow Blizzard Cooldown Text|r\" setting to work in Buff Overlay, you need to enable this Blizzard option.\n\nYou can find this option located in Blizzard settings at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nDo you want to enable it now?\n\n\n",
+    text = "Blizzard cooldown text is currently disabled in Blizzard settings.\n\nIn order for the |cff83b2ffShow Blizzard Cooldown Text|r setting to work in BuffOverlay, this Blizzard setting needs to be enabled. You can find this setting located at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nWould you like BuffOverlay to enable this setting now?\n\n",
     buttons = {
         {
             text = YES,
@@ -373,7 +373,7 @@ function BuffOverlay:Options()
                         name = "Icon Scale",
                         type = "range",
                         width = 1,
-                        desc = "The scale of the icon based on the size of the default icons on raidframe.",
+                        desc = "Scale the size of the icon. Base icon size is proportionate to its parent frame.",
                         min = 0.01,
                         max = 99,
                         softMax = 3,
@@ -396,7 +396,7 @@ function BuffOverlay:Options()
                         name = "Icon Spacing",
                         type = "range",
                         width = 1,
-                        desc = "Spacing between icons.",
+                        desc = "Spacing between icons. Spacing is scaled based on icon size for uniformity across different icon sizes.",
                         min = 0,
                         max = 200,
                         softMax = 20,
@@ -451,7 +451,7 @@ function BuffOverlay:Options()
                         name = "Show Blizzard Cooldown Text",
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing of the cooldown text. Note that this will enable Blizzard cooldown text in settings. You'll need to disable it manually.",
+                        desc = "Toggle showing of the cooldown text.",
                         get = function(info)
                             if not GetCVarBool("countdownForCooldowns") and self.db.profile[info[#info]] then
                                 self.db.profile[info[#info]] = false
