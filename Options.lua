@@ -278,7 +278,7 @@ local customSpells = {
                     BuffOverlay.print(format("|T%s:0|t %s is already being tracked.", icon or 134400, name))
                 end
             else
-                BuffOverlay.print("Invalid Spell ID")
+                BuffOverlay.print(format("Invalid Spell ID |cffffd700%s|r", state))
             end
         end,
     }
