@@ -95,7 +95,9 @@ local function UnitBuffTest(_, index)
 end
 
 function BuffOverlay:InsertBuff(spellId)
-    if not C_Spell.DoesSpellExist(spellId) then return end
+    if not C_Spell.DoesSpellExist(spellId) then
+        return false
+    end
 
     local custom = self.db.global.customBuffs
     if not custom[spellId] and not self.db.profile.buffs[spellId] then
