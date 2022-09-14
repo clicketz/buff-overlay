@@ -7,13 +7,49 @@ local SetCVar = SetCVar
 local format = format
 local next = next
 local wipe = wipe
+local tonumber = tonumber
 local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
 
 local spellDescriptions = {}
+
 local customIcons = {
     ["Eating/Drinking"] = 134062,
+}
+
+local deleteSpellDelegate = {
+    buttons = {
+        {
+            text = YES,
+            on_click = function(self)
+                local key = self.data
+                local spellId = tonumber(key)
+
+                BuffOverlay.db.global.customBuffs[spellId] = nil
+
+                if not BuffOverlay.defaultSpells[spellId] then
+                    BuffOverlay.db.profile.buffs[spellId] = nil
+                end
+
+                BuffOverlay.options.args.customSpells.args[key] = nil
+                BuffOverlay:UpdateSpellOptionsTable()
+                BuffOverlay:RefreshOverlays()
+
+                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+            end,
+        },
+        {
+            text = NO,
+        },
+    },
+    no_close_button = true,
+    show_while_dead = true,
+    hide_on_escape = true,
+    on_show = function(self)
+        self:SetFrameStrata("FULLSCREEN_DIALOG")
+        self:Raise()
+    end,
 }
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
@@ -139,19 +175,13 @@ local customSpellInfo = {
         order = 2,
         type = "execute",
         name = "Delete",
-        confirm = true,
         width = 1,
-        confirmText = "Are you sure you want to delete this spell?",
         func = function(info)
-            local spellId = info[#info - 1]
-            spellId = tonumber(spellId)
-            BuffOverlay.db.global.customBuffs[spellId] = nil
-            if not BuffOverlay.defaultSpells[spellId] then
-                BuffOverlay.db.profile.buffs[spellId] = nil
-            end
-            info.options.args.customSpells.args[info[#info - 1]] = nil
-            BuffOverlay:UpdateSpellOptionsTable()
-            BuffOverlay:RefreshOverlays()
+            local spellId = tonumber(info[#info - 1])
+            local spellName, _, icon = GetSpellInfo(spellId)
+            deleteSpellDelegate.text = format("Are you sure you want to delete\n\n|T%s:0|t %s?\n\n", icon, spellName)
+
+            LibDialog:Spawn(deleteSpellDelegate, info[#info - 1])
         end,
     },
     header1 = {
