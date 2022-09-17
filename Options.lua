@@ -60,7 +60,7 @@ local deleteSpellDelegate = {
 }
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
-    text = "Blizzard cooldown text is currently disabled in Blizzard settings.\n\nIn order for the |cff83b2ffShow Blizzard Cooldown Text|r setting to work in BuffOverlay, this Blizzard setting needs to be enabled. You can find this setting located at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nWould you like BuffOverlay to enable this setting now?\n\n",
+    text = "In order for |cff83b2ffShow Blizzard Cooldown Text|r setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nWould you like BuffOverlay to enable this setting for you?\n\n",
     buttons = {
         {
             text = YES,
