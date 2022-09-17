@@ -16,6 +16,8 @@ local IsInInstance = IsInInstance
 local select = select
 local next = next
 local pairs = pairs
+local ipairs = ipairs
+local wipe = wipe
 local rawset = rawset
 local print = print
 local CreateFrame = CreateFrame
@@ -77,6 +79,11 @@ local defaultFrames = {
     "^oUF_.-Party",
     "^PitBull4_Groups_Party",
     -- "^CompactParty",
+}
+
+local filters = {
+    "HELPFUL",
+    "HARMFUL",
 }
 
 local function round(num, numDecimalPlaces)
@@ -440,31 +447,31 @@ function BuffOverlay:Test()
     self:RefreshOverlays()
 end
 
-local function CompactUnitFrame_UtilSetBuff(buffFrame, unit, index, filter)
+local function SetOverlayAura(overlay, unit, index, filter)
 
-    local UnitBuff = BuffOverlay.test and UnitBuffTest or UnitBuff
+    local UnitAura = BuffOverlay.test and UnitBuffTest or UnitAura
 
-    local _, icon, count, _, duration, expirationTime = UnitBuff(unit, index, filter)
-    buffFrame.icon:SetTexture(icon)
+    local _, icon, count, _, duration, expirationTime = UnitAura(unit, index, filter)
+    overlay.icon:SetTexture(icon)
     if (count > 1) then
         local countText = count
         if (count >= 100) then
             countText = BUFF_STACKS_OVERFLOW
         end
-        buffFrame.count:Show()
-        buffFrame.count:SetText(countText)
+        overlay.count:Show()
+        overlay.count:SetText(countText)
     else
-        buffFrame.count:Hide()
+        overlay.count:Hide()
     end
-    buffFrame:SetID(index)
+    overlay:SetID(index)
     local enabled = expirationTime and expirationTime ~= 0
     if enabled then
         local startTime = expirationTime - duration
-        CooldownFrame_Set(buffFrame.cooldown, startTime, duration, true)
+        CooldownFrame_Set(overlay.cooldown, startTime, duration, true)
     else
-        CooldownFrame_Clear(buffFrame.cooldown)
+        CooldownFrame_Clear(overlay.cooldown)
     end
-    buffFrame:Show()
+    overlay:Show()
 end
 
 local function UpdateBorder(frame)
@@ -504,7 +511,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
         (self.db.profile.iconSpacing / self.options.args.layout.args.iconSpacing.softMax)
     local overlayNum = 1
 
-    local UnitBuff = self.test and UnitBuffTest or UnitBuff
+    local UnitAura = self.test and UnitBuffTest or UnitAura
 
     for i = 1, self.db.profile.iconCount do
         local overlay = self.overlays[bFrame .. i]
@@ -561,25 +568,24 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     end
 
     if #self.priority > 0 then
-        for i = 1, #self.priority do
-            self.priority[i] = nil
-        end
+        wipe(self.priority)
     end
 
-    -- This will stop long before iterating 999 times, but the number needs to be large to cover test buff table sizes.
-    for i = 1, 999 do
-        local buffName, _, _, _, _, _, _, _, _, spellId = UnitBuff(unit, i)
-        if spellId then
-            if self.db.profile.buffs[buffName] and not self.db.profile.buffs[spellId] then
-                self.db.profile.buffs[spellId] = self.db.profile.buffs[buffName]
-            end
+    -- TODO: Optimize this with new UNIT_AURA event payload
+    for _, filter in ipairs(filters) do
+        for i = 1, 999 do
+            local spellName, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, i, filter)
+            if spellId then
+                local aura = self.db.profile.buffs[spellName] or self.db.profile.buffs[spellId]
 
-            if self.db.profile.buffs[spellId] and self.db.profile.buffs[spellId].enabled then
-                rawset(self.priority, #self.priority + 1, { i, self.db.profile.buffs[spellId].prio })
+                if aura and aura.enabled then
+                    rawset(self.priority, #self.priority + 1, { i, aura.prio, filter })
+                end
+            else
+                break
             end
-        else
-            break
         end
+        if self.test then break end
     end
 
     if #self.priority > 1 then
@@ -590,7 +596,8 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
     while overlayNum <= self.db.profile.iconCount do
         if self.priority[overlayNum] then
-            CompactUnitFrame_UtilSetBuff(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1], nil)
+            SetOverlayAura(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1],
+                self.priority[overlayNum][3])
             overlayNum = overlayNum + 1
         else
             break
