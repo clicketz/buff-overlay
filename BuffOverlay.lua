@@ -58,7 +58,6 @@ local defaultSettings = {
 
 local defaultFrames = {
     "^Vd",
-    "^HealBot",
     "^GridLayout",
     "^Grid2Layout",
     "^PlexusLayout",
