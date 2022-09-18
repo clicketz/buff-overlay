@@ -99,7 +99,7 @@ local function InsertTestBuff(spellId)
     end
 end
 
-local function UnitBuffTest(_, index)
+local function UnitBuffTest(_, index, filter)
     local buff = TestBuffs[index]
     if not buff then return end
     return "TestBuff", buff[2], 0, nil, 60, GetTime() + 60, nil, nil, nil, buff[1]
@@ -447,12 +447,9 @@ function BuffOverlay:Test()
     self:RefreshOverlays()
 end
 
-local function SetOverlayAura(overlay, unit, index, filter)
-
-    local UnitAura = BuffOverlay.test and UnitBuffTest or UnitAura
-
-    local _, icon, count, _, duration, expirationTime = UnitAura(unit, index, filter)
+local function SetOverlayAura(overlay, index, icon, count, duration, expirationTime)
     overlay.icon:SetTexture(icon)
+
     if (count > 1) then
         local countText = count
         if (count >= 100) then
@@ -463,7 +460,9 @@ local function SetOverlayAura(overlay, unit, index, filter)
     else
         overlay.count:Hide()
     end
+
     overlay:SetID(index)
+
     local enabled = expirationTime and expirationTime ~= 0
     if enabled then
         local startTime = expirationTime - duration
@@ -471,6 +470,7 @@ local function SetOverlayAura(overlay, unit, index, filter)
     else
         CooldownFrame_Clear(overlay.cooldown)
     end
+
     overlay:Show()
 end
 
@@ -574,12 +574,12 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     -- TODO: Optimize this with new UNIT_AURA event payload
     for _, filter in ipairs(filters) do
         for i = 1, 999 do
-            local spellName, _, _, _, _, _, _, _, _, spellId = UnitAura(unit, i, filter)
+            local spellName, icon, count, _, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, filter)
             if spellId then
                 local aura = self.db.profile.buffs[spellName] or self.db.profile.buffs[spellId]
 
                 if aura and aura.enabled then
-                    rawset(self.priority, #self.priority + 1, { i, aura.prio, filter })
+                    rawset(self.priority, #self.priority + 1, { i, aura.prio, icon, count, duration, expirationTime })
                 end
             else
                 break
@@ -595,9 +595,9 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     end
 
     while overlayNum <= self.db.profile.iconCount do
-        if self.priority[overlayNum] then
-            SetOverlayAura(self.overlays[bFrame .. overlayNum], unit, self.priority[overlayNum][1],
-                self.priority[overlayNum][3])
+        local data = self.priority[overlayNum]
+        if data then
+            SetOverlayAura(self.overlays[bFrame .. overlayNum], data[1], data[3], data[4], data[5], data[6])
             overlayNum = overlayNum + 1
         else
             break
