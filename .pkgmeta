@@ -4,7 +4,7 @@ enable-nolib-creation: no
 
 externals:
   Libs/LibStub: https://repos.curseforge.com/wow/libstub/trunk
-  Libs/LibGetFrame-1.0: https://github.com/mrbuds/LibGetFrame
+  Libs/LibGetFrame-1.0: https://github.com/clicketz/LibGetFrame
   Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
   Libs/AceAddon-3.0: https://repos.wowace.com/wow/ace3/trunk/AceAddon-3.0
   Libs/AceDB-3.0: https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0
