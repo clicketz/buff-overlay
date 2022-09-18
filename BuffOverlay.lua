@@ -215,6 +215,16 @@ function BuffOverlay:UpdateBuffs()
     end
 end
 
+local function HideAllOverlays(frame)
+    local bFrame = frame:GetName() .. "BuffOverlay"
+    for i = 1, BuffOverlay.db.profile.iconCount do
+        local overlay = BuffOverlay.overlays[bFrame .. i]
+        if overlay then
+            overlay:Hide()
+        end
+    end
+end
+
 function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
 
@@ -250,7 +260,6 @@ function BuffOverlay:OnInitialize()
     end)
 
     LGF.RegisterCallback(self, "FRAME_UNIT_UPDATE", function(event, frame, unit)
-        if string.find(unit, "target") then return end
         -- TODO: Use a more performant lookup. The issue is that LGF returns all frames on FRAME_UNIT_UPDATE
         --  including frames that we don't care about (such as nameplates).
         local found = false
@@ -332,7 +341,13 @@ function BuffOverlay:RefreshOverlays(full)
     end
 
     for frame, info in pairs(self.frames) do
-        if (frame:IsShown() and frame:IsVisible()) then self:ApplyOverlay(frame, info.unit) end
+        if frame:IsShown() and frame:IsVisible() then
+            if string.find(info.unit, "target") then
+                HideAllOverlays(frame)
+            else
+                self:ApplyOverlay(frame, info.unit)
+            end
+        end
     end
 end
 
@@ -506,6 +521,7 @@ end
 
 function BuffOverlay:ApplyOverlay(frame, unit)
     if frame:IsForbidden() or not (frame:IsShown() and frame:IsVisible()) then return end
+    if string.find(unit, "target") then return end
 
     local bFrame = frame:GetName() .. "BuffOverlay"
     local frameWidth, frameHeight = frame:GetSize()
@@ -516,6 +532,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
     local UnitAura = self.test and UnitBuffTest or UnitAura
 
+    -- TODO: Create an overlay container on each frame to make iterating over frame specific overlays easier
     for i = 1, self.db.profile.iconCount do
         local overlay = self.overlays[bFrame .. i]
 
@@ -629,15 +646,11 @@ end
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     if not frame.buffFrames then return end
 
-    local unit = frame.displayedUnit
-
-    if string.find(unit, "target") then return end
-
     if not BuffOverlay.frames[frame] then
         BuffOverlay.frames[frame] = {}
     end
 
-    BuffOverlay.frames[frame].unit = unit
+    BuffOverlay.frames[frame].unit = frame.displayedUnit
 
-    BuffOverlay:ApplyOverlay(frame, unit)
+    BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
 end)
