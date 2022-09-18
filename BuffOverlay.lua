@@ -57,7 +57,7 @@ local defaultSettings = {
 }
 
 local defaultFrames = {
-    "^Vd1",
+    "^Vd",
     "^HealBot",
     "^GridLayout",
     "^Grid2Layout",
@@ -79,6 +79,8 @@ local defaultFrames = {
     "^oUF_.-Party",
     "^PitBull4_Groups_Party",
     -- "^CompactParty",
+    "^ElvUF_TankUnitButton%d$",
+    "^ElvUF_AssistUnitButton%d$",
 }
 
 local filters = {
@@ -249,6 +251,7 @@ function BuffOverlay:OnInitialize()
     end)
 
     LGF.RegisterCallback(self, "FRAME_UNIT_UPDATE", function(event, frame, unit)
+        if string.find(unit, "target") then return end
         -- TODO: Use a more performant lookup. The issue is that LGF returns all frames on FRAME_UNIT_UPDATE
         --  including frames that we don't care about (such as nameplates).
         local found = false
@@ -285,6 +288,7 @@ function BuffOverlay:OnInitialize()
     end)
 
     LGF.RegisterCallback(self, "FRAME_UNIT_REMOVED", function(event, frame, unit)
+        if not self.frames[frame] then return end
         self:RefreshOverlays()
     end)
 
@@ -626,11 +630,15 @@ end
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     if not frame.buffFrames then return end
 
+    local unit = frame.displayedUnit
+
+    if string.find(unit, "target") then return end
+
     if not BuffOverlay.frames[frame] then
         BuffOverlay.frames[frame] = {}
     end
 
-    BuffOverlay.frames[frame].unit = frame.displayedUnit
+    BuffOverlay.frames[frame].unit = unit
 
-    BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
+    BuffOverlay:ApplyOverlay(frame, unit)
 end)
