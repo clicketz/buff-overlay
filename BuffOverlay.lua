@@ -115,10 +115,11 @@ function BuffOverlay:InsertBuff(spellId)
         custom[spellId] = { class = "MISC", prio = 100, custom = true }
         return true
     elseif not custom[spellId] and self.db.profile.buffs[spellId] then
-        custom[spellId] = {}
-        custom[spellId].class = self.db.profile.buffs[spellId].class
-        custom[spellId].prio = self.db.profile.buffs[spellId].prio
-        custom[spellId].custom = true
+        custom[spellId] = {
+            class = self.db.profile.buffs[spellId].class,
+            prio = self.db.profile.buffs[spellId].prio,
+            custom = true,
+        }
         return true
     end
 
