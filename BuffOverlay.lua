@@ -166,6 +166,9 @@ end
 
 local function ValidateBuffData()
     for k, v in pairs(BuffOverlay.db.profile.buffs) do
+        if v.custom and not BuffOverlay.db.global.customBuffs[k] then
+            v.custom = nil
+        end
         -- Check for old buffs from a previous DB
         if (not BuffOverlay.defaultSpells[k]) and (not BuffOverlay.db.global.customBuffs[k]) then
             BuffOverlay.db.profile.buffs[k] = nil
