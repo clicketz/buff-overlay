@@ -176,22 +176,24 @@ end
 local function GetClasses()
     local classes = {}
     classes["MISC"] = {
-        name = "Miscellaneous",
+        name = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"])),
         order = 1,
         type = "group",
         args = GetSpells("MISC"),
-        icon = "Interface\\Icons\\Trade_Engineering",
-        iconCoords = nil,
+        -- icon = "Interface\\Icons\\Trade_Engineering",
+        -- iconCoords = nil,
     }
 
     for i = 1, MAX_CLASSES do
-        classes[CLASS_SORT_ORDER[i]] = {
-            name = LOCALIZED_CLASS_NAMES_MALE[CLASS_SORT_ORDER[i]],
+        local className = CLASS_SORT_ORDER[i]
+        classes[className] = {
+            -- format icons directly in case user is using a custom icon pack
+            name = format("%s %s", GetIconString(classIcons[className]), LOCALIZED_CLASS_NAMES_MALE[className]),
             order = 0,
             type = "group",
-            args = GetSpells(CLASS_SORT_ORDER[i]),
-            icon = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes",
-            iconCoords = CLASS_ICON_TCOORDS[CLASS_SORT_ORDER[i]],
+            args = GetSpells(className),
+            -- icon = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes",
+            -- iconCoords = CLASS_ICON_TCOORDS[className],
         }
     end
     return classes
