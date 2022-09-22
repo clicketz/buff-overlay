@@ -283,6 +283,9 @@ local customSpellInfo = {
             spellId = tonumber(spellId)
             BuffOverlay.db.global.customBuffs[spellId][option] = state
             BuffOverlay.db.profile.buffs[spellId][option] = state
+            if BuffOverlay.db.profile.buffs[spellId].children then
+                BuffOverlay.db.profile.buffs[spellId]:UpdateChildren()
+            end
             BuffOverlay:UpdateSpellOptionsTable()
         end,
     },
