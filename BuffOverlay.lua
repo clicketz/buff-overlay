@@ -115,8 +115,25 @@ function BuffOverlay:InsertBuff(spellId)
     if not custom[spellId] and not self.db.profile.buffs[spellId] then
         custom[spellId] = { class = "MISC", prio = 100, custom = true }
         return true
+    elseif not custom[spellId] and self.db.profile.buffs[spellId] then
+        custom[spellId] = {}
+        custom[spellId].class = self.db.profile.buffs[spellId].class
+        custom[spellId].prio = self.db.profile.buffs[spellId].prio
+        custom[spellId].custom = true
+        return true
     end
+
     return false
+end
+
+local function UpdateChildren(self)
+    for child in pairs(self.children) do
+        for k, v in pairs(self) do
+            if k ~= "children" and k ~= "UpdateChildren" then
+                BuffOverlay.db.profile.buffs[child][k] = v
+            end
+        end
+    end
 end
 
 function BuffOverlay:UpdateCustomBuffs()
@@ -137,6 +154,10 @@ function BuffOverlay:UpdateCustomBuffs()
             buff[field] = value
         end
 
+        if buff.children then
+            buff:UpdateChildren()
+        end
+
         InsertTestBuff(spellId)
     end
     self:UpdateSpellOptionsTable()
@@ -154,6 +175,10 @@ local function ValidateBuffData()
                 v.children = nil
             end
 
+            if v.UpdateChildren then
+                v.UpdateChildren = nil
+            end
+
             local parent = BuffOverlay.db.profile.buffs[v.parent]
 
             if not parent.children then
@@ -162,9 +187,13 @@ local function ValidateBuffData()
 
             parent.children[k] = true
 
+            if not parent.UpdateChildren then
+                parent.UpdateChildren = UpdateChildren
+            end
+
             -- Give child the same fields as parent
             for key, val in pairs(parent) do
-                if key ~= "children" then
+                if key ~= "children" and key ~= "UpdateChildren" then
                     BuffOverlay.db.profile.buffs[k][key] = val
                 end
             end
@@ -301,13 +330,6 @@ function BuffOverlay:OnInitialize()
     end)
 
     self:UpdateBuffs()
-
-    -- Remove invalid custom cooldowns
-    for k in pairs(self.db.global.customBuffs) do
-        if (not GetSpellInfo(k)) or self.defaultSpells[k] then
-            self.db.global.customBuffs[k] = nil
-        end
-    end
 
     SLASH_BuffOverlay1 = "/bo"
     SLASH_BuffOverlay2 = "/buffoverlay"

@@ -51,16 +51,25 @@ local deleteSpellDelegate = {
         {
             text = YES,
             on_click = function(self)
-                local key = self.data
-                local spellId = tonumber(key)
+                local spellId = tonumber(self.data)
 
                 BuffOverlay.db.global.customBuffs[spellId] = nil
 
-                if not BuffOverlay.defaultSpells[spellId] then
+                if BuffOverlay.defaultSpells[spellId] then
+                    for k, v in pairs(BuffOverlay.defaultSpells[spellId]) do
+                        BuffOverlay.db.profile.buffs[spellId][k] = v
+                    end
+                    BuffOverlay.db.profile.buffs[spellId].enabled = false
+                    BuffOverlay.db.profile.buffs[spellId].custom = nil
+                else
                     BuffOverlay.db.profile.buffs[spellId] = nil
                 end
 
-                BuffOverlay.options.args.customSpells.args[key] = nil
+                if BuffOverlay.db.profile.buffs[spellId] and BuffOverlay.db.profile.buffs[spellId].children then
+                    BuffOverlay.db.profile.buffs[spellId]:UpdateChildren()
+                end
+
+                BuffOverlay.options.args.customSpells.args[self.data] = nil
                 BuffOverlay:UpdateSpellOptionsTable()
                 BuffOverlay:RefreshOverlays()
 
@@ -147,12 +156,18 @@ local function GetSpells(class)
                         local description = spellDescriptions[k] and spellDescriptions[k] ~= "" and
                             spellDescriptions[k] .. "\n" or ""
 
-                        if tonumber(k) then
-                            description = description .. format("\n|cffffd100Spell ID|r %d", k)
-                        end
-
-                        -- NOTE: Temporary until I add a way to edit default spells through GUI
                         description = description .. format("\n|cffffd100Priority|r %d", v.prio)
+
+                        local spellId = tonumber(k)
+                        if spellId then
+                            description = description .. format("\n|cffffd100Spell ID|r %d", spellId)
+                            if BuffOverlay.db.profile.buffs[spellId].children then
+                                description = description .. " |cffffd700 " .. "\nChild Spell ID(s)" .. "|r\n"
+                                for child in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
+                                    description = description .. child .. "\n"
+                                end
+                            end
+                        end
 
                         return description
                     end,
@@ -214,8 +229,15 @@ local customSpellInfo = {
         type = "description",
         width = "full",
         name = function(info)
-            local spellId = info[#info - 1]
-            return "|cffffd700 " .. "Spell ID" .. "|r " .. spellId .. "\n\n"
+            local spellId = tonumber(info[#info - 1])
+            local str = "|cffffd700" .. "Spell ID" .. "|r " .. spellId
+            if BuffOverlay.db.profile.buffs[spellId].children then
+                str = str .. " |cffffd700 " .. "\n\nChild Spell ID(s)" .. "|r\n"
+                for child in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
+                    str = str .. child .. "\n"
+                end
+            end
+            return str .. "\n\n"
         end,
     },
     delete = {
@@ -226,7 +248,12 @@ local customSpellInfo = {
         func = function(info)
             local spellId = tonumber(info[#info - 1])
             local spellName, _, icon = GetSpellInfo(spellId)
-            deleteSpellDelegate.text = format("Are you sure you want to delete\n\n%s %s?\n\n", GetIconString(icon), spellName)
+            local text = format("Are you sure you want to delete\n\n%s %s?\n\n", GetIconString(icon), spellName)
+            if BuffOverlay.defaultSpells[spellId] then
+                text = text ..
+                    "(|cff9b6ef3Note|r: This is a default spell. Deleting it from this tab will simply reset all its values to default and disable it, but it will not be removed from the spells tab.)"
+            end
+            deleteSpellDelegate.text = text
 
             LibDialog:Spawn(deleteSpellDelegate, info[#info - 1])
         end,
@@ -278,6 +305,9 @@ local customSpellInfo = {
             spellId = tonumber(spellId)
             BuffOverlay.db.global.customBuffs[spellId][option] = state
             BuffOverlay.db.profile.buffs[spellId][option] = state
+            if BuffOverlay.db.profile.buffs[spellId].children then
+                BuffOverlay.db.profile.buffs[spellId]:UpdateChildren()
+            end
             BuffOverlay:RefreshOverlays()
         end,
         get = function(info)
@@ -295,7 +325,7 @@ local customSpells = {
     spellId_info = {
         order = 1,
         type = "description",
-        name = "Note: anything you add here will persist through addon updates and profile resets.",
+        name = "In addition to adding new spells here, you can also add any Spell ID from the spells tab to edit its default values.\n(Note: anything you add here will persist through addon updates and profile resets.)",
     },
     spellId = {
         order = 2,
@@ -304,6 +334,11 @@ local customSpells = {
         type = "input",
         set = function(_, state)
             local spellId = tonumber(state)
+
+            if BuffOverlay.db.profile.buffs[spellId] and BuffOverlay.db.profile.buffs[spellId].parent then
+                spellId = BuffOverlay.db.profile.buffs[spellId].parent
+            end
+
             local name, _, icon = GetSpellInfo(spellId)
 
             if name then
@@ -318,7 +353,8 @@ local customSpells = {
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
-                    BuffOverlay.print(format("%s %s is already being tracked.", GetIconString(icon) or customIcons["?"], name))
+                    BuffOverlay.print(format("%s %s is already being tracked.", GetIconString(icon) or customIcons["?"],
+                        name))
                 end
             else
                 BuffOverlay.print(format("Invalid Spell ID |cffffd700%s|r", state))
@@ -329,16 +365,14 @@ local customSpells = {
 
 function BuffOverlay:Options()
     for spellId in pairs(self.db.global.customBuffs) do
-        if not self.defaultSpells[spellId] then
-            customSpells[tostring(spellId)] = {
-                name = format("%s %s", GetIconString(select(3, GetSpellInfo(spellId))), GetSpellInfo(spellId)),
-                desc = function()
-                    return spellDescriptions[spellId] or ""
-                end,
-                type = "group",
-                args = customSpellInfo,
-            }
-        end
+        customSpells[tostring(spellId)] = {
+            name = format("%s %s", GetIconString(select(3, GetSpellInfo(spellId))), GetSpellInfo(spellId)),
+            desc = function()
+                return spellDescriptions[spellId] or ""
+            end,
+            type = "group",
+            args = customSpellInfo,
+        }
     end
     self.options = {
         name = "BuffOverlay",
