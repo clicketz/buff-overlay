@@ -106,6 +106,10 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
     end,
 })
 
+local function GetIconString(icon)
+    return format("|T%s:0|t", icon)
+end
+
 local function GetSpells(class)
     local spells = {}
 
@@ -125,8 +129,8 @@ local function GetSpells(class)
                     icon = customIcons[k]
                 end
 
-                local formattedName = spellName and format("|T%s:0|t %s", icon, spellName) or
-                    icon and format("|T%s:0|t %s", icon, k) or tostring(k)
+                local formattedName = spellName and format("%s %s", GetIconString(icon), spellName) or
+                    icon and format("%s %s", GetIconString(icon), k) or tostring(k)
 
                 if spellName then
                     local id = customSpellDescriptions[k] or k
@@ -217,7 +221,7 @@ local customSpellInfo = {
         func = function(info)
             local spellId = tonumber(info[#info - 1])
             local spellName, _, icon = GetSpellInfo(spellId)
-            deleteSpellDelegate.text = format("Are you sure you want to delete\n\n|T%s:0|t %s?\n\n", icon, spellName)
+            deleteSpellDelegate.text = format("Are you sure you want to delete\n\n%s %s?\n\n", GetIconString(icon), spellName)
 
             LibDialog:Spawn(deleteSpellDelegate, info[#info - 1])
         end,
@@ -233,11 +237,11 @@ local customSpellInfo = {
         name = "Class",
         values = function()
             local classes = {}
-            classes["MISC"] = format("|T%s:0|t Miscellaneous", customIcons["Cogwheel"])
+            classes["MISC"] = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"]))
             for i = 1, MAX_CLASSES do
                 local className = CLASS_SORT_ORDER[i]
                 local icon = classIcons[className] or customIcons["?"]
-                classes[className] = format("|T%s:0|t %s", icon, LOCALIZED_CLASS_NAMES_MALE[className])
+                classes[className] = format("%s %s", GetIconString(icon), LOCALIZED_CLASS_NAMES_MALE[className])
             end
             return classes
         end,
@@ -300,7 +304,7 @@ local customSpells = {
             if name then
                 if BuffOverlay:InsertBuff(spellId) then
                     BuffOverlay.options.args.customSpells.args[tostring(spellId)] = {
-                        name = format("|T%s:0|t %s", icon, name),
+                        name = format("%s %s", GetIconString(icon), name),
                         desc = function()
                             return spellDescriptions[spellId] or ""
                         end,
@@ -309,7 +313,7 @@ local customSpells = {
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
-                    BuffOverlay.print(format("|T%s:0|t %s is already being tracked.", icon or customIcons["?"], name))
+                    BuffOverlay.print(format("%s %s is already being tracked.", GetIconString(icon) or customIcons["?"], name))
                 end
             else
                 BuffOverlay.print(format("Invalid Spell ID |cffffd700%s|r", state))
@@ -322,7 +326,7 @@ function BuffOverlay:Options()
     for spellId in pairs(self.db.global.customBuffs) do
         if not self.defaultSpells[spellId] then
             customSpells[tostring(spellId)] = {
-                name = format("|T%s:0|t %s", select(3, GetSpellInfo(spellId)), GetSpellInfo(spellId)),
+                name = format("%s %s", GetIconString(select(3, GetSpellInfo(spellId))), GetSpellInfo(spellId)),
                 desc = function()
                     return spellDescriptions[spellId] or ""
                 end,
