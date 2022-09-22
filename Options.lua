@@ -3,7 +3,6 @@ local LibDialog = LibStub("LibDialog-1.0")
 
 local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
-local GetSpellTexture = GetSpellTexture
 local SetCVar = SetCVar
 local InCombatLockdown = InCombatLockdown
 local format = format
@@ -27,6 +26,24 @@ local customSpellDescriptions = {
 
 local customIcons = {
     ["Eating/Drinking"] = 134062,
+    ["?"] = 134400,
+    ["Cogwheel"] = 136243,
+}
+
+local classIcons = {
+    ["DEATHKNIGHT"] = 135771,
+    ["DEMONHUNTER"] = 1260827,
+    ["DRUID"] = 625999,
+    ["EVOKER"] = 4574311,
+    ["HUNTER"] = 626000,
+    ["MAGE"] = 626001,
+    ["MONK"] = 626002,
+    ["PALADIN"] = 626003,
+    ["PRIEST"] = 626004,
+    ["ROGUE"] = 626005,
+    ["SHAMAN"] = 626006,
+    ["WARLOCK"] = 626007,
+    ["WARRIOR"] = 626008,
 }
 
 local deleteSpellDelegate = {
@@ -216,9 +233,11 @@ local customSpellInfo = {
         name = "Class",
         values = function()
             local classes = {}
-            classes["MISC"] = "Miscellaneous"
+            classes["MISC"] = format("|T%s:0|t Miscellaneous", customIcons["Cogwheel"])
             for i = 1, MAX_CLASSES do
-                classes[CLASS_SORT_ORDER[i]] = LOCALIZED_CLASS_NAMES_MALE[CLASS_SORT_ORDER[i]]
+                local className = CLASS_SORT_ORDER[i]
+                local icon = classIcons[className] or customIcons["?"]
+                classes[className] = format("|T%s:0|t %s", icon, LOCALIZED_CLASS_NAMES_MALE[className])
             end
             return classes
         end,
@@ -287,11 +306,10 @@ local customSpells = {
                         end,
                         type = "group",
                         args = customSpellInfo,
-                        -- icon = GetSpellTexture(spellId),
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
-                    BuffOverlay.print(format("|T%s:0|t %s is already being tracked.", icon or 134400, name))
+                    BuffOverlay.print(format("|T%s:0|t %s is already being tracked.", icon or customIcons["?"], name))
                 end
             else
                 BuffOverlay.print(format("Invalid Spell ID |cffffd700%s|r", state))
@@ -310,7 +328,6 @@ function BuffOverlay:Options()
                 end,
                 type = "group",
                 args = customSpellInfo,
-                -- icon = GetSpellTexture(spellId),
             }
         end
     end
