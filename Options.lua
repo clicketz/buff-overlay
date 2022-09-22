@@ -281,11 +281,13 @@ local customSpells = {
             if name then
                 if BuffOverlay:InsertBuff(spellId) then
                     BuffOverlay.options.args.customSpells.args[tostring(spellId)] = {
-                        name = name,
+                        name = format("|T%s:0|t %s", icon, name),
+                        desc = function()
+                            return spellDescriptions[spellId] or ""
+                        end,
                         type = "group",
-                        childGroups = "tab",
                         args = customSpellInfo,
-                        icon = GetSpellTexture(spellId),
+                        -- icon = GetSpellTexture(spellId),
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
@@ -302,11 +304,13 @@ function BuffOverlay:Options()
     for spellId in pairs(self.db.global.customBuffs) do
         if not self.defaultSpells[spellId] then
             customSpells[tostring(spellId)] = {
-                name = GetSpellInfo(spellId),
+                name = format("|T%s:0|t %s", select(3, GetSpellInfo(spellId)), GetSpellInfo(spellId)),
+                desc = function()
+                    return spellDescriptions[spellId] or ""
+                end,
                 type = "group",
-                childGroups = "tab",
                 args = customSpellInfo,
-                icon = GetSpellTexture(spellId),
+                -- icon = GetSpellTexture(spellId),
             }
         end
     end
