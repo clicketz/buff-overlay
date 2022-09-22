@@ -4,7 +4,6 @@ local LGF = LibStub("LibGetFrame-1.0")
 local C_Spell = C_Spell
 local C_Timer = C_Timer
 local PixelUtil = PixelUtil
-local GetSpellInfo = GetSpellInfo
 local GetSpellTexture = GetSpellTexture
 local IsAddOnLoaded = IsAddOnLoaded
 local UnitIsPlayer = UnitIsPlayer
