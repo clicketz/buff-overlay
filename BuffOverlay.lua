@@ -147,8 +147,9 @@ function BuffOverlay:UpdateCustomBuffs()
         end
 
         if not self.db.profile.buffs[spellId] then
-            self.db.profile.buffs[spellId] = {}
-            self.db.profile.buffs[spellId].enabled = true
+            self.db.profile.buffs[spellId] = {
+                enabled = true,
+            }
         end
 
         local buff = self.db.profile.buffs[spellId]
@@ -219,11 +220,12 @@ function BuffOverlay:CreateBuffTable()
     -- If the current profile doesn't have any buffs saved use default list and save it
     if next(self.db.profile.buffs) == nil then
         for k, v in pairs(self.defaultSpells) do
-            self.db.profile.buffs[k] = {}
+            self.db.profile.buffs[k] = {
+                enabled = true,
+            }
             for key, val in pairs(v) do
                 self.db.profile.buffs[k][key] = val
             end
-            self.db.profile.buffs[k].enabled = true
         end
         newdb = true
         ValidateBuffData()
@@ -237,11 +239,12 @@ function BuffOverlay:UpdateBuffs()
         -- Update buffs if any user changes are made to lua file
         for k, v in pairs(self.defaultSpells) do
             if not self.db.profile.buffs[k] then
-                self.db.profile.buffs[k] = {}
+                self.db.profile.buffs[k] = {
+                    enabled = true,
+                }
                 for key, val in pairs(v) do
                     self.db.profile.buffs[k][key] = val
                 end
-                self.db.profile.buffs[k].enabled = true
             else
                 local e = self.db.profile.buffs[k].enabled
                 for key, val in pairs(v) do
