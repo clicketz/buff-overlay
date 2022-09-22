@@ -21,6 +21,10 @@ local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 
 local spellDescriptions = {}
 
+local customSpellDescriptions = {
+    [362486] = 353114, -- Keeper of the Grove
+}
+
 local customIcons = {
     ["Eating/Drinking"] = 134062,
 }
@@ -108,9 +112,10 @@ local function GetSpells(class)
                     icon and format("|T%s:0|t %s", icon, k) or tostring(k)
 
                 if spellName then
-                    local s = Spell:CreateFromSpellID(k)
-                    s:ContinueOnSpellLoad(function()
-                        spellDescriptions[k] = s:GetSpellDescription()
+                    local id = customSpellDescriptions[k] or k
+                    local spell = Spell:CreateFromSpellID(id)
+                    spell:ContinueOnSpellLoad(function()
+                        spellDescriptions[k] = spell:GetSpellDescription()
                     end)
                 end
 
