@@ -128,6 +128,9 @@ end
 
 local function UpdateChildren(self)
     for child in pairs(self.children) do
+        if BuffOverlay.db.profile.buffs[child].custom and not self.custom then
+            BuffOverlay.db.profile.buffs[child].custom = nil
+        end
         for k, v in pairs(self) do
             if k ~= "children" and k ~= "UpdateChildren" then
                 BuffOverlay.db.profile.buffs[child][k] = v
@@ -166,8 +169,12 @@ end
 
 local function ValidateBuffData()
     for k, v in pairs(BuffOverlay.db.profile.buffs) do
-        if v.custom and not BuffOverlay.db.global.customBuffs[k] then
-            v.custom = nil
+        if v.custom then
+            if v.parent and not BuffOverlay.db.global.customBuffs[v.parent] then
+                v.custom = nil
+            elseif not BuffOverlay.db.global.customBuffs[k] then
+                v.custom = nil
+            end
         end
         -- Check for old buffs from a previous DB
         if (not BuffOverlay.defaultSpells[k]) and (not BuffOverlay.db.global.customBuffs[k]) then
