@@ -117,7 +117,16 @@ local function GetSpells(class)
                 spells[tostring(k)] = {
                     name = formattedName,
                     type = "toggle",
-                    desc = spellDescriptions[k] or "",
+                    desc = function()
+                        local description = spellDescriptions[k] and spellDescriptions[k] ~= "" and
+                            spellDescriptions[k] .. "\n" or ""
+
+                        if tonumber(k) then
+                            description = description .. format("\n|cffffd100Spell ID|r %d", k)
+                        end
+
+                        return description
+                    end,
                     width = "full",
                     get = function()
                         return BuffOverlay.db.profile.buffs[k].enabled or false
