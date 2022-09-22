@@ -151,6 +151,9 @@ local function GetSpells(class)
                             description = description .. format("\n|cffffd100Spell ID|r %d", k)
                         end
 
+                        -- NOTE: Temporary until I add a way to edit default spells through GUI
+                        description = description .. format("\n|cffffd100Priority|r %d", v.prio)
+
                         return description
                     end,
                     width = "full",
