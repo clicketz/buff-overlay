@@ -374,12 +374,14 @@ function BuffOverlay:RefreshOverlays(full)
     end
 
     for frame, info in pairs(self.frames) do
-        if frame:IsShown() and frame:IsVisible() then
+        if frame:IsShown() then
             if string.find(info.unit, "target") or info.unit == "focus" then
                 HideAllOverlays(frame)
             else
                 self:ApplyOverlay(frame, info.unit)
             end
+        else
+            HideAllOverlays(frame)
         end
     end
 end
@@ -553,7 +555,7 @@ local function UpdateBorder(frame)
 end
 
 function BuffOverlay:ApplyOverlay(frame, unit)
-    if frame:IsForbidden() or not (frame:IsShown() and frame:IsVisible()) then return end
+    if frame:IsForbidden() or not frame:IsShown() then return end
     if string.find(unit, "target") or unit == "focus" then return end
 
     local bFrame = frame:GetName() .. "BuffOverlay"
