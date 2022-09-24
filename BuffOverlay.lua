@@ -1,5 +1,5 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
-local LGF = LibStub("LibGetFrame-1.0")
+local LGF = LibStub("LibGetFrame-1.1")
 
 local C_Spell = C_Spell
 local C_Timer = C_Timer
