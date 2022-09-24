@@ -287,23 +287,21 @@ function BuffOverlay:OnInitialize()
     self.overlays = {}
     self.priority = {}
 
+    -- Initialize LibGetFrame for cache listener
+    LGF.Init()
+
     -- EventHandler
     local eventHandler = CreateFrame("Frame")
-    -- TODO: Waiting for this event is kind of hacky, I'd rather a more official way to init LGF
-    eventHandler:RegisterEvent("INITIAL_CLUBS_LOADED") -- this event is fired a few seconds after addons are loaded
     eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
     eventHandler:SetScript("OnEvent", function(_, event)
-        if event == "INITIAL_CLUBS_LOADED" then
-            -- Init LGF. Will not init automatically, and will also break if init too early
-            LGF.GetUnitFrame("player")
-        elseif event == "GROUP_ROSTER_UPDATE" then
+        if event == "GROUP_ROSTER_UPDATE" then
             self:RefreshOverlays()
         end
     end)
 
     LGF.RegisterCallback(self, "FRAME_UNIT_UPDATE", function(event, frame, unit)
         -- TODO: Use a more performant lookup. The issue is that LGF returns all frames on FRAME_UNIT_UPDATE
-        --  including frames that we don't care about (such as nameplates).
+        --  including frames that we don't care about.
         local found = false
         local frameName = frame:GetName()
         for _, v in pairs(defaultFrames) do
