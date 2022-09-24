@@ -98,7 +98,7 @@ BuffOverlay.defaultSpells = {
     [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection
 
     -- Misc
-    ["Eating/Drinking"] = { class = "MISC", prio = 100 }, -- Food umbrella
+    ["Eating/Drinking"] = { class = "MISC", prio = 90 }, -- Food umbrella
     ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
     ["Food"] = { parent = "Eating/Drinking" }, --Food
     ["Drink"] = { parent = "Eating/Drinking" }, --Drink
