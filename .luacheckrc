@@ -62,4 +62,6 @@ globals = {
     "PixelUtil",
     "UnitIsPlayer",
     "wipe",
+    "SecureButton_GetModifiedUnit",
+    "SecureButton_GetUnit",
 }

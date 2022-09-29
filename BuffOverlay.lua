@@ -1,11 +1,10 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
-local LGF = LibStub("LibGetFrame-1.1")
+-- local LGF = LibStub("LibGetFrame-1.1")
 
 local C_Spell = C_Spell
 local C_Timer = C_Timer
 local PixelUtil = PixelUtil
 local GetSpellTexture = GetSpellTexture
-local IsAddOnLoaded = IsAddOnLoaded
 local UnitIsPlayer = UnitIsPlayer
 local InCombatLockdown = InCombatLockdown
 local GetNumGroupMembers = GetNumGroupMembers
@@ -18,8 +17,8 @@ local pairs = pairs
 local ipairs = ipairs
 local wipe = wipe
 local rawset = rawset
-local print = print
 local CreateFrame = CreateFrame
+
 local TestBuffs = {}
 local TestBuffIds = {}
 local test
@@ -124,6 +123,55 @@ function BuffOverlay:InsertBuff(spellId)
     end
 
     return false
+end
+
+local function InitUnitFrames()
+    for unit in pairs(BuffOverlay.units) do
+        BuffOverlay.unitFrames[unit] = {}
+    end
+end
+
+local function InitUnits()
+    local units = BuffOverlay.units
+    local container = CreateFrame("Frame", "BuffOverlayContainer", UIParent)
+
+    for i = 1, 40 do
+        units["raid" .. i] = CreateFrame("Frame", "BuffOverlayRaid" .. i, container)
+        units["raidpet" .. i] = CreateFrame("Frame", "BuffOverlayRaidPet" .. i, container)
+    end
+    for i = 1, 4 do
+        units["party" .. i] = CreateFrame("Frame", "BuffOverlayParty" .. i, container)
+        units["partypet" .. i] = CreateFrame("Frame", "BuffOverlayPartyPet" .. i, container)
+    end
+    units["player"] = CreateFrame("Frame", "BuffOverlayPlayer", container)
+    units["pet"] = CreateFrame("Frame", "BuffOverlayPet", container)
+
+    for unit, frame in pairs(units) do
+        frame:SetScript("OnEvent", function()
+            for f in pairs(BuffOverlay.unitFrames[unit]) do
+                BuffOverlay:ApplyOverlay(f, unit)
+            end
+        end)
+
+        frame:RegisterUnitEvent("UNIT_AURA", unit)
+    end
+
+    InitUnitFrames()
+end
+
+function BuffOverlay:AddUnitFrame(frame, unit)
+    if not self.unitFrames[unit] then
+        self.unitFrames[unit] = {}
+    end
+
+    -- Remove the frame if it exists for another unit
+    for u in pairs(self.unitFrames) do
+        if self.unitFrames[u][frame] then
+            self.unitFrames[u][frame] = nil
+        end
+    end
+
+    self.unitFrames[unit][frame] = true
 end
 
 local function UpdateChildren(self)
@@ -258,12 +306,10 @@ function BuffOverlay:UpdateBuffs()
 end
 
 local function HideAllOverlays(frame)
-    local bFrame = frame:GetName() .. "BuffOverlay"
-    for i = 1, BuffOverlay.db.profile.iconCount do
-        local overlay = BuffOverlay.overlays[bFrame .. i]
-        if overlay then
-            overlay:Hide()
-        end
+    if not frame.BuffOverlays then return end
+
+    for _, child in ipairs({ frame.BuffOverlays:GetChildren() }) do
+        child:Hide()
     end
 end
 
@@ -283,61 +329,44 @@ function BuffOverlay:OnInitialize()
         self.print("Type |cff9b6ef3/buffoverlay|r or |cff9b6ef3/bo|r to open the options panel or |cff9b6ef3/bo help|r for more commands.")
     end
 
-    self.frames = {}
     self.overlays = {}
     self.priority = {}
+    self.units = {}
+    self.unitFrames = {}
+    self.blizzFrames = {}
 
     -- Initialize LibGetFrame for cache listener
-    LGF.Init()
+    -- LGF.Init()
+    InitUnits()
 
     -- EventHandler
+    local timer
     local eventHandler = CreateFrame("Frame")
+    eventHandler:RegisterEvent("PLAYER_LOGIN")
+    eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
     eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
+    eventHandler:RegisterEvent("UNIT_EXITED_VEHICLE")
+    eventHandler:RegisterEvent("UNIT_ENTERED_VEHICLE")
     eventHandler:SetScript("OnEvent", function(_, event)
-        if event == "GROUP_ROSTER_UPDATE" then
-            self:RefreshOverlays()
-        end
-    end)
+        if event == "PLAYER_LOGIN" then
+            self:InitFrames()
+        elseif event == "GROUP_ROSTER_UPDATE" then
+            -- if timer then return end
 
-    LGF.RegisterCallback(self, "FRAME_UNIT_UPDATE", function(event, frame, unit)
-        -- TODO: Use a more performant lookup. The issue is that LGF returns all frames on FRAME_UNIT_UPDATE
-        --  including frames that we don't care about.
-        local found = false
-        local frameName = frame:GetName()
-        for _, v in pairs(defaultFrames) do
-            if string.find(frameName, v) then
-                found = true
-                break
-            end
-        end
-        if not found then return end
+            -- timer = C_Timer.NewTimer(2, function()
+            --     self:GetAllFrames()
+            --     timer = nil
+            -- end)
 
-        if not self.frames[frame] then self.frames[frame] = {} end
-        self.frames[frame].unit = unit
-
-        -- specific fix for SUF
-        if IsAddOnLoaded("ShadowedUnitFrames") then
-            -- SUF overwrites RegisterUnitEvent
-            frame:RegisterUnitEvent("UNIT_AURA", frame, "FullUpdate")
-        else
-            frame:RegisterUnitEvent("UNIT_AURA", unit)
-        end
-
-        if not self.frames[frame].hooked then
-            frame:HookScript("OnEvent", function(s, ev)
-                if ev == "UNIT_AURA" then
-                    if not self.frames[s] then return end
-                    self:ApplyOverlay(s, self.frames[s].unit)
-                end
+            self:GetAllFrames()
+        elseif event == "PLAYER_ENTERING_WORLD" then
+            self:GetAllFrames()
+        elseif event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE" then
+            -- Wait a frame for the vehicle to be fully loaded/unloaded
+            C_Timer.After(0, function()
+                self:UpdateUnits()
             end)
-            self.frames[frame].hooked = true
         end
-        self:RefreshOverlays()
-    end)
-
-    LGF.RegisterCallback(self, "FRAME_UNIT_REMOVED", function(event, frame, unit)
-        if not self.frames[frame] then return end
-        self:RefreshOverlays()
     end)
 
     self:UpdateBuffs()
@@ -373,13 +402,19 @@ function BuffOverlay:RefreshOverlays(full)
         end
     end
 
-    for frame, info in pairs(self.frames) do
-        if frame:IsShown() then
-            if string.find(info.unit, "target") or info.unit == "focus" then
-                HideAllOverlays(frame)
+    for unit, frames in pairs(self.unitFrames) do
+        for frame in pairs(frames) do
+            if frame:IsShown() then
+                self:ApplyOverlay(frame, unit)
             else
-                self:ApplyOverlay(frame, info.unit)
+                HideAllOverlays(frame)
             end
+        end
+    end
+
+    for frame in pairs(self.blizzFrames) do
+        if frame:IsShown() then
+            self:ApplyOverlay(frame, frame.displayedUnit)
         else
             HideAllOverlays(frame)
         end
@@ -474,24 +509,24 @@ function BuffOverlay:Test()
     end
 
     if not anchor then
-        LGF.ScanForUnitFrames()
-        LGF.RegisterCallback(callback, "GETFRAME_REFRESH", function()
-            -- NOTE: Timer might be unnecessary here, but it's a failsafe
-            C_Timer.After(0.1, function()
-                local anc = GetTestAnchor()
+        -- LGF.ScanForUnitFrames()
+        -- LGF.RegisterCallback(callback, "GETFRAME_REFRESH", function()
+        --     -- NOTE: Timer might be unnecessary here, but it's a failsafe
+        --     C_Timer.After(0.1, function()
+        --         local anc = GetTestAnchor()
 
-                if not anc then
-                    self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
-                    test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-                else
-                    test:SetPoint("BOTTOMLEFT", anc, "TOPLEFT", 0, 2)
-                end
+        --         if not anc then
+        --             self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
+        --             test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+        --         else
+        --             test:SetPoint("BOTTOMLEFT", anc, "TOPLEFT", 0, 2)
+        --         end
 
-                test:Show()
-            end)
+        --         test:Show()
+        --     end)
 
-            LGF.UnregisterCallback(callback, "GETFRAME_REFRESH")
-        end)
+        --     LGF.UnregisterCallback(callback, "GETFRAME_REFRESH")
+        -- end)
     else
         test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
         test:Show()
@@ -554,11 +589,20 @@ local function UpdateBorder(frame)
     border:SetShown(BuffOverlay.db.profile.iconBorder)
 end
 
+function BuffOverlay:SetupContainer(frame)
+    frame.BuffOverlays = frame.BuffOverlays or CreateFrame("Frame", frame:GetName() .. "BuffOverlayContainer", frame)
+    frame.BuffOverlays:SetAllPoints()
+end
+
 function BuffOverlay:ApplyOverlay(frame, unit)
-    if frame:IsForbidden() or not frame:IsShown() then return end
+    if not frame or frame:IsForbidden() or not frame:IsShown() then return end
     if string.find(unit, "target") or unit == "focus" then return end
 
-    local bFrame = frame:GetName() .. "BuffOverlay"
+    if not frame.BuffOverlays then
+        self:SetupContainer(frame)
+    end
+
+    local overlayName = frame:GetName() .. "BuffOverlay"
     local frameWidth, frameHeight = frame:GetSize()
     local overlaySize = math.min(frameHeight, frameWidth) * 0.33
     local relativeSpacing = overlaySize *
@@ -567,13 +611,13 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
     local UnitAura = self.test and UnitBuffTest or UnitAura
 
-    -- TODO: Create an overlay container on each frame to make iterating over frame specific overlays easier
     for i = 1, self.db.profile.iconCount do
-        local overlay = self.overlays[bFrame .. i]
+        local overlay = self.overlays[overlayName .. i]
 
         if not overlay or overlay.needsUpdate or (round(overlay.spacing, 2) ~= round(relativeSpacing, 2)) or
             (round(overlay.size, 2) ~= round(overlaySize, 2)) then
-            overlay = _G[bFrame .. i] or CreateFrame("Button", bFrame .. i, frame, "CompactAuraTemplate")
+            overlay = _G[overlayName .. i] or
+                CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
 
             overlay.spacing = relativeSpacing
             overlay.size = overlaySize
@@ -608,16 +652,17 @@ function BuffOverlay:ApplyOverlay(frame, unit)
                     self.db.profile.iconXOff, self.db.profile.iconYOff)
             else
                 if self.db.profile.growDirection == "DOWN" then
-                    PixelUtil.SetPoint(overlay, "TOP", _G[bFrame .. i - 1], "BOTTOM", 0, -relativeSpacing)
+                    PixelUtil.SetPoint(overlay, "TOP", _G[overlayName .. i - 1], "BOTTOM", 0, -relativeSpacing)
                 elseif self.db.profile.growDirection == "LEFT" then
-                    PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", _G[bFrame .. i - 1], "BOTTOMLEFT", -relativeSpacing, 0)
+                    PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", _G[overlayName .. i - 1], "BOTTOMLEFT", -relativeSpacing,
+                        0)
                 elseif self.db.profile.growDirection == "UP" or self.db.profile.growDirection == "VERTICAL" then
-                    PixelUtil.SetPoint(overlay, "BOTTOM", _G[bFrame .. i - 1], "TOP", 0, relativeSpacing)
+                    PixelUtil.SetPoint(overlay, "BOTTOM", _G[overlayName .. i - 1], "TOP", 0, relativeSpacing)
                 else
-                    PixelUtil.SetPoint(overlay, "BOTTOMLEFT", _G[bFrame .. i - 1], "BOTTOMRIGHT", relativeSpacing, 0)
+                    PixelUtil.SetPoint(overlay, "BOTTOMLEFT", _G[overlayName .. i - 1], "BOTTOMRIGHT", relativeSpacing, 0)
                 end
             end
-            self.overlays[bFrame .. i] = overlay
+            self.overlays[overlayName .. i] = overlay
         end
         overlay:Hide()
     end
@@ -652,7 +697,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     while overlayNum <= self.db.profile.iconCount do
         local data = self.priority[overlayNum]
         if data then
-            SetOverlayAura(self.overlays[bFrame .. overlayNum], data[1], data[3], data[4], data[5], data[6])
+            SetOverlayAura(self.overlays[overlayName .. overlayNum], data[1], data[3], data[4], data[5], data[6])
             overlayNum = overlayNum + 1
         else
             break
@@ -662,7 +707,7 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     overlayNum = overlayNum - 1
 
     if overlayNum > 0 and (self.db.profile.growDirection == "HORIZONTAL" or self.db.profile.growDirection == "VERTICAL") then
-        local overlay1 = self.overlays[bFrame .. 1]
+        local overlay1 = self.overlays[overlayName .. 1]
         local width, height = overlay1:GetSize()
         local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
 
@@ -682,10 +727,15 @@ hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     if not frame.buffFrames then return end
 
     if not BuffOverlay.frames[frame] then
-        BuffOverlay.frames[frame] = {}
+        BuffOverlay.frames[frame] = {
+            unit = "displayedUnit",
+            blizz = true,
+        }
     end
 
-    BuffOverlay.frames[frame].unit = frame.displayedUnit
+    if not BuffOverlay.blizzFrames[frame] then
+        BuffOverlay.blizzFrames[frame] = true
+    end
 
     BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
 end)

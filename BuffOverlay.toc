@@ -13,5 +13,6 @@ BuffOverlay.xml
 embeds.xml
 
 Spells\spellList_Mainline.lua
+AddonCompatibility.lua
 BuffOverlay.lua
 Options.lua

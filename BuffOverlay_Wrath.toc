@@ -13,5 +13,6 @@ BuffOverlay.xml
 embeds.xml
 
 Spells\spellList_Wrath.lua
+AddonCompatibility.lua
 BuffOverlay.lua
 Options.lua
