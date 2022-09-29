@@ -1,5 +1,4 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
--- local LGF = LibStub("LibGetFrame-1.1")
 
 local C_Spell = C_Spell
 local C_Timer = C_Timer
@@ -22,7 +21,6 @@ local CreateFrame = CreateFrame
 local TestBuffs = {}
 local TestBuffIds = {}
 local test
-local callback = CreateFrame("Frame")
 
 local defaultSettings = {
     profile = {
@@ -52,32 +50,6 @@ local defaultSettings = {
     global = {
         customBuffs = {},
     },
-}
-
-local defaultFrames = {
-    "^Vd",
-    "^GridLayout",
-    "^Grid2Layout",
-    "^PlexusLayout",
-    "^InvenRaidFrames3Group%dUnitButton",
-    "^ElvUF_Raid%d*Group",
-    "^oUF_.-Raid",
-    "^AshToAsh",
-    "^Cell",
-    "^LimeGroup",
-    "^SUFHeaderraid",
-    "^LUFHeaderraid",
-    -- "^CompactRaid",
-    "^InvenUnitFrames_Party%d",
-    "^AleaUI_GroupHeader",
-    "^SUFHeaderparty",
-    "^LUFHeaderparty",
-    "^ElvUF_PartyGroup",
-    "^oUF_.-Party",
-    "^PitBull4_Groups_Party",
-    -- "^CompactParty",
-    "^ElvUF_TankUnitButton%d$",
-    "^ElvUF_AssistUnitButton%d$",
 }
 
 local filters = {
@@ -335,8 +307,6 @@ function BuffOverlay:OnInitialize()
     self.unitFrames = {}
     self.blizzFrames = {}
 
-    -- Initialize LibGetFrame for cache listener
-    -- LGF.Init()
     InitUnits()
 
     -- EventHandler
@@ -351,6 +321,8 @@ function BuffOverlay:OnInitialize()
         if event == "PLAYER_LOGIN" then
             self:InitFrames()
         elseif event == "GROUP_ROSTER_UPDATE" then
+            -- TODO: Potentially use a coroutine to fix stuttering
+
             -- if timer then return end
 
             -- timer = C_Timer.NewTimer(2, function()
@@ -435,7 +407,7 @@ end
 local function GetTestAnchor()
     local anchor = false
     for frame, info in pairs(BuffOverlay.frames) do
-        if UnitIsPlayer(info.unit) and frame:IsShown() and frame:IsVisible() then
+        if UnitIsPlayer(frame[info.unit]) and frame:IsShown() and frame:IsVisible() then
             anchor = frame
 
             local parent = frame:GetParent()
@@ -509,24 +481,19 @@ function BuffOverlay:Test()
     end
 
     if not anchor then
-        -- LGF.ScanForUnitFrames()
-        -- LGF.RegisterCallback(callback, "GETFRAME_REFRESH", function()
-        --     -- NOTE: Timer might be unnecessary here, but it's a failsafe
-        --     C_Timer.After(0.1, function()
-        --         local anc = GetTestAnchor()
+        self:GetAllFrames()
+        C_Timer.After(0.1, function()
+            anchor = GetTestAnchor()
 
-        --         if not anc then
-        --             self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
-        --             test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-        --         else
-        --             test:SetPoint("BOTTOMLEFT", anc, "TOPLEFT", 0, 2)
-        --         end
+            if not anchor then
+                self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
+                test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+            else
+                test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
+            end
 
-        --         test:Show()
-        --     end)
-
-        --     LGF.UnregisterCallback(callback, "GETFRAME_REFRESH")
-        -- end)
+            test:Show()
+        end)
     else
         test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
         test:Show()

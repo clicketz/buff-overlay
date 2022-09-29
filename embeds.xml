@@ -8,5 +8,4 @@
     <Include file="Libs\AceGUI-3.0\AceGUI-3.0.xml" />
     <Include file="Libs\AceConfig-3.0\AceConfig-3.0.xml" />
     <Include file="Libs\LibDialog-1.0\lib.xml"/>
-    <Script file="Libs\LibGetFrame-1.1\LibGetFrame-1.1.lua" />
 </Ui>
