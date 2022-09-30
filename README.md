@@ -8,19 +8,33 @@ This extremely lightweight addon was created for people to quickly and easily se
 By default, all immunity and damage reduction abilities have been added.
 
 
-Type /bo or /buffoverlay to open the options panel.
+Type `/bo` or `/buffoverlay` to open the options panel.
 
 # **Multi-AddOn Support**
 
+AddOns supported as of `v11.8`:
+
 - ElvUI
 - VuhDo
-- HealBot
+- Grid
 - Grid2
+- HealBot
+- Cell
+- Aptechka
+- InvenRaidFrames3
+- Lime
+- Plexus
+- Tukui
 - Shadowed Unit Frames
+- ZPerl
+- PitBull4
+- NDui
 - oUF
+- KkthxUI
+- GW2 UI
+- AltzUI
+- AshToAsh
 - Blizzard Raid Frames
-
-(Note: This list is not exhaustive. All addons supported by [LibGetFrame](https://github.com/mrbuds/LibGetFrame) should now work with BuffOverlay)
 
 # **Full In-Game UI**
 
