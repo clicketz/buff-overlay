@@ -118,6 +118,8 @@ local function InitUnits()
     units["player"] = CreateFrame("Frame", "BuffOverlayPlayer", container)
     units["pet"] = CreateFrame("Frame", "BuffOverlayPet", container)
 
+    InitUnitFrames()
+
     for unit, frame in pairs(units) do
         frame:SetScript("OnEvent", function()
             for f in pairs(BuffOverlay.unitFrames[unit]) do
@@ -127,8 +129,6 @@ local function InitUnits()
 
         frame:RegisterUnitEvent("UNIT_AURA", unit)
     end
-
-    InitUnitFrames()
 end
 
 function BuffOverlay:AddUnitFrame(frame, unit)
