@@ -20,7 +20,7 @@ local CreateFrame = CreateFrame
 
 local TestBuffs = {}
 local TestBuffIds = {}
-local test
+local testTextFrame
 
 local defaultSettings = {
     profile = {
@@ -418,19 +418,19 @@ function BuffOverlay:Test()
 
     self.test = not self.test
 
-    if not test then
-        test = CreateFrame("Frame", "BuffOverlayTest", UIParent)
-        test.bg = test:CreateTexture()
-        test.bg:SetAllPoints(true)
-        test.bg:SetColorTexture(1, 0, 0, 0.6)
-        test.text = test:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-        test.text:SetPoint("CENTER", 0, 0)
-        test.text:SetText("BuffOverlay Test")
-        test:SetSize(test.text:GetWidth() + 20, test.text:GetHeight() + 2)
-        test:EnableMouse(false)
+    if not testTextFrame then
+        testTextFrame = CreateFrame("Frame", "BuffOverlayTest", UIParent)
+        testTextFrame.bg = testTextFrame:CreateTexture()
+        testTextFrame.bg:SetAllPoints(true)
+        testTextFrame.bg:SetColorTexture(1, 0, 0, 0.6)
+        testTextFrame.text = testTextFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+        testTextFrame.text:SetPoint("CENTER", 0, 0)
+        testTextFrame.text:SetText("BuffOverlay Test")
+        testTextFrame:SetSize(testTextFrame.text:GetWidth() + 20, testTextFrame.text:GetHeight() + 2)
+        testTextFrame:EnableMouse(false)
     end
 
-    test:Hide()
+    testTextFrame:Hide()
 
     if not self.test then
         if GetNumGroupMembers() == 0 or
@@ -453,7 +453,7 @@ function BuffOverlay:Test()
     end
 
     self.print("Test mode activated.")
-    test:ClearAllPoints()
+    testTextFrame:ClearAllPoints()
 
     local anchor = false
     if CompactRaidFrameManager then
@@ -474,16 +474,16 @@ function BuffOverlay:Test()
 
             if not anchor then
                 self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
-                test:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+                testTextFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
             else
-                test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
+                testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
             end
 
-            test:Show()
+            testTextFrame:Show()
         end)
     else
-        test:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
-        test:Show()
+        testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
+        testTextFrame:Show()
     end
 
     self:RefreshOverlays()
