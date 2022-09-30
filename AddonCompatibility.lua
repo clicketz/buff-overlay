@@ -1,8 +1,9 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
-local pairs, IsAddOnLoaded = pairs, IsAddOnLoaded
+local pairs, IsAddOnLoaded, debugprofilestop, collectgarbage = pairs, IsAddOnLoaded, debugprofilestop, collectgarbage
 local maxDepth = 50
-
+local co
+local coFrame = CreateFrame("Frame")
 local enabledFrameNames = {}
 
 BuffOverlay.frames = {}
@@ -195,17 +196,31 @@ local addonFrameInfo = {
     }
 }
 
-local function CheckEnabledAddOns()
+local function AddOnsExist()
+    local addonsExist = false
     for addon, info in pairs(addonFrameInfo) do
         if IsAddOnLoaded(addon) then
             for _, frameInfo in pairs(info) do
                 enabledFrameNames[frameInfo.frame] = { unit = frameInfo.unit }
             end
+
+            if not addonsExist then
+                addonsExist = true
+            end
         end
     end
+    return addonsExist
 end
 
+--[[----------------------------------------------------------
+
+    Scanning functionality largely inspired by LibGetFrame
+    https://github.com/mrbuds/LibGetFrame
+
+------------------------------------------------------------]]
+
 local function ScanFrames(depth, frame, ...)
+    coroutine.yield()
     if not frame then return end
 
     if depth < maxDepth and frame.IsForbidden and not frame:IsForbidden() then
@@ -242,11 +257,28 @@ function BuffOverlay:UpdateUnits()
     self:RefreshOverlays()
 end
 
+coFrame:Hide()
+coFrame:SetScript("OnUpdate", function(self)
+    local start = debugprofilestop()
+
+    while debugprofilestop() - start < 5 and coroutine.status(co) ~= "dead" do
+        coroutine.resume(co, 1, UIParent:GetChildren())
+    end
+
+    if coroutine.status(co) == "dead" then
+        self:Hide()
+        BuffOverlay:UpdateUnits()
+        collectgarbage()
+    end
+end)
+
 function BuffOverlay:GetAllFrames()
     -- Timer is needed to account for addons that have a delay in creating their frames
     C_Timer.After(1, function()
-        ScanFrames(0, UIParent)
-        self:UpdateUnits()
+        if not coFrame:IsShown() then
+            co = coroutine.create(ScanFrames)
+            coFrame:Show()
+        end
     end)
 end
 
@@ -255,9 +287,16 @@ function BuffOverlay:InitFrames()
     -- PLAYER_LOGIN fires too early.
     C_Timer.After(0, function()
         C_Timer.After(0, function()
-            CheckEnabledAddOns()
-            ScanFrames(0, UIParent)
-            self:UpdateUnits()
+            -- Blizzard frames are handled differently so if we have no supported addons
+            -- installed then we don't need to waste cycles scanning for frames.
+            if AddOnsExist() then
+                self.eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
+                self.eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
+                self.eventHandler:RegisterEvent("UNIT_EXITED_VEHICLE")
+                self.eventHandler:RegisterEvent("UNIT_ENTERED_VEHICLE")
+
+                self:GetAllFrames()
+            end
         end)
     end)
 end

@@ -309,32 +309,19 @@ function BuffOverlay:OnInitialize()
 
     InitUnits()
 
-    -- EventHandler
-    local timer
-    local eventHandler = CreateFrame("Frame")
-    eventHandler:RegisterEvent("PLAYER_LOGIN")
-    eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
-    eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
-    eventHandler:RegisterEvent("UNIT_EXITED_VEHICLE")
-    eventHandler:RegisterEvent("UNIT_ENTERED_VEHICLE")
-    eventHandler:SetScript("OnEvent", function(_, event)
+    -- EventHandler for third-party addons
+    -- Note: More events get added in InitFrames()
+    self.eventHandler = CreateFrame("Frame")
+    self.eventHandler:RegisterEvent("PLAYER_LOGIN")
+    self.eventHandler:SetScript("OnEvent", function(_, event)
         if event == "PLAYER_LOGIN" then
             self:InitFrames()
         elseif event == "GROUP_ROSTER_UPDATE" then
-            -- TODO: Potentially use a coroutine to fix stuttering
-
-            -- if timer then return end
-
-            -- timer = C_Timer.NewTimer(2, function()
-            --     self:GetAllFrames()
-            --     timer = nil
-            -- end)
-
             self:GetAllFrames()
         elseif event == "PLAYER_ENTERING_WORLD" then
             self:GetAllFrames()
         elseif event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE" then
-            -- Wait a frame for the vehicle to be fully loaded/unloaded
+            -- Wait for the next frame for the vehicle to be fully loaded/unloaded
             C_Timer.After(0, function()
                 self:UpdateUnits()
             end)
@@ -562,7 +549,7 @@ function BuffOverlay:SetupContainer(frame)
 end
 
 function BuffOverlay:ApplyOverlay(frame, unit)
-    if not frame or frame:IsForbidden() or not frame:IsShown() then return end
+    if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string.find(unit, "target") or unit == "focus" then return end
 
     if not frame.BuffOverlays then
