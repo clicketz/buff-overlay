@@ -1,6 +1,6 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
-local pairs, IsAddOnLoaded, debugprofilestop, collectgarbage = pairs, IsAddOnLoaded, debugprofilestop, collectgarbage
+local pairs, IsAddOnLoaded, debugprofilestop, collectgarbage, InCombatLockdown = pairs, IsAddOnLoaded, debugprofilestop, collectgarbage, InCombatLockdown
 local maxDepth = 50
 local co
 local coFrame = CreateFrame("Frame")
@@ -212,6 +212,12 @@ local function AddOnsExist()
     return addonsExist
 end
 
+local collect = CreateFrame("Frame")
+collect:SetScript("OnEvent", function(self)
+    collectgarbage()
+    self:UnregisterAllEvents()
+end)
+
 --[[----------------------------------------------------------
 
     Scanning functionality largely inspired by LibGetFrame
@@ -255,20 +261,25 @@ function BuffOverlay:UpdateUnits()
         end
     end
     self:RefreshOverlays()
+
+    if InCombatLockdown() then
+        collect:RegisterEvent("PLAYER_REGEN_ENABLED")
+    else
+        collectgarbage()
+    end
 end
 
 coFrame:Hide()
 coFrame:SetScript("OnUpdate", function(self)
     local start = debugprofilestop()
 
-    while debugprofilestop() - start < 5 and coroutine.status(co) ~= "dead" do
+    while debugprofilestop() - start < 15 and coroutine.status(co) ~= "dead" do
         coroutine.resume(co, 1, UIParent:GetChildren())
     end
 
     if coroutine.status(co) == "dead" then
         self:Hide()
         BuffOverlay:UpdateUnits()
-        collectgarbage()
     end
 end)
 
