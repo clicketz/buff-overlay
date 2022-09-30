@@ -83,6 +83,7 @@ BuffOverlay.defaultSpells = {
     [81782] = { class = "PRIEST", prio = 50 }, --Power Word: Barrier
     [271466] = { class = "PRIEST", prio = 50 }, --Luminous Barrier
     [20711] = { class = "PRIEST", prio = 50 }, --Spirit of Redemption
+    [19236] = { class = "PRIEST", prio = 50 }, --Desperate Prayer
 
     -- Rogue
     [31224] = { class = "ROGUE", prio = 10 }, --Cloak of Shadows
