@@ -284,13 +284,13 @@ coFrame:SetScript("OnUpdate", function(self)
 end)
 
 function BuffOverlay:GetAllFrames()
-    -- Timer is needed to account for addons that have a delay in creating their frames
-    C_Timer.After(1, function()
-        if not coFrame:IsShown() then
+    if not coFrame:IsShown() then
+        -- Timer is needed to account for addons that have a delay in creating their frames
+        C_Timer.After(1, function()
             co = coroutine.create(ScanFrames)
             coFrame:Show()
-        end
-    end)
+        end)
+    end
 end
 
 function BuffOverlay:InitFrames()
