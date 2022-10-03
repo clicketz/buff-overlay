@@ -393,18 +393,20 @@ end
 
 local function GetTestAnchor()
     local anchor = false
-    for frame, info in pairs(BuffOverlay.frames) do
-        if UnitIsPlayer(frame[info.unit]) and frame:IsShown() and frame:IsVisible() then
-            anchor = frame
+    if BuffOverlay.frames then
+        for frame, info in pairs(BuffOverlay.frames) do
+            if UnitIsPlayer(frame[info.unit]) and frame:IsShown() and frame:IsVisible() then
+                anchor = frame
 
-            local parent = frame:GetParent()
-            while parent:GetSize() ~= UIParent:GetSize() and parent ~= ElvUF_Parent and parent:IsShown() and
-                parent:IsVisible() do
-                anchor = parent
-                parent = parent:GetParent()
+                local parent = frame:GetParent()
+                while parent:GetSize() ~= UIParent:GetSize() and parent ~= ElvUF_Parent and parent:IsShown() and
+                    parent:IsVisible() do
+                    anchor = parent
+                    parent = parent:GetParent()
+                end
+
+                break
             end
-
-            break
         end
     end
     return anchor
@@ -680,14 +682,14 @@ end
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     if not frame.buffFrames then return end
 
-    if not BuffOverlay.frames[frame] then
+    if BuffOverlay.frames and not BuffOverlay.frames[frame] then
         BuffOverlay.frames[frame] = {
             unit = "displayedUnit",
             blizz = true,
         }
     end
 
-    if not BuffOverlay.blizzFrames[frame] then
+    if BuffOverlay.blizzFrames and not BuffOverlay.blizzFrames[frame] then
         BuffOverlay.blizzFrames[frame] = true
     end
 
