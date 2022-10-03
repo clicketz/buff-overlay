@@ -1,14 +1,14 @@
 name: "Bug Report"
 description: Create a report to help me improve Buff Overlay.
 # title: "[BUG]: "
-labels: 'bug'
+labels: ["bug"]
 assignees:
   - clicketz
 body:
 - type: markdown
   attributes:
     value: |
-      Please [search for existing issues](https://github.com/clicketz/buff-overlay/issues) before creating a new one.
+      Please [search for existing issues](https://github.com/clicketz/buff-overlay/labels/bug) before creating a new one.
 
 - type: textarea
   attributes:
