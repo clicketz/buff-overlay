@@ -35,6 +35,7 @@ AddOns supported as of `v11.8`:
 - AltzUI
 - AshToAsh
 - Blizzard Raid Frames
+- LunaUnitFrames
 
 # **Full In-Game UI**
 
