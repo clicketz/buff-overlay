@@ -193,6 +193,23 @@ local addonFrameInfo = {
             type = "raid",
             unit = "unit",
         },
+    },
+    ["LunaUnitFrames"] = {
+        {
+            frame = "^LUFHeaderpartyUnitButton%d+",
+            type = "party",
+            unit = "unit",
+        },
+        {
+            frame = "^LUFHeaderraid%d+UnitButton%d+",
+            type = "raid",
+            unit = "unit",
+        },
+        {
+            frame = "^LUFHeadermaintankUnitButton%d+",
+            type = "tank",
+            unit = "unit",
+        },
     }
 }
 
