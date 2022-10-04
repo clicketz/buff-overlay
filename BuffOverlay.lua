@@ -390,10 +390,15 @@ function BuffOverlay:OnInitialize()
     self.blizzFrames = {}
 
     -- Clean up old DB entries
-    if self.db.profile.iconCount then
-        self.print("There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing |cff9b6ef3/bo|r in chat.")
-        wipe(self.db.profile)
-        self.db:ResetProfile()
+    for _, content in pairs(self.db.profiles) do
+        for attr in pairs(defaultBarSettings) do
+            if content[attr] ~= nil then
+                self.print("There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing |cff9b6ef3/bo|r in chat.")
+                wipe(self.db.profile)
+                self.db:ResetProfile()
+                break
+            end
+        end
     end
 
     InitUnits()
