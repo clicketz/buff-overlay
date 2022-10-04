@@ -59,8 +59,10 @@ local deleteSpellDelegate = {
                     for k, v in pairs(BuffOverlay.defaultSpells[spellId]) do
                         BuffOverlay.db.profile.buffs[spellId][k] = v
                     end
-                    BuffOverlay.db.profile.buffs[spellId].enabled = false
                     BuffOverlay.db.profile.buffs[spellId].custom = nil
+                    for barName in pairs(BuffOverlay.db.profile.bars) do
+                        BuffOverlay.db.profile.buffs[spellId].enabled[barName] = false
+                    end
                 else
                     BuffOverlay.db.profile.buffs[spellId] = nil
                 end
@@ -119,7 +121,7 @@ local function GetIconString(icon)
     return format("|T%s:0|t", icon)
 end
 
-local function GetSpells(class)
+local function GetSpells(class, barName)
     local spells = {}
 
     if next(BuffOverlay.db.profile.buffs) ~= nil then
@@ -173,13 +175,13 @@ local function GetSpells(class)
                     end,
                     width = "full",
                     get = function()
-                        return BuffOverlay.db.profile.buffs[k].enabled or false
+                        return BuffOverlay.db.profile.buffs[k].enabled[barName] or false
                     end,
                     set = function(_, value)
-                        BuffOverlay.db.profile.buffs[k].enabled = value
+                        BuffOverlay.db.profile.buffs[k].enabled[barName] = value
                         if BuffOverlay.db.profile.buffs[k].children then
                             for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
-                                BuffOverlay.db.profile.buffs[child].enabled = value
+                                BuffOverlay.db.profile.buffs[child].enabled[barName] = value
                             end
                         end
                         BuffOverlay:RefreshOverlays()
@@ -191,13 +193,13 @@ local function GetSpells(class)
     return spells
 end
 
-local function GetClasses()
+local function GetClasses(barName)
     local classes = {}
     classes["MISC"] = {
         name = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"])),
         order = 1,
         type = "group",
-        args = GetSpells("MISC"),
+        args = GetSpells("MISC", barName),
         -- icon = "Interface\\Icons\\Trade_Engineering",
         -- iconCoords = nil,
     }
@@ -209,7 +211,7 @@ local function GetClasses()
             name = format("%s %s", GetIconString(classIcons[className]), LOCALIZED_CLASS_NAMES_MALE[className]),
             order = 0,
             type = "group",
-            args = GetSpells(className),
+            args = GetSpells(className, barName),
             -- icon = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes",
             -- iconCoords = CLASS_ICON_TCOORDS[className],
         }
@@ -218,9 +220,337 @@ local function GetClasses()
 end
 
 function BuffOverlay:UpdateSpellOptionsTable()
-    for k, v in pairs(GetClasses()) do
-        self.options.args.spells.args[k] = v
+    for barName in pairs(self.db.profile.bars) do
+        for k, v in pairs(GetClasses(barName)) do
+            if self.options.args.bars.args[barName] then
+                self.options.args.bars.args[barName].args.spells.args[k] = v
+            end
+        end
     end
+end
+
+function BuffOverlay:AddBarToOptions(bar, barName)
+    self.options.args.bars.args[barName] = {
+        name = bar.name or barName,
+        type = "group",
+        childGroups = "tab",
+        args = {
+            delete = {
+                name = "Delete Bar",
+                type = "execute",
+                order = 1,
+                width = 0.75,
+                func = function()
+                    BuffOverlay:DeleteBar(barName)
+                end,
+            },
+            name = {
+                name = "Set Bar Name",
+                type = "input",
+                order = 0,
+                width = 1,
+                get = function() return "" end,
+                set = function(info, val)
+                    bar[info[#info]] = val
+                    self.options.args.bars.args[barName].name = val
+                end,
+            },
+            space = {
+                name = "",
+                type = "description",
+                order = 0.5,
+                width = 0.1,
+            },
+            settings = {
+                name = "Settings",
+                type = "group",
+                order = 1,
+                get = function(info) return bar[info[#info]] end,
+                set = function(info, val)
+                    if InCombatLockdown() then
+                        self.print("Cannot change settings in combat.")
+                        return
+                    end
+                    bar[info[#info]] = val
+                    self:RefreshOverlays(true)
+                end,
+                args = {
+                    iconCount = {
+                        order = 1,
+                        name = "Icon Count",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Number of icons you want to display (per frame).",
+                        min = 1,
+                        max = 40,
+                        softMax = 10,
+                        step = 1,
+                    },
+                    iconAlpha = {
+                        order = 2,
+                        name = "Icon Alpha",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Icon transparency.",
+                        min = 0,
+                        max = 1,
+                        step = 0.01,
+                    },
+                    iconScale = {
+                        order = 3,
+                        name = "Icon Scale",
+                        type = "range",
+                        width = 1,
+                        desc = "Scale the size of the icon. Base icon size is proportionate to its parent frame.",
+                        min = 0.01,
+                        max = 99,
+                        softMax = 3,
+                        step = 0.01,
+                    },
+                    cooldownNumberScale = {
+                        order = 4,
+                        name = "Cooldown Text Scale",
+                        type = "range",
+                        width = 1,
+                        desc = "Scale the icon's cooldown text size.",
+                        min = 0.01,
+                        max = 10,
+                        softMax = 3,
+                        step = 0.01,
+                        disabled = function() return not bar.showCooldownNumbers end,
+                    },
+                    iconSpacing = {
+                        order = 5,
+                        name = "Icon Spacing",
+                        type = "range",
+                        width = 1,
+                        desc = "Spacing between icons. Spacing is scaled based on icon size for uniformity across different icon sizes.",
+                        min = 0,
+                        max = 200,
+                        softMax = 20,
+                        step = 1,
+                    },
+                    iconBorder = {
+                        order = 6,
+                        name = "Icon Border",
+                        type = "toggle",
+                        width = 0.75,
+                        desc = "Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present.",
+                    },
+                    iconBorderColor = {
+                        order = 7,
+                        name = "Icon Border Color",
+                        type = "color",
+                        width = 0.75,
+                        desc = "Change the icon border color.",
+                        hasAlpha = true,
+                        disabled = function() return not bar.iconBorder end,
+                        get = function(info)
+                            local t = bar[info[#info]]
+                            return t.r, t.g, t.b, t.a
+                        end,
+                        set = function(info, r, g, b, a)
+                            local t = bar[info[#info]]
+                            t.r, t.g, t.b, t.a = r, g, b, a
+                            self:RefreshOverlays(true)
+                        end,
+                    },
+                    iconBorderSize = {
+                        order = 8,
+                        name = "Icon Border Size",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Change the icon border size (in pixels).",
+                        min = 1,
+                        max = 10,
+                        softMax = 5,
+                        step = 1,
+                        disabled = function() return not bar.iconBorder end,
+                    },
+                    showCooldownSpiral = {
+                        order = 9,
+                        name = "Cooldown Spiral",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the cooldown spiral.",
+                    },
+                    showCooldownNumbers = {
+                        order = 10,
+                        name = "Show Blizzard Cooldown Text",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the cooldown text.",
+                        get = function(info)
+                            if not GetCVarBool("countdownForCooldowns") and bar[info[#info]] then
+                                bar[info[#info]] = false
+                                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+                            end
+                            return bar[info[#info]]
+                        end,
+                        set = function(info, val)
+                            if InCombatLockdown() then
+                                self.print("Cannot change settings in combat.")
+                                return
+                            end
+
+                            if val and not GetCVarBool("countdownForCooldowns") then
+                                LibDialog:Spawn("ConfirmEnableBlizzardCooldownText")
+                            else
+                                bar[info[#info]] = val
+                                self:RefreshOverlays(true)
+                            end
+                        end,
+                    },
+                },
+            },
+            anchoring = {
+                name = "Anchoring",
+                order = 2,
+                type = "group",
+                get = function(info) return bar[info[#info]] end,
+                set = function(info, val)
+                    if InCombatLockdown() then
+                        self.print("Cannot change settings in combat.")
+                        return
+                    end
+                    bar[info[#info]] = val
+                    self:RefreshOverlays(true)
+                end,
+                args = {
+                    iconAnchor = {
+                        order = 1,
+                        name = "Icon Anchor",
+                        type = "select",
+                        style = "dropdown",
+                        width = 1,
+                        desc = "Where the anchor is on the icon.",
+                        values = {
+                            ["TOPLEFT"] = "TOPLEFT",
+                            ["TOPRIGHT"] = "TOPRIGHT",
+                            ["BOTTOMLEFT"] = "BOTTOMLEFT",
+                            ["BOTTOMRIGHT"] = "BOTTOMRIGHT",
+                            ["TOP"] = "TOP",
+                            ["BOTTOM"] = "BOTTOM",
+                            ["RIGHT"] = "RIGHT",
+                            ["LEFT"] = "LEFT",
+                            ["CENTER"] = "CENTER",
+                        },
+                    },
+                    iconRelativePoint = {
+                        order = 2,
+                        name = "Frame Attachment Point",
+                        type = "select",
+                        style = "dropdown",
+                        width = 1,
+                        desc = "Icon position relative to its parent frame.",
+                        values = {
+                            ["TOPLEFT"] = "TOPLEFT",
+                            ["TOPRIGHT"] = "TOPRIGHT",
+                            ["BOTTOMLEFT"] = "BOTTOMLEFT",
+                            ["BOTTOMRIGHT"] = "BOTTOMRIGHT",
+                            ["TOP"] = "TOP",
+                            ["BOTTOM"] = "BOTTOM",
+                            ["RIGHT"] = "RIGHT",
+                            ["LEFT"] = "LEFT",
+                            ["CENTER"] = "CENTER",
+                        },
+                    },
+                    growDirection = {
+                        order = 3,
+                        name = "Grow Direction",
+                        type = "select",
+                        style = "dropdown",
+                        width = 1,
+                        desc = "Where the icons will grow from the first icon.",
+                        values = {
+                            ["DOWN"] = "DOWN",
+                            ["UP"] = "UP",
+                            ["LEFT"] = "LEFT",
+                            ["RIGHT"] = "RIGHT",
+                            ["HORIZONTAL"] = "HORIZONTAL",
+                            ["VERTICAL"] = "VERTICAL",
+                        },
+                    },
+                    iconXOff = {
+                        order = 4,
+                        name = "X-Offset",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Change the icon group's X-Offset.",
+                        min = -100,
+                        max = 100,
+                        step = 1,
+                    },
+                    iconYOff = {
+                        order = 5,
+                        name = "Y-Offset",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Change the icon group's Y-Offset.",
+                        min = -100,
+                        max = 100,
+                        step = 1,
+                    },
+                },
+            },
+            spells = {
+                order = 3,
+                name = "Spells",
+                type = "group",
+                args = {
+                    enableAll = {
+                        order = 1,
+                        name = "Enable All",
+                        type = "execute",
+                        width = 0.75,
+                        desc = "Enable all spells.",
+                        func = function()
+                            for k in pairs(self.db.profile.buffs) do
+                                self.db.profile.buffs[k].enabled[barName] = true
+                            end
+                            self:RefreshOverlays()
+                        end,
+                    },
+                    disableAll = {
+                        order = 2,
+                        name = "Disable All",
+                        type = "execute",
+                        width = 0.75,
+                        desc = "Disable all spells.",
+                        func = function()
+                            for k in pairs(self.db.profile.buffs) do
+                                self.db.profile.buffs[k].enabled[barName] = false
+                            end
+                            self:RefreshOverlays()
+                        end,
+                    },
+                    space4 = {
+                        order = 3,
+                        name = "\n",
+                        type = "description",
+                        width = "full",
+                    },
+                },
+            }
+        }
+    }
+    self:UpdateSpellOptionsTable()
+end
+
+function BuffOverlay:UpdateBarOptions()
+    local options = self.options.args.bars.args
+
+    for opt in pairs(options) do
+        if opt ~= "addBar" then
+            options[opt] = nil
+        end
+    end
+
+    for name, bar in pairs(self.db.profile.bars) do
+        self:AddBarToOptions(bar, name)
+    end
+
+    self:UpdateSpellOptionsTable()
 end
 
 local customSpellInfo = {
@@ -398,7 +728,7 @@ function BuffOverlay:Options()
             },
             test = {
                 order = 3,
-                name = "Toggle Test Buffs",
+                name = "Toggle Test Auras",
                 type = "execute",
                 func = "Test",
                 handler = BuffOverlay
@@ -414,276 +744,20 @@ function BuffOverlay:Options()
                     self.db.profile[info[#info]] = val
                 end,
             },
-            layout = {
-                order = 5,
-                name = "Settings",
+            bars = {
+                name = "Bars",
                 type = "group",
-                get = function(info) return self.db.profile[info[#info]] end,
-                set = function(info, val)
-                    if InCombatLockdown() then
-                        self.print("Cannot change settings in combat.")
-                        return
-                    end
-                    self.db.profile[info[#info]] = val
-                    self:RefreshOverlays(true)
-                end,
+                childGroups = "tab",
+                order = 5.5,
                 args = {
-                    iconCount = {
+                    addBar = {
                         order = 1,
-                        name = "Icon Count",
-                        type = "range",
-                        width = 1.5,
-                        desc = "Number of icons you want to display (per frame).",
-                        min = 1,
-                        max = 40,
-                        softMax = 10,
-                        step = 1,
-                    },
-                    iconAlpha = {
-                        order = 2,
-                        name = "Icon Alpha",
-                        type = "range",
-                        width = 1.5,
-                        desc = "Icon transparency.",
-                        min = 0,
-                        max = 1,
-                        step = 0.01,
-                    },
-                    iconScale = {
-                        order = 3,
-                        name = "Icon Scale",
-                        type = "range",
-                        width = 1,
-                        desc = "Scale the size of the icon. Base icon size is proportionate to its parent frame.",
-                        min = 0.01,
-                        max = 99,
-                        softMax = 3,
-                        step = 0.01,
-                    },
-                    cooldownNumberScale = {
-                        order = 4,
-                        name = "Cooldown Text Scale",
-                        type = "range",
-                        width = 1,
-                        desc = "Scale the icon's cooldown text size.",
-                        min = 0.01,
-                        max = 10,
-                        softMax = 3,
-                        step = 0.01,
-                        disabled = function() return not self.db.profile.showCooldownNumbers end,
-                    },
-                    iconSpacing = {
-                        order = 5,
-                        name = "Icon Spacing",
-                        type = "range",
-                        width = 1,
-                        desc = "Spacing between icons. Spacing is scaled based on icon size for uniformity across different icon sizes.",
-                        min = 0,
-                        max = 200,
-                        softMax = 20,
-                        step = 1,
-                    },
-                    iconBorder = {
-                        order = 6,
-                        name = "Icon Border",
-                        type = "toggle",
-                        width = 0.75,
-                        desc = "Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present.",
-                    },
-                    iconBorderColor = {
-                        order = 7,
-                        name = "Icon Border Color",
-                        type = "color",
-                        width = 0.75,
-                        desc = "Change the icon border color.",
-                        hasAlpha = true,
-                        disabled = function() return not self.db.profile.iconBorder end,
-                        get = function(info)
-                            local t = self.db.profile[info[#info]]
-                            return t.r, t.g, t.b, t.a
-                        end,
-                        set = function(info, r, g, b, a)
-                            local t = self.db.profile[info[#info]]
-                            t.r, t.g, t.b, t.a = r, g, b, a
-                            self:RefreshOverlays(true)
-                        end,
-                    },
-                    iconBorderSize = {
-                        order = 8,
-                        name = "Icon Border Size",
-                        type = "range",
-                        width = 1.5,
-                        desc = "Change the icon border size (in pixels).",
-                        min = 1,
-                        max = 10,
-                        softMax = 5,
-                        step = 1,
-                        disabled = function() return not self.db.profile.iconBorder end,
-                    },
-                    showCooldownSpiral = {
-                        order = 9,
-                        name = "Cooldown Spiral",
-                        type = "toggle",
-                        width = "full",
-                        desc = "Toggle showing of the cooldown spiral.",
-                    },
-                    showCooldownNumbers = {
-                        order = 10,
-                        name = "Show Blizzard Cooldown Text",
-                        type = "toggle",
-                        width = "full",
-                        desc = "Toggle showing of the cooldown text.",
-                        get = function(info)
-                            if not GetCVarBool("countdownForCooldowns") and self.db.profile[info[#info]] then
-                                self.db.profile[info[#info]] = false
-                                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
-                            end
-                            return self.db.profile[info[#info]]
-                        end,
-                        set = function(info, val)
-                            if InCombatLockdown() then
-                                self.print("Cannot change settings in combat.")
-                                return
-                            end
-
-                            if val and not GetCVarBool("countdownForCooldowns") then
-                                LibDialog:Spawn("ConfirmEnableBlizzardCooldownText")
-                            else
-                                self.db.profile[info[#info]] = val
-                                self:RefreshOverlays(true)
-                            end
-                        end,
-                    },
-                    space2 = {
-                        order = 11,
-                        name = "\n",
-                        type = "description",
-                        width = "full",
-                    },
-                    header2 = {
-                        order = 12,
-                        name = "Anchoring",
-                        type = "header",
-                        width = "full",
-                    },
-                    space3 = {
-                        order = 13,
-                        name = "\n",
-                        type = "description",
-                        width = "full",
-                    },
-                    iconAnchor = {
-                        order = 14,
-                        name = "Icon Anchor",
-                        type = "select",
-                        style = "dropdown",
-                        width = 1,
-                        desc = "Where the anchor is on the icon.",
-                        values = {
-                            ["TOPLEFT"] = "TOPLEFT",
-                            ["TOPRIGHT"] = "TOPRIGHT",
-                            ["BOTTOMLEFT"] = "BOTTOMLEFT",
-                            ["BOTTOMRIGHT"] = "BOTTOMRIGHT",
-                            ["TOP"] = "TOP",
-                            ["BOTTOM"] = "BOTTOM",
-                            ["RIGHT"] = "RIGHT",
-                            ["LEFT"] = "LEFT",
-                            ["CENTER"] = "CENTER",
-                        },
-                    },
-                    iconRelativePoint = {
-                        order = 15,
-                        name = "Frame Attachment Point",
-                        type = "select",
-                        style = "dropdown",
-                        width = 1,
-                        desc = "Icon position relative to its parent frame.",
-                        values = {
-                            ["TOPLEFT"] = "TOPLEFT",
-                            ["TOPRIGHT"] = "TOPRIGHT",
-                            ["BOTTOMLEFT"] = "BOTTOMLEFT",
-                            ["BOTTOMRIGHT"] = "BOTTOMRIGHT",
-                            ["TOP"] = "TOP",
-                            ["BOTTOM"] = "BOTTOM",
-                            ["RIGHT"] = "RIGHT",
-                            ["LEFT"] = "LEFT",
-                            ["CENTER"] = "CENTER",
-                        },
-                    },
-                    growDirection = {
-                        order = 16,
-                        name = "Grow Direction",
-                        type = "select",
-                        style = "dropdown",
-                        width = 1,
-                        desc = "Where the icons will grow from the first icon.",
-                        values = {
-                            ["DOWN"] = "DOWN",
-                            ["UP"] = "UP",
-                            ["LEFT"] = "LEFT",
-                            ["RIGHT"] = "RIGHT",
-                            ["HORIZONTAL"] = "HORIZONTAL",
-                            ["VERTICAL"] = "VERTICAL",
-                        },
-                    },
-                    iconXOff = {
-                        order = 17,
-                        name = "X-Offset",
-                        type = "range",
-                        width = 1.5,
-                        desc = "Change the icon group's X-Offset.",
-                        min = -100,
-                        max = 100,
-                        step = 1,
-                    },
-                    iconYOff = {
-                        order = 18,
-                        name = "Y-Offset",
-                        type = "range",
-                        width = 1.5,
-                        desc = "Change the icon group's Y-Offset.",
-                        min = -100,
-                        max = 100,
-                        step = 1,
-                    },
-                }
-            },
-            spells = {
-                order = 6,
-                name = "Spells",
-                type = "group",
-                args = {
-                    enableAll = {
-                        order = 1,
-                        name = "Enable All",
+                        name = "Add Bar",
                         type = "execute",
                         width = 0.75,
-                        desc = "Enable all spells.",
                         func = function()
-                            for k in pairs(self.db.profile.buffs) do
-                                self.db.profile.buffs[k].enabled = true
-                            end
-                            self:RefreshOverlays()
+                            self:AddBar()
                         end,
-                    },
-                    disableAll = {
-                        order = 2,
-                        name = "Disable All",
-                        type = "execute",
-                        width = 0.75,
-                        desc = "Disable all spells.",
-                        func = function()
-                            for k in pairs(self.db.profile.buffs) do
-                                self.db.profile.buffs[k].enabled = false
-                            end
-                            self:RefreshOverlays()
-                        end,
-                    },
-                    space4 = {
-                        order = 3,
-                        name = "\n",
-                        type = "description",
-                        width = "full",
                     },
                 },
             },
@@ -706,5 +780,5 @@ function BuffOverlay:Options()
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 590, 570)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 630, 590)
 end
