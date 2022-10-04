@@ -65,4 +65,5 @@ globals = {
     "SecureButton_GetModifiedUnit",
     "SecureButton_GetUnit",
     "debugprofilestop",
+    "CopyTable",
 }
