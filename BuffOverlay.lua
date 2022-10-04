@@ -480,10 +480,13 @@ function BuffOverlay:RefreshOverlays(full)
 end
 
 function BuffOverlay:FullRefresh()
+    if next(self.db.profile.bars) == nil then
+        self:AddBar()
+    end
+    self:UpdateBarOptions()
+    self:UpdateSpellOptionsTable()
     self:UpdateBuffs()
     self:RefreshOverlays(true)
-    self:UpdateSpellOptionsTable()
-    self:UpdateBarOptions()
 end
 
 function BuffOverlay.print(msg)
