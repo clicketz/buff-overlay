@@ -12,7 +12,7 @@ Type `/bo` or `/buffoverlay` to open the options panel.
 
 # **Multi-AddOn Support**
 
-AddOns supported as of `v11.8`:
+AddOns supported as of `v11.9`:
 
 - ElvUI
 - VuhDo
