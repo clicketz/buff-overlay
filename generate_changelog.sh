@@ -5,7 +5,9 @@ current=$( git describe --tags --always --abbrev=0 )
 
 date=$( git log -1 --date=short --format="%ad" )
 url=$( git remote get-url origin | sed -e 's/^git@\(.*\):/https:\/\/\1\//' -e 's/\.git$//' )
-commits=$( git log --pretty=format:"- "%s --no-merges --cherry-pick ${previous}...${current} )
 
-echo -ne "$commits" > "CHANGELOG.md"
+commitsFromMe=$( git log --pretty=format:"- %s" --no-merges --author="$(git config user.name)" $previous..$current )
+commitsFromOthers=$( git log --pretty=format:"- %s (thanks %aN)" --no-merges --author="^(?!$(git config user.name)).*$" --perl-regexp $previous..$current )
+
+echo -ne "$commitsFromMe \n $commitsFromOthers" > "CHANGELOG.md"
 echo -e "[${current}](${url}/tree/${current}) ($date)\n\n[Full Changelog](${url}/compare/${previous}...${current})\n\n$(sort -u "CHANGELOG.md")" > "CHANGELOG.md"
