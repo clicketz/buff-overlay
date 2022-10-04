@@ -1,6 +1,6 @@
 # **Buff Overlay**
 
-<img src="https://i.imgur.com/NRKVqfA.png" alt="BuffOverlay" />
+<img src="https://i.imgur.com/WQXxJ7Y.png" alt="BuffOverlay" />
 
 This extremely lightweight addon was created for people to quickly and easily see defensive cooldowns active on other players so they can adjust their gameplay accordingly.
 
@@ -10,7 +10,11 @@ By default, all immunity and damage reduction abilities have been added.
 
 Type `/bo` or `/buffoverlay` to open the options panel.
 
-# **Multi-AddOn Support**
+# **Multi Aura Bar Support**
+
+You can have multiple (as many as you want) separate "bars" of auras on your frames, each with their own unique configuration.
+
+# **Multi AddOn Support**
 
 AddOns supported as of `v11.9`:
 
@@ -43,17 +47,18 @@ Now supports the ability to control your overlays completely through the in-game
 
 
 <p align="center">
-    <img src="https://i.imgur.com/UjiXKkF.png" alt="Settings" />
+    <img src="https://i.imgur.com/jetenQY.png" alt="Settings" />
 </p>
 
 <p align="center">
-    <img src="https://i.imgur.com/TwBauJT.png" alt="Spell Tab" />
+    <img src="https://i.imgur.com/CHwfXzJ.png" alt="Spell Tab" />
 </p>
 
 
 **Contribution:**
 
-- [Report bugs](https://github.com/clicketz/buff-overlay/issues)
+- [Report Bugs](https://github.com/clicketz/buff-overlay/issues/new/choose)
+- [Request Feature](https://github.com/clicketz/buff-overlay/issues/new/choose)
 
 **Download:**
 
