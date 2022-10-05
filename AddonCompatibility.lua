@@ -338,9 +338,8 @@ function BuffOverlay:InitFrames()
     end)
 end
 
-hooksecurefunc("CreateFrame", function(...)
+hooksecurefunc("CreateFrame", function(frameType, name, _, template)
     if not addOnsExist then return end
-    local frameType, name, _, template = ...
 
     if frameType == "Button" and template then
         local frame = _G[name]
