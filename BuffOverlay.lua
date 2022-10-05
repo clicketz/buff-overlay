@@ -188,7 +188,7 @@ function BuffOverlay:AddUnitFrame(frame, unit)
 
     -- Remove the frame if it exists for another unit
     for u in pairs(self.unitFrames) do
-        if self.unitFrames[u][frame] then
+        if u ~= unit and self.unitFrames[u][frame] then
             self.unitFrames[u][frame] = nil
         end
     end
@@ -415,9 +415,9 @@ function BuffOverlay:OnInitialize()
         if event == "PLAYER_LOGIN" then
             self:InitFrames()
         elseif event == "GROUP_ROSTER_UPDATE" then
-            self:GetAllFrames()
+            self:UpdateUnits()
         elseif event == "PLAYER_ENTERING_WORLD" then
-            self:GetAllFrames()
+            self:UpdateUnits()
         elseif event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE" then
             -- Wait for the next frame for the vehicle to be fully loaded/unloaded
             C_Timer.After(0, function()
@@ -573,7 +573,7 @@ function BuffOverlay:Test()
     end
 
     if not anchor then
-        self:GetAllFrames()
+        self:UpdateUnits()
         C_Timer.After(0.1, function()
             anchor = GetTestAnchor()
 

@@ -1,23 +1,27 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
-local pairs, IsAddOnLoaded, debugprofilestop, collectgarbage, InCombatLockdown = pairs, IsAddOnLoaded, debugprofilestop, collectgarbage, InCombatLockdown
-local maxDepth = 50
-local co
-local coFrame = CreateFrame("Frame")
+local _G, pairs, IsAddOnLoaded = _G, pairs, IsAddOnLoaded
 local enabledFrameNames = {}
+local addOnsExist = true
+local tempFramePool = {}
 
 BuffOverlay.frames = {}
 
 local addonFrameInfo = {
     ["ElvUI"] = {
         {
-            frame = "^ElvUF_Raid",
+            frame = "^ElvUF_Raid%d+Group%dUnitButton%d+$",
             type = "raid",
             unit = "unit",
         },
         {
-            frame = "^ElvUF_Party",
+            frame = "^ElvUF_PartyGroup1UnitButton",
             type = "party",
+            unit = "unit",
+        },
+        {
+            frame = "^ElvUF_RaidpetGroup%dUnitButton%d+$",
+            type = "pet",
             unit = "unit",
         },
         {
@@ -33,7 +37,7 @@ local addonFrameInfo = {
     },
     ["VuhDo"] = {
         {
-            frame = "^Vd",
+            frame = "^Vd%dH%d+$",
             type = "raid",
             unit = "raidid",
         },
@@ -54,15 +58,40 @@ local addonFrameInfo = {
     },
     ["HealBot"] = {
         {
-            frame = "^HealBot",
+            frame = "^HealBot_Action_HealUnit",
             type = "raid",
             unit = "unit",
         },
     },
     ["Cell"] = {
         {
-            frame = "^Cell",
+            frame = "^CellRaidFrameHeader%d+UnitButton%d+$",
             type = "raid",
+            unit = "unitid",
+        },
+        {
+            frame = "^CellPartyFrameHeaderUnitButton%d+$",
+            type = "party",
+            unit = "unitid",
+        },
+        {
+            frame = "^CellRaidFrameHeader%d+UnitButton%d+Pet$",
+            type = "pet",
+            unit = "unitid",
+        },
+        {
+            frame = "^CellPartyFrameHeaderUnitButton%d+Pet$",
+            type = "pet",
+            unit = "unitid",
+        },
+        {
+            frame = "^CellSoloFramePlayer$",
+            type = "solo",
+            unit = "unitid",
+        },
+        {
+            frame = "^CellSoloFramePet$",
+            type = "pet",
             unit = "unitid",
         },
     },
@@ -94,7 +123,7 @@ local addonFrameInfo = {
     },
     ["Plexus"] = {
         {
-            frame = "^PlexusLayout",
+            frame = "^PlexusLayoutHeader%dUnitButton",
             type = "raid",
             unit = "unit",
         },
@@ -113,8 +142,18 @@ local addonFrameInfo = {
     },
     ["ShadowedUnitFrames"] = {
         {
-            frame = "^SUFHeader",
+            frame = "^SUFHeaderraidUnitButton",
             type = "raid",
+            unit = "unit",
+        },
+        {
+            frame = "^SUFHeaderraid%dUnitButton",
+            type = "raid",
+            unit = "unit",
+        },
+        {
+            frame = "^SUFHeaderpartyUnitButton",
+            type = "party",
             unit = "unit",
         },
     },
@@ -170,7 +209,7 @@ local addonFrameInfo = {
     },
     ["GW2_UI"] = {
         {
-            frame = "^GwCompactRaid",
+            frame = "^GwCompactRaidFrame",
             type = "raid",
             unit = "unit",
         },
@@ -210,8 +249,20 @@ local addonFrameInfo = {
             type = "tank",
             unit = "unit",
         },
-    }
+    },
 }
+
+local function AshToAshFix(frame)
+    local root = frame:GetParent():GetParent()
+    local frames = { root:GetChildren() }
+    local data = addonFrameInfo["AshToAsh"][1]
+
+    for _, f in pairs(frames) do
+        if f:GetName():match(data.frame) then
+            BuffOverlay.frames[f] = { unit = data.unit }
+        end
+    end
+end
 
 local function AddOnsExist()
     local addonsExist = false
@@ -226,88 +277,46 @@ local function AddOnsExist()
             end
         end
     end
+    addOnsExist = addonsExist
     return addonsExist
 end
 
-local collect = CreateFrame("Frame")
-collect:SetScript("OnEvent", function(self)
-    collectgarbage()
-    self:UnregisterAllEvents()
-end)
+local function cleanFramePool()
+    for frame in pairs(tempFramePool) do
+        local name = frame:GetName()
 
---[[----------------------------------------------------------
+        if name:match("AshToAshUnit%dShadowGroupHeaderUnitButton") then
+            AshToAshFix(frame)
+        end
 
-    Scanning functionality largely inspired by LibGetFrame
-    https://github.com/mrbuds/LibGetFrame
-
-------------------------------------------------------------]]
-
-local function ScanFrames(depth, frame, ...)
-    coroutine.yield()
-    if not frame then return end
-
-    if depth < maxDepth and frame.IsForbidden and not frame:IsForbidden() then
-        local type = frame:GetObjectType()
-        if type == "Frame" or type == "Button" then
-            ScanFrames(depth + 1, frame:GetChildren())
-
-            local name = frame:GetName()
-            -- Make sure we only store unit frames
-            local unit = SecureButton_GetUnit(frame)
-
-            if name and unit and not BuffOverlay.frames[frame] then
-                for enabledFrames, data in pairs(enabledFrameNames) do
-                    if name:find(enabledFrames) then
-                        BuffOverlay.frames[frame] = { unit = data.unit }
-                        BuffOverlay:SetupContainer(frame)
-                        break
-                    end
-                end
+        for enabledFrames, data in pairs(enabledFrameNames) do
+            if name:match(enabledFrames) then
+                BuffOverlay.frames[frame] = { unit = data.unit }
+                break
             end
         end
+        tempFramePool[frame] = nil
     end
-    ScanFrames(depth, ...)
 end
 
-function BuffOverlay:UpdateUnits()
-    for frame, data in pairs(self.frames) do
+local function updateUnits()
+    cleanFramePool()
+
+    for frame, data in pairs(BuffOverlay.frames) do
         local unit = frame[data.unit] or SecureButton_GetUnit(frame)
 
         if unit and not data.blizz then
-            self:AddUnitFrame(frame, unit)
+            BuffOverlay:AddUnitFrame(frame, unit)
         end
     end
-    self:RefreshOverlays()
-
-    if InCombatLockdown() then
-        collect:RegisterEvent("PLAYER_REGEN_ENABLED")
-    else
-        collectgarbage()
-    end
+    BuffOverlay:RefreshOverlays()
 end
 
-coFrame:Hide()
-coFrame:SetScript("OnUpdate", function(self)
-    local start = debugprofilestop()
-
-    while debugprofilestop() - start < 15 and coroutine.status(co) ~= "dead" do
-        coroutine.resume(co, 1, UIParent:GetChildren())
-    end
-
-    if coroutine.status(co) == "dead" then
-        self:Hide()
-        BuffOverlay:UpdateUnits()
-    end
-end)
-
-function BuffOverlay:GetAllFrames()
-    if not coFrame:IsShown() then
-        -- Timer is needed to account for addons that have a delay in creating their frames
-        C_Timer.After(1, function()
-            co = coroutine.create(ScanFrames)
-            coFrame:Show()
-        end)
-    end
+function BuffOverlay:UpdateUnits()
+    -- Some addons take a second to load their frames fully.
+    -- updateUnits() is cheap so we'll just run it twice.
+    updateUnits()
+    C_Timer.After(1, updateUnits)
 end
 
 function BuffOverlay:InitFrames()
@@ -323,8 +332,23 @@ function BuffOverlay:InitFrames()
                 self.eventHandler:RegisterEvent("UNIT_EXITED_VEHICLE")
                 self.eventHandler:RegisterEvent("UNIT_ENTERED_VEHICLE")
 
-                self:GetAllFrames()
+                self:UpdateUnits()
             end
         end)
     end)
 end
+
+hooksecurefunc("CreateFrame", function(...)
+    if not addOnsExist then return end
+    local frameType, name, _, template = ...
+
+    if frameType == "Button" and template then
+        local frame = _G[name]
+
+        if frame and not frame:IsForbidden() then
+            if not name:match("BuffOverlayBar") then
+                tempFramePool[frame] = true
+            end
+        end
+    end
+end)
