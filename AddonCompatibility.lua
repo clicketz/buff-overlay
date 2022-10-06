@@ -1,9 +1,9 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
 local _G, pairs, IsAddOnLoaded = _G, pairs, IsAddOnLoaded
-local enabledFrameNames = {}
+local enabledAddOns = {}
 local addOnsExist = true
-local tempFramePool = {}
+local tempFrameCache = {}
 
 BuffOverlay.frames = {}
 
@@ -269,7 +269,7 @@ local function AddOnsExist()
     for addon, info in pairs(addonFrameInfo) do
         if IsAddOnLoaded(addon) then
             for _, frameInfo in pairs(info) do
-                enabledFrameNames[frameInfo.frame] = { unit = frameInfo.unit }
+                enabledAddOns[frameInfo.frame] = { unit = frameInfo.unit }
             end
 
             if not addonsExist then
@@ -282,20 +282,20 @@ local function AddOnsExist()
 end
 
 local function cleanFramePool()
-    for frame in pairs(tempFramePool) do
+    for frame in pairs(tempFrameCache) do
         local name = frame:GetName()
 
         if name:match("AshToAshUnit%dShadowGroupHeaderUnitButton") then
             AshToAshFix(frame)
         end
 
-        for enabledFrames, data in pairs(enabledFrameNames) do
-            if name:match(enabledFrames) then
+        for addOnFramePattern, data in pairs(enabledAddOns) do
+            if name:match(addOnFramePattern) then
                 BuffOverlay.frames[frame] = { unit = data.unit }
                 break
             end
         end
-        tempFramePool[frame] = nil
+        tempFrameCache[frame] = nil
     end
 end
 
@@ -346,7 +346,7 @@ hooksecurefunc("CreateFrame", function(frameType, name, _, template)
 
         if frame and not frame:IsForbidden() then
             if not name:match("BuffOverlayBar") then
-                tempFramePool[frame] = true
+                tempFrameCache[frame] = true
             end
         end
     end
