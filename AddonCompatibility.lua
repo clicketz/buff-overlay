@@ -265,7 +265,7 @@ local function AddOnsExist()
                 addonsExist = true
             end
 
-            -- Fix for ElvUI Party Pet Frames. They are not in the frame pool due
+            -- Fix for ElvUI Party Pet Frames. They are not in the frame cache due
             -- to the way ElvUI creates them. This is unique to party pets, thankfully.
             if addon == "ElvUI" then
                 for i = 1, 5 do
@@ -278,7 +278,7 @@ local function AddOnsExist()
     return addonsExist
 end
 
-local function cleanFramePool()
+local function cleanFrameCache()
     for frame in pairs(tempFrameCache) do
         local name = frame:GetName()
 
@@ -307,7 +307,7 @@ local function cleanFramePool()
 end
 
 local function updateUnits()
-    cleanFramePool()
+    cleanFrameCache()
 
     if next(framesToFind) ~= nil then
         for f, data in pairs(framesToFind) do
