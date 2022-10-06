@@ -67,19 +67,14 @@ local function GetFirstUnusedNum()
     local nums = {}
 
     for name in pairs(BuffOverlay.db.profile.bars) do
-        rawset(nums, #nums + 1, string.match(name, "%d+"))
+        rawset(nums, #nums + 1, tonumber(string.match(name, "%d+")))
     end
 
     table.sort(nums)
 
-    for i = 1, #nums do
-        local num = tonumber(nums[i])
-        local nextNum = tonumber(nums[i + 1])
-
-        if num > i then
+    for i, num in ipairs(nums) do
+        if i ~= num then
             return i
-        elseif nextNum and nextNum > num + 1 then
-            return num + 1
         end
     end
 
