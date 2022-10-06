@@ -521,12 +521,14 @@ function BuffOverlay:Test()
         return
     end
 
+    self:UpdateUnits()
+
     self.test = not self.test
 
     if not testTextFrame then
         testTextFrame = CreateFrame("Frame", "BuffOverlayTest", UIParent)
         testTextFrame.bg = testTextFrame:CreateTexture()
-        testTextFrame.bg:SetAllPoints(true)
+        testTextFrame.bg:SetAllPoints()
         testTextFrame.bg:SetColorTexture(1, 0, 0, 0.6)
         testTextFrame.text = testTextFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
         testTextFrame.text:SetPoint("CENTER", 0, 0)

@@ -1,8 +1,9 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
-local _G, pairs, IsAddOnLoaded = _G, pairs, IsAddOnLoaded
-local enabledAddOns = {}
+local _G, pairs, IsAddOnLoaded, next = _G, pairs, IsAddOnLoaded, next
 local addOnsExist = true
+local enabledPatterns = {}
+local framesToFind = {}
 local tempFrameCache = {}
 
 BuffOverlay.frames = {}
@@ -15,7 +16,7 @@ local addonFrameInfo = {
             unit = "unit",
         },
         {
-            frame = "^ElvUF_PartyGroup1UnitButton",
+            frame = "^ElvUF_PartyGroup1UnitButton%d+$",
             type = "party",
             unit = "unit",
         },
@@ -252,28 +253,24 @@ local addonFrameInfo = {
     },
 }
 
-local function AshToAshFix(frame)
-    local root = frame:GetParent():GetParent()
-    local frames = { root:GetChildren() }
-    local data = addonFrameInfo["AshToAsh"][1]
-
-    for _, f in pairs(frames) do
-        if f:GetName():match(data.frame) then
-            BuffOverlay.frames[f] = { unit = data.unit }
-        end
-    end
-end
-
 local function AddOnsExist()
     local addonsExist = false
     for addon, info in pairs(addonFrameInfo) do
         if IsAddOnLoaded(addon) then
             for _, frameInfo in pairs(info) do
-                enabledAddOns[frameInfo.frame] = { unit = frameInfo.unit }
+                enabledPatterns[frameInfo.frame] = { unit = frameInfo.unit }
             end
 
             if not addonsExist then
                 addonsExist = true
+            end
+
+            -- Fix for ElvUI Party Pet Frames. They are not in the frame pool due
+            -- to the way ElvUI creates them. This is unique to party pets, thankfully.
+            if addon == "ElvUI" then
+                for i = 1, 5 do
+                    framesToFind["ElvUF_PartyGroup1UnitButton" .. i .. "Pet"] = "unit"
+                end
             end
         end
     end
@@ -285,22 +282,42 @@ local function cleanFramePool()
     for frame in pairs(tempFrameCache) do
         local name = frame:GetName()
 
+        -- AshToAsh Fix
         if name:match("AshToAshUnit%dShadowGroupHeaderUnitButton") then
-            AshToAshFix(frame)
-        end
+            local root = frame:GetParent():GetParent()
+            local frames = { root:GetChildren() }
+            local data = addonFrameInfo["AshToAsh"][1]
 
-        for addOnFramePattern, data in pairs(enabledAddOns) do
-            if name:match(addOnFramePattern) then
-                BuffOverlay.frames[frame] = { unit = data.unit }
-                break
+            for _, f in pairs(frames) do
+                if f:GetName():match(data.frame) then
+                    BuffOverlay.frames[f] = { unit = data.unit }
+                end
+            end
+        else
+            for addOnFramePattern, data in pairs(enabledPatterns) do
+                if name:match(addOnFramePattern) then
+                    BuffOverlay.frames[frame] = { unit = data.unit }
+                    break
+                end
             end
         end
+
         tempFrameCache[frame] = nil
     end
 end
 
 local function updateUnits()
     cleanFramePool()
+
+    if next(framesToFind) ~= nil then
+        for f, data in pairs(framesToFind) do
+            local frame = _G[f]
+            if frame and not BuffOverlay.frames[frame] then
+                BuffOverlay.frames[frame] = { data.unit }
+                framesToFind[f] = nil
+            end
+        end
+    end
 
     for frame, data in pairs(BuffOverlay.frames) do
         local unit = frame[data.unit] or SecureButton_GetUnit(frame)
@@ -339,10 +356,10 @@ function BuffOverlay:InitFrames()
     end)
 end
 
-hooksecurefunc("CreateFrame", function(frameType, name, _, template)
+hooksecurefunc("CreateFrame", function(type, name)
     if not addOnsExist then return end
 
-    if frameType == "Button" and template then
+    if name and type == "Button" then
         local frame = _G[name]
 
         if frame and not frame:IsForbidden() then
