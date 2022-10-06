@@ -82,14 +82,24 @@ local function GetFirstUnusedNum()
 end
 
 function BuffOverlay:AddBar()
-    self.db.profile.bars["Bar" .. GetFirstUnusedNum()] = CopyTable(defaultBarSettings)
-    self:UpdateBarOptions()
-    self:UpdateBuffs()
+    local num = GetFirstUnusedNum()
+    local barName = "Bar" .. num
+
+    self.db.profile.bars[barName] = CopyTable(defaultBarSettings)
+    self:AddBarToOptions(self.db.profile.bars[barName], barName)
+
+    for _, v in pairs(self.db.profile.buffs) do
+        if v.enabled[barName] == nil then
+            v.enabled[barName] = true
+        end
+    end
+
     self:RefreshOverlays(true)
 end
 
 function BuffOverlay:DeleteBar(barName)
     self.db.profile.bars[barName] = nil
+    self.options.args.bars.args[barName] = nil
 
     for _, v in pairs(self.db.profile.buffs) do
         if v.enabled then
@@ -97,8 +107,6 @@ function BuffOverlay:DeleteBar(barName)
         end
     end
 
-    self:UpdateBarOptions()
-    self:UpdateBuffs()
     self:RefreshOverlays(true)
 end
 
@@ -422,7 +430,6 @@ function BuffOverlay:OnInitialize()
     end)
 
     self:UpdateBuffs()
-    self:UpdateBarOptions()
 
     SLASH_BuffOverlay1 = "/bo"
     SLASH_BuffOverlay2 = "/buffoverlay"
@@ -442,7 +449,7 @@ function BuffOverlay:OnInitialize()
     end
 end
 
-function BuffOverlay:RefreshOverlays(full)
+function BuffOverlay:RefreshOverlays(full, barName)
     -- fix for resetting profile with buffs active
     if next(self.db.profile.buffs) == nil then
         self:CreateBuffTable()
@@ -450,15 +457,22 @@ function BuffOverlay:RefreshOverlays(full)
 
     if full then
         for k in pairs(self.overlays) do
-            self.overlays[k]:Hide()
-            self.overlays[k].needsUpdate = true
+            if barName then
+                if k:match("BuffOverlay" .. barName) then
+                    self.overlays[k]:Hide()
+                    self.overlays[k].needsUpdate = true
+                end
+            else
+                self.overlays[k]:Hide()
+                self.overlays[k].needsUpdate = true
+            end
         end
     end
 
     for unit, frames in pairs(self.unitFrames) do
         for frame in pairs(frames) do
             if frame:IsShown() then
-                self:ApplyOverlay(frame, unit)
+                self:ApplyOverlay(frame, unit, barName)
             else
                 HideAllOverlays(frame)
             end
@@ -467,7 +481,7 @@ function BuffOverlay:RefreshOverlays(full)
 
     for frame in pairs(self.blizzFrames) do
         if frame:IsShown() then
-            self:ApplyOverlay(frame, frame.displayedUnit)
+            self:ApplyOverlay(frame, frame.displayedUnit, barName)
         else
             HideAllOverlays(frame)
         end
@@ -478,8 +492,7 @@ function BuffOverlay:FullRefresh()
     if next(self.db.profile.bars) == nil then
         self:AddBar()
     end
-    self:UpdateBarOptions()
-    self:UpdateSpellOptionsTable()
+    self:UpdateBarOptionsTable()
     self:UpdateBuffs()
     self:RefreshOverlays(true)
 end
@@ -661,7 +674,7 @@ end
 
 -- TODO: Look into how this function works with multiple bars. Currently a lot of wasted cycles. Needs entire rework, probably.
 --  Might be good to save rework until dragonflight since UNIT_AURA seems to be getting efficiency changes with payload updates.
-function BuffOverlay:ApplyOverlay(frame, unit)
+function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string.find(unit, "target") or unit == "focus" then return end
 
@@ -673,7 +686,16 @@ function BuffOverlay:ApplyOverlay(frame, unit)
     local overlaySize = math.min(frameHeight, frameWidth) * 0.33
     local UnitAura = self.test and UnitBuffTest or UnitAura
 
-    for barName, bar in pairs(self.db.profile.bars) do
+    -- Workaround for only updating a single bar when you change settings.
+    local bars
+    if barNameUpdate then
+        bars = {}
+        bars[barNameUpdate] = self.db.profile.bars[barNameUpdate]
+    else
+        bars = self.db.profile.bars
+    end
+
+    for barName, bar in pairs(bars) do
         local overlayName = frame:GetName() .. "BuffOverlay" .. barName .. "Icon"
         local relativeSpacing = overlaySize *
             (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
@@ -684,8 +706,10 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
             if not overlay or overlay.needsUpdate or (round(overlay.spacing, 2) ~= round(relativeSpacing, 2)) or
                 (round(overlay.size, 2) ~= round(overlaySize, 2)) then
-                overlay = _G[overlayName .. i] or
-                    CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
+
+                if not overlay then
+                    overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
+                end
 
                 overlay.spacing = relativeSpacing
                 overlay.size = overlaySize

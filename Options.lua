@@ -16,7 +16,6 @@ local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CLASS_SORT_ORDER
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
--- local CLASS_ICON_TCOORDS = CLASS_ICON_TCOORDS
 
 local spellDescriptions = {}
 
@@ -200,8 +199,6 @@ local function GetClasses(barName)
         order = 1,
         type = "group",
         args = GetSpells("MISC", barName),
-        -- icon = "Interface\\Icons\\Trade_Engineering",
-        -- iconCoords = nil,
     }
 
     for i = 1, MAX_CLASSES do
@@ -212,8 +209,6 @@ local function GetClasses(barName)
             order = 0,
             type = "group",
             args = GetSpells(className, barName),
-            -- icon = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes",
-            -- iconCoords = CLASS_ICON_TCOORDS[className],
         }
     end
     return classes
@@ -272,7 +267,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         return
                     end
                     bar[info[#info]] = val
-                    self:RefreshOverlays(true)
+                    self:RefreshOverlays(true, barName)
                 end,
                 args = {
                     iconCount = {
@@ -352,7 +347,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         set = function(info, r, g, b, a)
                             local t = bar[info[#info]]
                             t.r, t.g, t.b, t.a = r, g, b, a
-                            self:RefreshOverlays(true)
+                            self:RefreshOverlays(true, barName)
                         end,
                     },
                     iconBorderSize = {
@@ -397,7 +392,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                                 LibDialog:Spawn("ConfirmEnableBlizzardCooldownText")
                             else
                                 bar[info[#info]] = val
-                                self:RefreshOverlays(true)
+                                self:RefreshOverlays(true, barName)
                             end
                         end,
                     },
@@ -414,7 +409,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         return
                     end
                     bar[info[#info]] = val
-                    self:RefreshOverlays(true)
+                    self:RefreshOverlays(true, barName)
                 end,
                 args = {
                     iconAnchor = {
@@ -537,7 +532,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
     self:UpdateSpellOptionsTable()
 end
 
-function BuffOverlay:UpdateBarOptions()
+function BuffOverlay:UpdateBarOptionsTable()
     local options = self.options.args.bars.args
 
     for opt in pairs(options) do
@@ -777,8 +772,10 @@ function BuffOverlay:Options()
         },
     }
 
+    self:UpdateBarOptionsTable()
+
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 630, 590)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 630, 595)
 end
