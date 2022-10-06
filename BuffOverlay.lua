@@ -517,7 +517,16 @@ end
 
 function BuffOverlay:Test()
     if InCombatLockdown() then
-        self.print("You are in combat.")
+        if self.test then
+            self.test = false
+            if testTextFrame then
+                testTextFrame:Hide()
+            end
+            self:UpdateUnits()
+        else
+            self.print("You are in combat.")
+        end
+
         return
     end
 
