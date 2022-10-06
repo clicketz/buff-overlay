@@ -659,6 +659,8 @@ function BuffOverlay:SetupContainer(frame)
     frame.BuffOverlays:SetAllPoints()
 end
 
+-- TODO: Look into how this function works with multiple bars. Currently a lot of wasted cycles. Needs entire rework, probably.
+--  Might be good to save rework until dragonflight since UNIT_AURA seems to be getting efficiency changes with payload updates.
 function BuffOverlay:ApplyOverlay(frame, unit)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string.find(unit, "target") or unit == "focus" then return end
@@ -669,14 +671,13 @@ function BuffOverlay:ApplyOverlay(frame, unit)
 
     local frameWidth, frameHeight = frame:GetSize()
     local overlaySize = math.min(frameHeight, frameWidth) * 0.33
+    local UnitAura = self.test and UnitBuffTest or UnitAura
 
     for barName, bar in pairs(self.db.profile.bars) do
         local overlayName = frame:GetName() .. "BuffOverlay" .. barName .. "Icon"
         local relativeSpacing = overlaySize *
             (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
         local overlayNum = 1
-
-        local UnitAura = self.test and UnitBuffTest or UnitAura
 
         for i = 1, bar.iconCount do
             local overlay = self.overlays[overlayName .. i]
