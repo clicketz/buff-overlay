@@ -313,6 +313,7 @@ local function updateUnits()
 end
 
 function BuffOverlay:UpdateUnits()
+    if not addOnsExist then return end
     -- Some addons take a second to load their frames fully.
     -- updateUnits() is cheap so we'll just run it twice.
     updateUnits()
