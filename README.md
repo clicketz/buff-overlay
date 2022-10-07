@@ -1,6 +1,6 @@
 # **Buff Overlay**
 
-<img src="https://i.imgur.com/WQXxJ7Y.png" alt="BuffOverlay" />
+<img src="https://i.imgur.com/NRKVqfA.png" alt="BuffOverlay" />
 
 This extremely lightweight addon was created for people to quickly and easily see defensive cooldowns active on other players so they can adjust their gameplay accordingly.
 
@@ -13,6 +13,8 @@ Type `/bo` or `/buffoverlay` to open the options panel.
 # **Multi Aura Bar Support**
 
 You can have multiple (as many as you want) separate "bars" of auras on your frames, each with their own unique configuration.
+
+<img src="https://i.imgur.com/WQXxJ7Y.png" alt="BuffOverlay" />
 
 # **Multi AddOn Support**
 
