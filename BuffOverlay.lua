@@ -123,7 +123,7 @@ local function InsertTestBuff(spellId)
     end
 end
 
-local function UnitBuffTest(_, index, filter)
+local function UnitAuraTest(_, index, filter)
     local buff = TestBuffs[index]
     if not buff then return end
     return "TestBuff", buff[2], 0, nil, 60, GetTime() + 60, nil, nil, nil, buff[1]
@@ -684,7 +684,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
 
     local frameWidth, frameHeight = frame:GetSize()
     local overlaySize = math.min(frameHeight, frameWidth) * 0.33
-    local UnitAura = self.test and UnitBuffTest or UnitAura
+    local UnitAura = self.test and UnitAuraTest or UnitAura
 
     -- Workaround for only updating a single bar when you change settings.
     local bars
@@ -764,14 +764,16 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
             wipe(self.priority)
         end
 
+        local maxIter = self.test and bar.iconCount or 40
+
         -- TODO: Optimize this with new UNIT_AURA event payload
         for _, filter in ipairs(filters) do
-            for i = 1, 999 do
+            for i = 1, maxIter do
                 local spellName, icon, count, _, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, filter)
                 if spellId then
                     local aura = self.db.profile.buffs[spellName] or self.db.profile.buffs[spellId]
 
-                    if aura and aura.enabled[barName] then
+                    if aura and (aura.enabled[barName] or self.test) then
                         rawset(self.priority, #self.priority + 1, { i, aura.prio, icon, count, duration, expirationTime })
                     end
                 else
