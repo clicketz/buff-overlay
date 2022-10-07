@@ -95,9 +95,11 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
     buttons = {
         {
             text = YES,
-            on_click = function()
+            on_click = function(self)
+                local bar = self.data
+
                 SetCVar("countdownForCooldowns", true)
-                BuffOverlay.db.profile.showCooldownNumbers = true
+                bar.showCooldownNumbers = true
                 BuffOverlay:RefreshOverlays(true)
 
                 LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
@@ -389,7 +391,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                             end
 
                             if val and not GetCVarBool("countdownForCooldowns") then
-                                LibDialog:Spawn("ConfirmEnableBlizzardCooldownText")
+                                LibDialog:Spawn("ConfirmEnableBlizzardCooldownText", bar)
                             else
                                 bar[info[#info]] = val
                                 self:RefreshOverlays(true, barName)
