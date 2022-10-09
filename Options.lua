@@ -476,7 +476,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         desc = "Change the icon group's X-Offset.",
                         min = -100,
                         max = 100,
-                        step = 1,
+                        step = 0.1,
                     },
                     iconYOff = {
                         order = 5,
@@ -486,7 +486,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         desc = "Change the icon group's Y-Offset.",
                         min = -100,
                         max = 100,
-                        step = 1,
+                        step = 0.1,
                     },
                 },
             },
