@@ -64,6 +64,11 @@ local filters = {
     "HARMFUL",
 }
 
+function BuffOverlay.print(msg)
+    local newMsg = "|cff83b2ffBuffOverlay|r: " .. msg
+    print(newMsg)
+end
+
 local function GetFirstUnusedNum()
     local nums = {}
 
@@ -498,11 +503,6 @@ function BuffOverlay:FullRefresh()
     self:RefreshOverlays(true)
 end
 
-function BuffOverlay.print(msg)
-    local newMsg = "|cff83b2ffBuffOverlay|r: " .. msg
-    print(newMsg)
-end
-
 local function GetTestAnchor()
     local anchor = false
     if BuffOverlay.frames then
@@ -641,6 +641,20 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
     overlay:Show()
 end
 
+local borderSlice = {
+    "Top",
+    "Bottom",
+    "Left",
+    "Right",
+}
+
+local function DisablePixelSnap(border)
+    for _, slice in pairs(borderSlice) do
+        border[slice]:SetSnapToPixelGrid(false)
+        border[slice]:SetTexelSnappingBias(0)
+    end
+end
+
 local function UpdateBorder(overlay, bar)
     -- zoomed in/out
     if bar.iconBorder then
@@ -651,7 +665,9 @@ local function UpdateBorder(overlay, bar)
 
     if not overlay.border then
         overlay.border = CreateFrame("Frame", nil, overlay, "BuffOverlayBorderTemplate")
-        overlay.border:SetFrameLevel(overlay:GetFrameLevel() + 1)
+        overlay.border:SetFrameLevel(overlay:GetFrameLevel() + 5)
+
+        DisablePixelSnap(overlay.border)
     end
 
     local border = overlay.border
@@ -661,7 +677,7 @@ local function UpdateBorder(overlay, bar)
     local pixelFactor = PixelUtil.GetPixelToUIUnitFactor()
     local pixelSize = (pixelFactor / 2) + (pixelFactor * size)
 
-    border:SetBorderSizes(pixelSize, 1, pixelSize, 1)
+    border:SetBorderSizes(pixelSize, pixelSize, pixelSize, pixelSize)
     border:SetVertexColor(borderColor.r, borderColor.g, borderColor.b, borderColor.a)
     border:UpdateSizes()
 
@@ -731,12 +747,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
 
                 overlay:SetScale(bar.iconScale)
                 overlay:SetAlpha(bar.iconAlpha)
-                PixelUtil.SetSize(overlay, overlaySize, overlaySize)
+                overlay:SetSize(overlaySize, overlaySize)
                 overlay:EnableMouse(false)
                 overlay:RegisterForClicks()
                 overlay:SetFrameLevel(999)
-
-                UpdateBorder(overlay, bar)
 
                 overlay:ClearAllPoints()
 
@@ -744,18 +758,22 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
                     PixelUtil.SetPoint(overlay, bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
                 else
                     if bar.growDirection == "DOWN" then
-                        PixelUtil.SetPoint(overlay, "TOP", self.overlays[overlayName .. i - 1], "BOTTOM", 0, -relativeSpacing)
+                        PixelUtil.SetPoint(overlay, "TOP", self.overlays[overlayName .. i - 1], "BOTTOM", 0,
+                            -relativeSpacing)
                     elseif bar.growDirection == "LEFT" then
                         PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", self.overlays[overlayName .. i - 1], "BOTTOMLEFT",
-                            -relativeSpacing,
-                            0)
+                            -relativeSpacing, 0)
                     elseif bar.growDirection == "UP" or bar.growDirection == "VERTICAL" then
-                        PixelUtil.SetPoint(overlay, "BOTTOM", self.overlays[overlayName .. i - 1], "TOP", 0, relativeSpacing)
+                        PixelUtil.SetPoint(overlay, "BOTTOM", self.overlays[overlayName .. i - 1], "TOP", 0,
+                            relativeSpacing)
                     else
                         PixelUtil.SetPoint(overlay, "BOTTOMLEFT", self.overlays[overlayName .. i - 1], "BOTTOMRIGHT",
                             relativeSpacing, 0)
                     end
                 end
+
+                UpdateBorder(overlay, bar)
+
                 self.overlays[overlayName .. i] = overlay
             end
             overlay:Hide()
