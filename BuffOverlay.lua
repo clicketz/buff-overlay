@@ -744,15 +744,15 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
                     PixelUtil.SetPoint(overlay, bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
                 else
                     if bar.growDirection == "DOWN" then
-                        PixelUtil.SetPoint(overlay, "TOP", _G[overlayName .. i - 1], "BOTTOM", 0, -relativeSpacing)
+                        PixelUtil.SetPoint(overlay, "TOP", self.overlays[overlayName .. i - 1], "BOTTOM", 0, -relativeSpacing)
                     elseif bar.growDirection == "LEFT" then
-                        PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", _G[overlayName .. i - 1], "BOTTOMLEFT",
+                        PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", self.overlays[overlayName .. i - 1], "BOTTOMLEFT",
                             -relativeSpacing,
                             0)
                     elseif bar.growDirection == "UP" or bar.growDirection == "VERTICAL" then
-                        PixelUtil.SetPoint(overlay, "BOTTOM", _G[overlayName .. i - 1], "TOP", 0, relativeSpacing)
+                        PixelUtil.SetPoint(overlay, "BOTTOM", self.overlays[overlayName .. i - 1], "TOP", 0, relativeSpacing)
                     else
-                        PixelUtil.SetPoint(overlay, "BOTTOMLEFT", _G[overlayName .. i - 1], "BOTTOMRIGHT",
+                        PixelUtil.SetPoint(overlay, "BOTTOMLEFT", self.overlays[overlayName .. i - 1], "BOTTOMRIGHT",
                             relativeSpacing, 0)
                     end
                 end
