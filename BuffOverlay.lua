@@ -641,7 +641,7 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
     overlay:Show()
 end
 
-local borderSlice = {
+local borderPieces = {
     "Top",
     "Bottom",
     "Left",
@@ -649,9 +649,12 @@ local borderSlice = {
 }
 
 local function DisablePixelSnap(border)
-    for _, slice in pairs(borderSlice) do
-        border[slice]:SetSnapToPixelGrid(false)
-        border[slice]:SetTexelSnappingBias(0)
+    for _, pieceName in pairs(borderPieces) do
+        local piece = border[pieceName]
+        if piece then
+            piece:SetSnapToPixelGrid(false)
+            piece:SetTexelSnappingBias(0)
+        end
     end
 end
 
