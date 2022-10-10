@@ -49,11 +49,11 @@ Now supports the ability to control your overlays completely through the in-game
 
 
 <p align="center">
-    <img src="https://i.imgur.com/jetenQY.png" alt="Settings" />
+    <img src="https://i.imgur.com/dUHflOh.png" alt="Settings" />
 </p>
 
 <p align="center">
-    <img src="https://i.imgur.com/CHwfXzJ.png" alt="Spell Tab" />
+    <img src="https://i.imgur.com/CGKUIpl.png" alt="Spell Tab" />
 </p>
 
 
