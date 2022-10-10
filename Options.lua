@@ -633,10 +633,10 @@ local customSpellInfo = {
         name = "Priority (Lower is Higher Prio)",
         validate = function(_, value)
             local num = tonumber(value)
-            if num and num >= 0 then
+            if num and num >= 0 and num < 1000000 and value:match("^%d+$") then
                 return true
             else
-                return "Priority must be a positive number."
+                return "Priority must be a positive integer between 0 and 999999"
             end
         end,
         set = function(info, state)
@@ -693,7 +693,8 @@ local customSpells = {
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
-                    BuffOverlay.print(format("%s %s is already being tracked.", GetIconString(icon, 20) or customIcons["?"],
+                    BuffOverlay.print(format("%s %s is already being tracked.",
+                        GetIconString(icon, 20) or customIcons["?"],
                         name))
                 end
             else
