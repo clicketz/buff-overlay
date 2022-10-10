@@ -560,11 +560,12 @@ function BuffOverlay:Test()
     if not self.test then
         if GetNumGroupMembers() == 0 or
             not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
-            if CompactPartyFrame then
-                CompactPartyFrame:Hide()
-            elseif CompactRaidFrameManager then
+            if CompactRaidFrameManager then
                 CompactRaidFrameManager:Hide()
                 CompactRaidFrameContainer:Hide()
+                if CompactPartyFrame then
+                    CompactPartyFrame:Hide()
+                end
             end
         end
         self.print("Exiting test mode.")
@@ -573,11 +574,12 @@ function BuffOverlay:Test()
     end
 
     if GetNumGroupMembers() == 0 then
-        if CompactPartyFrame then
-            CompactPartyFrame:Show()
-        elseif CompactRaidFrameManager then
+        if CompactRaidFrameManager then
             CompactRaidFrameManager:Show()
             CompactRaidFrameContainer:Show()
+            if CompactPartyFrame then
+                CompactPartyFrame:Show()
+            end
         end
     end
 
