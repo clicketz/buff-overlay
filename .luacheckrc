@@ -33,6 +33,7 @@ globals = {
     "GetNumGroupMembers",
     "CompactRaidFrameManager",
     "CompactRaidFrameContainer",
+    "CompactPartyFrame",
     "UnitBuff",
     "UnitAura",
     "BUFF_STACKS_OVERFLOW",
