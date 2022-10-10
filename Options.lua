@@ -155,6 +155,7 @@ local function GetSpells(class, barName)
                 spells[tostring(k)] = {
                     name = formattedName,
                     type = "toggle",
+                    order = v.prio,
                     desc = function()
                         local description = spellDescriptions[k] and spellDescriptions[k] ~= "" and
                             spellDescriptions[k] .. "\n" or ""
