@@ -629,29 +629,34 @@ local customSpellInfo = {
     },
     prio = {
         order = 6,
-        type = "range",
+        type = "input",
         name = "Priority (Lower is Higher Prio)",
-        min = 1,
-        max = 100,
-        step = 1,
+        validate = function(_, value)
+            local num = tonumber(value)
+            if num and num >= 0 then
+                return true
+            else
+                return "Priority must be a positive number."
+            end
+        end,
         set = function(info, state)
             local option = info[#info]
             local spellId = info[#info - 1]
+            local val = tonumber(state)
             spellId = tonumber(spellId)
-            BuffOverlay.db.global.customBuffs[spellId][option] = state
-            BuffOverlay.db.profile.buffs[spellId][option] = state
+            BuffOverlay.db.global.customBuffs[spellId][option] = val
+            BuffOverlay.db.profile.buffs[spellId][option] = val
             if BuffOverlay.db.profile.buffs[spellId].children then
                 BuffOverlay.db.profile.buffs[spellId]:UpdateChildren()
             end
             BuffOverlay:RefreshOverlays()
+            BuffOverlay:UpdateSpellOptionsTable()
         end,
         get = function(info)
             local option = info[#info]
             local spellId = info[#info - 1]
             spellId = tonumber(spellId)
-            local value = BuffOverlay.db.global.customBuffs[spellId][option]
-            if not value then return 100 end
-            return BuffOverlay.db.global.customBuffs[spellId][option]
+            return tostring(BuffOverlay.db.global.customBuffs[spellId][option])
         end,
     },
 }
