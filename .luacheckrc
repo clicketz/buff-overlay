@@ -67,4 +67,5 @@ globals = {
     "SecureButton_GetUnit",
     "debugprofilestop",
     "CopyTable",
+    "GetBuildInfo",
 }
