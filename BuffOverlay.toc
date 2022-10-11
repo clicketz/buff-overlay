@@ -6,6 +6,7 @@
 ## X-Website: https://www.curseforge.com/wow/addons/buff-overlay
 ## X-Curse-Project-ID: 296067
 ## X-WoWI-ID: 24683
+## X-Wago-ID: RBKpvqNE
 ## DefaultState: Enabled
 ## SavedVariables: BuffOverlayDB
 
