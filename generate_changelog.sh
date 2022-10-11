@@ -1,13 +1,33 @@
 #!/bin/bash
 
-previous=$( git describe --abbrev=0 --tags --exclude="$(git describe --abbrev=0 --tags)" )
-current=$( git describe --tags --always --abbrev=0 )
+version=$( git describe --tags --always )
+tag=$( git describe --tags --always --abbrev=0 )
+
+if [ "$version" = "$tag" ]; then # on a tag
+  current="$tag"
+  previous=$( git describe --tags --abbrev=0 HEAD~ )
+  if [[ $previous == *beta* ]]; then
+    if [[ $tag == *beta* ]]; then
+      previous=$( git describe --tags --abbrev=0 HEAD~ )
+    else
+      previous=$( git describe --tags --abbrev=0 --exclude="*beta*" HEAD~ )
+    fi
+  else
+    previous=$( git describe --tags --abbrev=0 HEAD~ )
+  fi
+else
+  current=$( git log -1 --format="%H" )
+  previous="$tag"
+fi
 
 date=$( git log -1 --date=short --format="%ad" )
 url=$( git remote get-url origin | sed -e 's/^git@\(.*\):/https:\/\/\1\//' -e 's/\.git$//' )
 
-commitsFromMe=$( git log --pretty=format:"- %s" --no-merges --author="$(git config user.name)" $previous..$current )
-commitsFromOthers=$( git log --pretty=format:"- %s (thanks %aN)" --no-merges --author="^(?!$(git config user.name)).*$" --perl-regexp $previous..$current )
+echo -ne "# [${version}](${url}/tree/${current}) ($date)\n\n[Full Changelog](${url}/compare/${previous}...${current})\n\n" > "CHANGELOG.md"
 
-echo -ne "$commitsFromMe \n $commitsFromOthers" > "CHANGELOG.md"
-echo -e "[${current}](${url}/tree/${current}) ($date)\n\n[Full Changelog](${url}/compare/${previous}...${current})\n\n$(sort -u "CHANGELOG.md")" > "CHANGELOG.md"
+if [ "$version" = "$tag" ]; then # on a tag
+  highlights=$( git cat-file -p "$tag" | sed -e '1,5d' -e '/^-----BEGIN PGP/,/^-----END PGP/d' )
+  echo -ne "## Highlights\n\n ${highlights} \n\n## Commits\n\n" >> "CHANGELOG.md"
+fi
+
+git shortlog --no-merges --reverse "$previous..$current" | sed -e  '/^\w/G' -e 's/^      /- /' >> "CHANGELOG.md"
