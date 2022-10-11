@@ -2,8 +2,6 @@ name: Giftwrap-Beta
 
 on:
   push:
-    branches:
-      - dragonflight
     tags:
       - "**-beta**"
 
