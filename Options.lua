@@ -789,6 +789,9 @@ function BuffOverlay:Options()
 
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
-    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
+    -- Temporary fix for Dragonflight Beta options panel taint.
+    if (select(4, GetBuildInfo())) < 100000 then
+        LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
+    end
     LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 630, 595)
 end
