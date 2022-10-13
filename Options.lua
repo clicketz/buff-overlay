@@ -369,6 +369,14 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         step = 1,
                         disabled = function() return not bar.iconBorder end,
                     },
+                    debuffIconBorderColorByDispelType = {
+                        order = 8.5,
+                        name = "Color Debuff Icon Border by Dispel Type",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Change the icon border color based on the dispel type of the debuff.",
+                        disabled = function() return not bar.iconBorder end,
+                    },
                     showCooldownSpiral = {
                         order = 9,
                         name = "Cooldown Spiral",
@@ -790,5 +798,5 @@ function BuffOverlay:Options()
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 630, 595)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 635, 605)
 end

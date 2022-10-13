@@ -45,6 +45,7 @@ local defaultBarSettings = {
         b = 0,
         a = 1,
     },
+    debuffIconBorderColorByDispelType = true,
     iconBorderSize = 1,
 }
 
@@ -621,7 +622,9 @@ function BuffOverlay:Test()
     self:RefreshOverlays()
 end
 
-local function SetOverlayAura(overlay, index, icon, count, duration, expirationTime)
+local function SetOverlayAura(overlay, index, icon, count, duration, expirationTime, dispelType, filter)
+    local bar = overlay.bar
+
     overlay.icon:SetTexture(icon)
 
     if (count > 1) then
@@ -645,6 +648,19 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
         CooldownFrame_Clear(overlay.cooldown)
     end
 
+    if overlay.border and bar.iconBorder then
+        if bar.debuffIconBorderColorByDispelType then
+            if filter == "HARMFUL" then
+                local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"]
+                overlay.border:SetVertexColor(color.r, color.g, color.b, bar.iconBorderColor.a)
+            else
+                overlay.border:SetVertexColor(bar.iconBorderColor.r, bar.iconBorderColor.g, bar.iconBorderColor.b, bar.iconBorderColor.a)
+            end
+        else
+            overlay.border:SetVertexColor(bar.iconBorderColor.r, bar.iconBorderColor.g, bar.iconBorderColor.b, bar.iconBorderColor.a)
+        end
+    end
+
     overlay:Show()
 end
 
@@ -665,7 +681,9 @@ local function DisablePixelSnap(border)
     end
 end
 
-local function UpdateBorder(overlay, bar)
+local function UpdateBorder(overlay)
+    local bar = overlay.bar
+
     -- zoomed in/out
     if bar.iconBorder then
         overlay.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
@@ -724,18 +742,20 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
 
     for barName, bar in pairs(bars) do
         local overlayName = frame:GetName() .. "BuffOverlay" .. barName .. "Icon"
-        local relativeSpacing = overlaySize *
-            (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
+        local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
         local overlayNum = 1
 
         for i = 1, bar.iconCount do
             local overlay = self.overlays[overlayName .. i]
 
-            if not overlay or overlay.needsUpdate or (round(overlay.spacing, 2) ~= round(relativeSpacing, 2)) or
+            if not overlay or
+                overlay.needsUpdate or
+                (round(overlay.spacing, 2) ~= round(relativeSpacing, 2)) or
                 (round(overlay.size, 2) ~= round(overlaySize, 2)) then
 
                 if not overlay then
                     overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
+                    overlay.bar = bar
                 end
 
                 overlay.spacing = relativeSpacing
@@ -767,22 +787,20 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
                 if i == 1 then
                     PixelUtil.SetPoint(overlay, bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
                 else
+                    local prevOverlay = self.overlays[overlayName .. (i - 1)]
+
                     if bar.growDirection == "DOWN" then
-                        PixelUtil.SetPoint(overlay, "TOP", self.overlays[overlayName .. i - 1], "BOTTOM", 0,
-                            -relativeSpacing)
+                        PixelUtil.SetPoint(overlay, "TOP", prevOverlay, "BOTTOM", 0, -relativeSpacing)
                     elseif bar.growDirection == "LEFT" then
-                        PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", self.overlays[overlayName .. i - 1], "BOTTOMLEFT",
-                            -relativeSpacing, 0)
+                        PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", prevOverlay, "BOTTOMLEFT", -relativeSpacing, 0)
                     elseif bar.growDirection == "UP" or bar.growDirection == "VERTICAL" then
-                        PixelUtil.SetPoint(overlay, "BOTTOM", self.overlays[overlayName .. i - 1], "TOP", 0,
-                            relativeSpacing)
+                        PixelUtil.SetPoint(overlay, "BOTTOM", prevOverlay, "TOP", 0, relativeSpacing)
                     else
-                        PixelUtil.SetPoint(overlay, "BOTTOMLEFT", self.overlays[overlayName .. i - 1], "BOTTOMRIGHT",
-                            relativeSpacing, 0)
+                        PixelUtil.SetPoint(overlay, "BOTTOMLEFT", prevOverlay, "BOTTOMRIGHT", relativeSpacing, 0)
                     end
                 end
 
-                UpdateBorder(overlay, bar)
+                UpdateBorder(overlay)
 
                 self.overlays[overlayName .. i] = overlay
             end
@@ -798,12 +816,12 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
         -- TODO: Optimize this with new UNIT_AURA event payload
         for _, filter in ipairs(filters) do
             for i = 1, maxIter do
-                local spellName, icon, count, _, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, filter)
+                local spellName, icon, count, dispelType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, filter)
                 if spellId then
-                    local aura = self.db.profile.buffs[spellName] or self.db.profile.buffs[spellId]
+                    local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
 
                     if aura and (aura.enabled[barName] or self.test) then
-                        rawset(self.priority, #self.priority + 1, { i, aura.prio, icon, count, duration, expirationTime })
+                        rawset(self.priority, #self.priority + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter })
                     end
                 else
                     break
@@ -821,7 +839,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
         while overlayNum <= bar.iconCount do
             local data = self.priority[overlayNum]
             if data then
-                SetOverlayAura(self.overlays[overlayName .. overlayNum], data[1], data[3], data[4], data[5], data[6])
+                SetOverlayAura(self.overlays[overlayName .. overlayNum], data[1], data[3], data[4], data[5], data[6], data[7], data[8])
                 overlayNum = overlayNum + 1
             else
                 break
@@ -836,12 +854,8 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
             local width, height = overlay1:GetSize()
             local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
 
-            local x = bar.growDirection == "HORIZONTAL" and
-                (-(width / 2) * (overlayNum - 1) + bar.iconXOff -
-                    (((overlayNum - 1) / 2) * relativeSpacing)) or xOfs
-            local y = bar.growDirection == "VERTICAL" and
-                (-(height / 2) * (overlayNum - 1) + bar.iconYOff -
-                    (((overlayNum - 1) / 2) * relativeSpacing)) or yOfs
+            local x = bar.growDirection == "HORIZONTAL" and (-(width / 2) * (overlayNum - 1) + bar.iconXOff - (((overlayNum - 1) / 2) * relativeSpacing)) or xOfs
+            local y = bar.growDirection == "VERTICAL" and (-(height / 2) * (overlayNum - 1) + bar.iconYOff - (((overlayNum - 1) / 2) * relativeSpacing)) or yOfs
 
             PixelUtil.SetPoint(overlay1, point, relativeTo, relativePoint, x, y)
         end
