@@ -20,6 +20,10 @@ local wipe = wipe
 local type = type
 local rawset = rawset
 local CreateFrame = CreateFrame
+local table_sort = table.sort
+local string_find = string.find
+local math_floor = math.floor
+local math_min = math.min
 
 local TestBuffs = {}
 local TestBuffIds = {}
@@ -77,7 +81,7 @@ local function GetFirstUnusedNum()
         rawset(nums, #nums + 1, tonumber(string.match(name, "%d+")))
     end
 
-    table.sort(nums)
+    table_sort(nums)
 
     for i, num in ipairs(nums) do
         if i ~= num then
@@ -119,7 +123,7 @@ end
 
 local function round(num, numDecimalPlaces)
     local mult = 10 ^ (numDecimalPlaces or 0)
-    return math.floor(num * mult + 0.5) / mult
+    return math_floor(num * mult + 0.5) / mult
 end
 
 local function InsertTestBuff(spellId)
@@ -377,6 +381,22 @@ local function HideAllOverlays(frame)
     end
 end
 
+local function ValidateBarAttributes()
+    for _, bar in pairs(BuffOverlay.db.profile.bars) do
+        for attr, val in pairs(defaultBarSettings) do
+            if bar[attr] == nil then
+                bar[attr] = val
+            end
+        end
+
+        for attribute in pairs(bar) do
+            if defaultBarSettings[attribute] == nil then
+                bar[attribute] = nil
+            end
+        end
+    end
+end
+
 function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
 
@@ -417,6 +437,8 @@ function BuffOverlay:OnInitialize()
         self:AddBar()
     end
 
+    ValidateBarAttributes()
+
     -- EventHandler for third-party addons
     -- Note: More events get added in InitFrames()
     self.eventHandler = CreateFrame("Frame")
@@ -440,7 +462,7 @@ function BuffOverlay:OnInitialize()
 
     SLASH_BuffOverlay1 = "/bo"
     SLASH_BuffOverlay2 = "/buffoverlay"
-    SlashCmdList.BuffOverlay = function(msg)
+    function SlashCmdList.BuffOverlay(msg)
         if msg == "help" or msg == "?" then
             self.print("Command List")
             print("|cff9b6ef3/buffoverlay|r or |cff9b6ef3/bo|r: Opens options panel.")
@@ -499,6 +521,7 @@ function BuffOverlay:FullRefresh()
     if next(self.db.profile.bars) == nil then
         self:AddBar()
     end
+    ValidateBarAttributes()
     self:UpdateBarOptionsTable()
     self:UpdateBuffs()
     self:RefreshOverlays(true)
@@ -717,147 +740,157 @@ function BuffOverlay:SetupContainer(frame)
     frame.BuffOverlays:SetAllPoints()
 end
 
+local function sortAuras(a, b)
+    return a[2] < b[2]
+end
+
 -- TODO: Look into how this function works with multiple bars. Currently a lot of wasted cycles. Needs entire rework, probably.
 --  Might be good to save rework until dragonflight since UNIT_AURA seems to be getting efficiency changes with payload updates.
 function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
-    if string.find(unit, "target") or unit == "focus" then return end
+    if string_find(unit, "target") or unit == "focus" then return end
 
     if not frame.BuffOverlays then
         self:SetupContainer(frame)
     end
 
+    local frameName = frame:GetName()
     local frameWidth, frameHeight = frame:GetSize()
-    local overlaySize = math.min(frameHeight, frameWidth) * 0.33
+    local overlaySize = round(math_min(frameHeight, frameWidth) * 0.33, 1)
     local UnitAura = self.test and UnitAuraTest or UnitAura
 
-    -- Workaround for only updating a single bar when you change settings.
-    local bars
-    if barNameUpdate then
-        bars = {}
-        bars[barNameUpdate] = self.db.profile.bars[barNameUpdate]
-    else
-        bars = self.db.profile.bars
+    for barName, bar in pairs(self.db.profile.bars) do
+        if barNameUpdate and barName ~= barNameUpdate then
+            -- Do nothing if we are only updating a specific bar
+        else
+            local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
+            local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
+
+            for i = 1, bar.iconCount do
+                local overlay = self.overlays[overlayName .. i]
+
+                if not overlay or
+                    overlay.needsUpdate or
+                    overlay.size ~= overlaySize then
+
+                    if not overlay then
+                        overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
+                    end
+
+                    overlay.bar = bar
+                    overlay.spacing = relativeSpacing
+                    overlay.size = overlaySize
+
+                    if overlay.size <= 0 then
+                        overlay.needsUpdate = true
+                        return
+                    else
+                        overlay.needsUpdate = false
+                    end
+
+                    overlay.cooldown:SetDrawSwipe(bar.showCooldownSpiral)
+                    overlay.cooldown:SetHideCountdownNumbers(not bar.showCooldownNumbers)
+                    overlay.cooldown:SetScale(bar.cooldownNumberScale * overlay.size / 36)
+
+                    overlay.count:SetScale(0.8)
+                    overlay.count:ClearPointsOffset()
+
+                    overlay:SetScale(bar.iconScale)
+                    overlay:SetAlpha(bar.iconAlpha)
+                    overlay:SetSize(overlaySize, overlaySize)
+                    overlay:EnableMouse(false)
+                    overlay:RegisterForClicks()
+                    overlay:SetFrameLevel(999)
+
+                    overlay:ClearAllPoints()
+
+                    if i == 1 then
+                        PixelUtil.SetPoint(overlay, bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
+                    else
+                        local prevOverlay = self.overlays[overlayName .. (i - 1)]
+
+                        if bar.growDirection == "DOWN" then
+                            PixelUtil.SetPoint(overlay, "TOP", prevOverlay, "BOTTOM", 0, -relativeSpacing)
+                        elseif bar.growDirection == "LEFT" then
+                            PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", prevOverlay, "BOTTOMLEFT", -relativeSpacing, 0)
+                        elseif bar.growDirection == "UP" or bar.growDirection == "VERTICAL" then
+                            PixelUtil.SetPoint(overlay, "BOTTOM", prevOverlay, "TOP", 0, relativeSpacing)
+                        else
+                            PixelUtil.SetPoint(overlay, "BOTTOMLEFT", prevOverlay, "BOTTOMRIGHT", relativeSpacing, 0)
+                        end
+                    end
+
+                    UpdateBorder(overlay)
+
+                    self.overlays[overlayName .. i] = overlay
+                end
+                overlay:Hide()
+            end
+
+            if not self.priority[barName] then
+                self.priority[barName] = {}
+            end
+
+            if next(self.priority[barName]) ~= nil then
+                wipe(self.priority[barName])
+            end
+        end
     end
 
-    for barName, bar in pairs(bars) do
-        local overlayName = frame:GetName() .. "BuffOverlay" .. barName .. "Icon"
-        local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
-        local overlayNum = 1
+    -- TODO: Optimize this with new UNIT_AURA event payload
+    for _, filter in ipairs(filters) do
+        for i = 1, 40 do
+            local spellName, icon, count, dispelType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, filter)
+            if spellId then
+                local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
 
-        for i = 1, bar.iconCount do
-            local overlay = self.overlays[overlayName .. i]
-
-            if not overlay or
-                overlay.needsUpdate or
-                (round(overlay.spacing, 2) ~= round(relativeSpacing, 2)) or
-                (round(overlay.size, 2) ~= round(overlaySize, 2)) then
-
-                if not overlay then
-                    overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
-                    overlay.bar = bar
-                end
-
-                overlay.spacing = relativeSpacing
-                overlay.size = overlaySize
-
-                if overlay.size <= 0 then
-                    overlay.needsUpdate = true
-                    return
-                else
-                    overlay.needsUpdate = false
-                end
-
-                overlay.cooldown:SetDrawSwipe(bar.showCooldownSpiral)
-                overlay.cooldown:SetHideCountdownNumbers(not bar.showCooldownNumbers)
-                overlay.cooldown:SetScale(bar.cooldownNumberScale * overlay.size / 36)
-
-                overlay.count:SetScale(0.8)
-                overlay.count:ClearPointsOffset()
-
-                overlay:SetScale(bar.iconScale)
-                overlay:SetAlpha(bar.iconAlpha)
-                overlay:SetSize(overlaySize, overlaySize)
-                overlay:EnableMouse(false)
-                overlay:RegisterForClicks()
-                overlay:SetFrameLevel(999)
-
-                overlay:ClearAllPoints()
-
-                if i == 1 then
-                    PixelUtil.SetPoint(overlay, bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
-                else
-                    local prevOverlay = self.overlays[overlayName .. (i - 1)]
-
-                    if bar.growDirection == "DOWN" then
-                        PixelUtil.SetPoint(overlay, "TOP", prevOverlay, "BOTTOM", 0, -relativeSpacing)
-                    elseif bar.growDirection == "LEFT" then
-                        PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", prevOverlay, "BOTTOMLEFT", -relativeSpacing, 0)
-                    elseif bar.growDirection == "UP" or bar.growDirection == "VERTICAL" then
-                        PixelUtil.SetPoint(overlay, "BOTTOM", prevOverlay, "TOP", 0, relativeSpacing)
-                    else
-                        PixelUtil.SetPoint(overlay, "BOTTOMLEFT", prevOverlay, "BOTTOMRIGHT", relativeSpacing, 0)
+                if aura then
+                    for barName in pairs(self.db.profile.bars) do
+                        if aura.enabled[barName] or self.test then
+                            rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter })
+                        end
                     end
                 end
-
-                UpdateBorder(overlay)
-
-                self.overlays[overlayName .. i] = overlay
-            end
-            overlay:Hide()
-        end
-
-        if #self.priority > 0 then
-            wipe(self.priority)
-        end
-
-        local maxIter = self.test and bar.iconCount or 40
-
-        -- TODO: Optimize this with new UNIT_AURA event payload
-        for _, filter in ipairs(filters) do
-            for i = 1, maxIter do
-                local spellName, icon, count, dispelType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, filter)
-                if spellId then
-                    local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
-
-                    if aura and (aura.enabled[barName] or self.test) then
-                        rawset(self.priority, #self.priority + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter })
-                    end
-                else
-                    break
-                end
-            end
-            if self.test then break end
-        end
-
-        if #self.priority > 1 then
-            table.sort(self.priority, function(a, b)
-                return a[2] < b[2]
-            end)
-        end
-
-        while overlayNum <= bar.iconCount do
-            local data = self.priority[overlayNum]
-            if data then
-                SetOverlayAura(self.overlays[overlayName .. overlayNum], data[1], data[3], data[4], data[5], data[6], data[7], data[8])
-                overlayNum = overlayNum + 1
             else
                 break
             end
         end
+        if self.test then break end
+    end
 
-        overlayNum = overlayNum - 1
+    for barName, bar in pairs(self.db.profile.bars) do
+        if barNameUpdate and barName ~= barNameUpdate then
+            -- Do nothing if we are only updating a specific bar
+        else
+            local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
+            local overlayNum = 1
 
-        if overlayNum > 0 and
-            (bar.growDirection == "HORIZONTAL" or bar.growDirection == "VERTICAL") then
-            local overlay1 = self.overlays[overlayName .. 1]
-            local width, height = overlay1:GetSize()
-            local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
+            if #self.priority[barName] > 1 then
+                table_sort(self.priority[barName], sortAuras)
+            end
 
-            local x = bar.growDirection == "HORIZONTAL" and (-(width / 2) * (overlayNum - 1) + bar.iconXOff - (((overlayNum - 1) / 2) * relativeSpacing)) or xOfs
-            local y = bar.growDirection == "VERTICAL" and (-(height / 2) * (overlayNum - 1) + bar.iconYOff - (((overlayNum - 1) / 2) * relativeSpacing)) or yOfs
+            while overlayNum <= bar.iconCount do
+                local data = self.priority[barName][overlayNum]
+                if data then
+                    SetOverlayAura(self.overlays[overlayName .. overlayNum], data[1], data[3], data[4], data[5], data[6], data[7], data[8])
+                    overlayNum = overlayNum + 1
+                else
+                    break
+                end
+            end
 
-            PixelUtil.SetPoint(overlay1, point, relativeTo, relativePoint, x, y)
+            overlayNum = overlayNum - 1
+
+            if overlayNum > 0 and (bar.growDirection == "HORIZONTAL" or bar.growDirection == "VERTICAL") then
+                local overlay1 = self.overlays[overlayName .. 1]
+                local width, height = overlay1:GetSize()
+                local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
+
+                local x = bar.growDirection == "HORIZONTAL" and (-(width / 2) * (overlayNum - 1) + bar.iconXOff - (((overlayNum - 1) / 2) * overlay1.spacing)) or xOfs
+                local y = bar.growDirection == "VERTICAL" and (-(height / 2) * (overlayNum - 1) + bar.iconYOff - (((overlayNum - 1) / 2) * overlay1.spacing)) or yOfs
+
+                PixelUtil.SetPoint(overlay1, point, relativeTo, relativePoint, x, y)
+            end
         end
     end
 end
