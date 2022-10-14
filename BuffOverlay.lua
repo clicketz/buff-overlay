@@ -24,6 +24,7 @@ local table_sort = table.sort
 local string_find = string.find
 local math_floor = math.floor
 local math_min = math.min
+local DebuffTypeColor = DebuffTypeColor
 
 local TestBuffs = {}
 local TestBuffIds = {}

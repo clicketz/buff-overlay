@@ -48,6 +48,7 @@ globals = {
     "LOCALIZED_CLASS_NAMES_MALE",
     "MAX_CLASSES",
     "Spell",
+    "WOW_PROJECT_WRATH_CLASSIC",
     "WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
     "WOW_PROJECT_CLASSIC",
     "WOW_PROJECT_ID",
@@ -67,4 +68,5 @@ globals = {
     "SecureButton_GetUnit",
     "debugprofilestop",
     "CopyTable",
+    "DebuffTypeColor",
 }
