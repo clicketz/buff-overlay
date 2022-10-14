@@ -385,7 +385,11 @@ local function ValidateBarAttributes()
     for _, bar in pairs(BuffOverlay.db.profile.bars) do
         for attr, val in pairs(defaultBarSettings) do
             if bar[attr] == nil then
-                bar[attr] = val
+                if type(val) == "table" then
+                    bar[attr] = CopyTable(val)
+                else
+                    bar[attr] = val
+                end
             end
         end
 
