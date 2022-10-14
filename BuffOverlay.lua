@@ -29,6 +29,7 @@ local DebuffTypeColor = DebuffTypeColor
 local TestBuffs = {}
 local TestBuffIds = {}
 local testTextFrame
+local testBarNames = {}
 
 local defaultBarSettings = {
     iconCount = 4,
@@ -553,7 +554,7 @@ local function GetTestAnchor()
     return anchor
 end
 
-function BuffOverlay:Test()
+function BuffOverlay:Test(barName)
     if InCombatLockdown() then
         if self.test then
             self.test = false
@@ -561,6 +562,7 @@ function BuffOverlay:Test()
                 testTextFrame:Hide()
             end
             self:UpdateUnits()
+            self.print("Exiting test mode.")
         else
             self.print("You are in combat.")
         end
@@ -568,25 +570,86 @@ function BuffOverlay:Test()
         return
     end
 
-    self:UpdateUnits()
+    if not self.test then
+        if not testTextFrame then
+            testTextFrame = CreateFrame("Frame", "BuffOverlayTest", UIParent)
+            testTextFrame.bg = testTextFrame:CreateTexture()
+            testTextFrame.bg:SetAllPoints()
+            testTextFrame.bg:SetColorTexture(1, 0, 0, 0.6)
+            testTextFrame.text = testTextFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+            testTextFrame.text:SetPoint("CENTER", 0, 0)
+            testTextFrame.text:SetText("BuffOverlay Test")
+            testTextFrame:SetSize(testTextFrame.text:GetWidth() + 20, testTextFrame.text:GetHeight() + 2)
+            testTextFrame:EnableMouse(false)
+        end
 
-    self.test = not self.test
+        testTextFrame:Hide()
 
-    if not testTextFrame then
-        testTextFrame = CreateFrame("Frame", "BuffOverlayTest", UIParent)
-        testTextFrame.bg = testTextFrame:CreateTexture()
-        testTextFrame.bg:SetAllPoints()
-        testTextFrame.bg:SetColorTexture(1, 0, 0, 0.6)
-        testTextFrame.text = testTextFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-        testTextFrame.text:SetPoint("CENTER", 0, 0)
-        testTextFrame.text:SetText("BuffOverlay Test")
-        testTextFrame:SetSize(testTextFrame.text:GetWidth() + 20, testTextFrame.text:GetHeight() + 2)
-        testTextFrame:EnableMouse(false)
+        if GetNumGroupMembers() == 0 then
+            if CompactRaidFrameManager then
+                CompactRaidFrameManager:Show()
+                CompactRaidFrameContainer:Show()
+                if CompactPartyFrame then
+                    CompactPartyFrame:Show()
+                end
+            end
+        end
+
+        self.print("Test mode activated.")
+        testTextFrame:ClearAllPoints()
+
+        local anchor = false
+        if CompactRaidFrameManager then
+            local container = _G["PartyFrame"] or _G["CompactRaidFrameContainer"]
+
+            if container and container:IsShown() and container:IsVisible() then
+                anchor = container
+            end
+        end
+
+        if not anchor then
+            anchor = GetTestAnchor()
+        end
+
+        if not anchor then
+            self:UpdateUnits()
+            C_Timer.After(0.1, function()
+                anchor = GetTestAnchor()
+
+                if not anchor then
+                    self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
+                    testTextFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+                else
+                    testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
+                end
+
+                testTextFrame:Show()
+            end)
+        else
+            testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
+            testTextFrame:Show()
+        end
     end
 
-    testTextFrame:Hide()
+    if barName then
+        testBarNames[barName] = testBarNames[barName] == nil and self.db.profile.bars[barName] or nil
+    else
+        local allBars = true
+        for k in pairs(self.db.profile.bars) do
+            if testBarNames[k] == nil then
+                allBars = false
+                break
+            end
+        end
 
-    if not self.test then
+        if allBars then
+            wipe(testBarNames)
+        end
+    end
+
+    if next(testBarNames) == nil and self.test then
+        self.test = false
+
         if GetNumGroupMembers() == 0 or
             not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
             if CompactRaidFrameManager then
@@ -598,53 +661,33 @@ function BuffOverlay:Test()
             end
         end
         self.print("Exiting test mode.")
+        testTextFrame:Hide()
         self:RefreshOverlays()
         return
-    end
-
-    if GetNumGroupMembers() == 0 then
-        if CompactRaidFrameManager then
-            CompactRaidFrameManager:Show()
-            CompactRaidFrameContainer:Show()
-            if CompactPartyFrame then
-                CompactPartyFrame:Show()
-            end
-        end
-    end
-
-    self.print("Test mode activated.")
-    testTextFrame:ClearAllPoints()
-
-    local anchor = false
-    if CompactRaidFrameManager then
-        local container = _G["PartyFrame"] or _G["CompactRaidFrameContainer"]
-
-        if container and container:IsShown() and container:IsVisible() then
-            anchor = container
-        end
-    end
-
-    if not anchor then
-        anchor = GetTestAnchor()
-    end
-
-    if not anchor then
-        self:UpdateUnits()
-        C_Timer.After(0.1, function()
-            anchor = GetTestAnchor()
-
-            if not anchor then
-                self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
-                testTextFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-            else
-                testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
-            end
-
-            testTextFrame:Show()
-        end)
     else
-        testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
-        testTextFrame:Show()
+        self.test = true
+    end
+
+    if not barName then
+        if next(testBarNames) ~= nil then
+            wipe(testBarNames)
+        end
+    end
+
+    if self.test and next(testBarNames) ~= nil then
+        for _, frames in pairs(self.unitFrames) do
+            for frame in pairs(frames) do
+                if frame:IsShown() then
+                    HideAllOverlays(frame)
+                end
+            end
+        end
+
+        for frame in pairs(self.blizzFrames) do
+            if frame:IsShown() then
+                HideAllOverlays(frame)
+            end
+        end
     end
 
     self:RefreshOverlays()
@@ -751,7 +794,7 @@ end
 
 -- TODO: Look into how this function works with multiple bars. Currently a lot of wasted cycles. Needs entire rework, probably.
 --  Might be good to save rework until dragonflight since UNIT_AURA seems to be getting efficiency changes with payload updates.
-function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
+function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string_find(unit, "target") or unit == "focus" then return end
 
@@ -764,10 +807,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
     local overlaySize = round(math_min(frameHeight, frameWidth) * 0.33, 1)
     local UnitAura = self.test and UnitAuraTest or UnitAura
 
-    for barName, bar in pairs(self.db.profile.bars) do
-        if barNameUpdate and barName ~= barNameUpdate then
-            -- Do nothing if we are only updating a specific bar
-        else
+    local bars = next(testBarNames) ~= nil and testBarNames or self.db.profile.bars
+
+    for barName, bar in pairs(bars) do
+        if not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
 
@@ -783,6 +826,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
                     end
 
                     overlay.bar = bar
+                    overlay.barName = barName
                     overlay.spacing = relativeSpacing
                     overlay.size = overlaySize
 
@@ -850,8 +894,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
                 local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
 
                 if aura then
-                    for barName in pairs(self.db.profile.bars) do
-                        if aura.enabled[barName] or self.test then
+                    for barName in pairs(bars) do
+                        if barNameToApply and barName ~= barNameToApply then
+                            -- Do nothing if we are testing a specific bar or if we are applying a specific bar
+                        elseif aura.enabled[barName] or self.test then
                             rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter })
                         end
                     end
@@ -863,10 +909,8 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameUpdate)
         if self.test then break end
     end
 
-    for barName, bar in pairs(self.db.profile.bars) do
-        if barNameUpdate and barName ~= barNameUpdate then
-            -- Do nothing if we are only updating a specific bar
-        else
+    for barName, bar in pairs(bars) do
+        if not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local overlayNum = 1
 

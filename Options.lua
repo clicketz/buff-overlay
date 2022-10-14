@@ -237,15 +237,6 @@ function BuffOverlay:AddBarToOptions(bar, barName)
         type = "group",
         childGroups = "tab",
         args = {
-            delete = {
-                name = "Delete Bar",
-                type = "execute",
-                order = 1,
-                width = 0.75,
-                func = function()
-                    BuffOverlay:DeleteBar(barName)
-                end,
-            },
             name = {
                 name = "Set Bar Name",
                 type = "input",
@@ -262,6 +253,30 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 type = "description",
                 order = 0.5,
                 width = 0.1,
+            },
+            delete = {
+                name = "Delete Bar",
+                type = "execute",
+                order = 1,
+                width = 0.75,
+                func = function()
+                    self:DeleteBar(barName)
+                end,
+            },
+            space2 = {
+                name = "",
+                type = "description",
+                order = 1.5,
+                width = 0.1,
+            },
+            test = {
+                name = "Test Bar",
+                type = "execute",
+                order = 2,
+                width = 0.75,
+                func = function()
+                    self:Test(barName)
+                end,
             },
             settings = {
                 name = "Settings",
@@ -551,7 +566,7 @@ function BuffOverlay:UpdateBarOptionsTable()
     local options = self.options.args.bars.args
 
     for opt in pairs(options) do
-        if opt ~= "addBar" then
+        if opt ~= "addBar" and opt ~= "test" then
             options[opt] = nil
         end
     end
@@ -742,13 +757,6 @@ function BuffOverlay:Options()
                 type = "description",
                 cmdHidden = true
             },
-            test = {
-                order = 3,
-                name = "Toggle Test Auras",
-                type = "execute",
-                func = "Test",
-                handler = BuffOverlay
-            },
             welcomeMessage = {
                 order = 4,
                 name = "Welcome Message",
@@ -774,6 +782,15 @@ function BuffOverlay:Options()
                         func = function()
                             self:AddBar()
                         end,
+                    },
+                    test = {
+                        order = 2,
+                        name = "Toggle All Test Auras",
+                        type = "execute",
+                        func = function()
+                            self:Test()
+                        end,
+                        width = 1,
                     },
                 },
             },
