@@ -896,9 +896,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                 if aura then
                     for barName in pairs(bars) do
-                        if barNameToApply and barName ~= barNameToApply then
-                            -- Do nothing if we are testing a specific bar or if we are applying a specific bar
-                        elseif aura.enabled[barName] or self.test then
+                        if not (barNameToApply and barName ~= barNameToApply) and (aura.enabled[barName] or self.test) then
                             rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter })
                         end
                     end
