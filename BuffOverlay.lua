@@ -563,6 +563,7 @@ function BuffOverlay:Test(barName)
             end
             self:UpdateUnits()
             self.print("Exiting test mode.")
+            return
         else
             self.print("You are in combat.")
         end
