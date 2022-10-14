@@ -67,3 +67,5 @@ Now supports the ability to control your overlays completely through the in-game
 [WoWInterface](https://www.wowinterface.com/downloads/info24683-BuffOverlay.html)
 
 [Curseforge](https://www.curseforge.com/wow/addons/buff-overlay)
+
+[Wago](https://addons.wago.io/addons/buff-overlay)
