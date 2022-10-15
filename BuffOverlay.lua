@@ -219,7 +219,11 @@ local function UpdateChildren(self)
         end
         for k, v in pairs(self) do
             if k ~= "children" and k ~= "UpdateChildren" then
-                BuffOverlay.db.profile.buffs[child][k] = v
+                if type(v) == "table" then
+                    BuffOverlay.db.profile.buffs[child][k] = CopyTable(v)
+                else
+                    BuffOverlay.db.profile.buffs[child][k] = v
+                end
             end
         end
     end
@@ -251,7 +255,11 @@ function BuffOverlay:UpdateCustomBuffs()
         end
 
         for field, value in pairs(v) do
-            buff[field] = value
+            if type(value) == "table" then
+                buff[field] = CopyTable(value)
+            else
+                buff[field] = value
+            end
         end
 
         if buff.children then
@@ -310,7 +318,11 @@ local function ValidateBuffData()
             -- Give child the same fields as parent
             for key, val in pairs(parent) do
                 if key ~= "children" and key ~= "UpdateChildren" then
-                    BuffOverlay.db.profile.buffs[k][key] = val
+                    if type(val) == "table" then
+                        BuffOverlay.db.profile.buffs[k][key] = CopyTable(val)
+                    else
+                        BuffOverlay.db.profile.buffs[k][key] = val
+                    end
                 end
             end
         else
@@ -329,7 +341,11 @@ function BuffOverlay:CreateBuffTable()
                 enabled = {},
             }
             for key, val in pairs(v) do
-                self.db.profile.buffs[k][key] = val
+                if type(val) == "table" then
+                    self.db.profile.buffs[k][key] = CopyTable(val)
+                else
+                    self.db.profile.buffs[k][key] = val
+                end
             end
         end
         newdb = true
@@ -353,7 +369,11 @@ function BuffOverlay:UpdateBuffs()
                 end
 
                 for key, val in pairs(v) do
-                    self.db.profile.buffs[k][key] = val
+                    if type(val) == "table" then
+                        self.db.profile.buffs[k][key] = CopyTable(val)
+                    else
+                        self.db.profile.buffs[k][key] = val
+                    end
                 end
             else
                 if type(self.db.profile.buffs[k].enabled) ~= "table" then
@@ -361,7 +381,11 @@ function BuffOverlay:UpdateBuffs()
                 end
 
                 for key, val in pairs(v) do
-                    self.db.profile.buffs[k][key] = val
+                    if type(val) == "table" then
+                        self.db.profile.buffs[k][key] = CopyTable(val)
+                    else
+                        self.db.profile.buffs[k][key] = val
+                    end
                 end
 
                 for barName in pairs(self.db.profile.bars) do
