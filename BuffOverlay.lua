@@ -824,10 +824,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
+                        overlay.barName = barName
                     end
 
                     overlay.bar = bar
-                    overlay.barName = barName
                     overlay.spacing = relativeSpacing
                     overlay.size = overlaySize
 
