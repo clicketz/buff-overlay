@@ -5,6 +5,7 @@ local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
 local SetCVar = SetCVar
 local InCombatLockdown = InCombatLockdown
+local CopyTable = CopyTable
 local format = format
 local next = next
 local wipe = wipe
@@ -56,7 +57,11 @@ local deleteSpellDelegate = {
 
                 if BuffOverlay.defaultSpells[spellId] then
                     for k, v in pairs(BuffOverlay.defaultSpells[spellId]) do
-                        BuffOverlay.db.profile.buffs[spellId][k] = v
+                        if type(v) == "table" then
+                            BuffOverlay.db.profile.buffs[spellId][k] = CopyTable(v)
+                        else
+                            BuffOverlay.db.profile.buffs[spellId][k] = v
+                        end
                     end
                     BuffOverlay.db.profile.buffs[spellId].custom = nil
                     for barName in pairs(BuffOverlay.db.profile.bars) do
