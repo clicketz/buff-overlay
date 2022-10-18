@@ -247,17 +247,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 type = "input",
                 order = 0,
                 width = 1,
-                get = function() return "" end,
                 set = function(info, val)
                     bar[info[#info]] = val
                     self.options.args.bars.args[barName].name = val
                 end,
-            },
-            space = {
-                name = "",
-                type = "description",
-                order = 0.5,
-                width = 0.1,
             },
             delete = {
                 name = "Delete Bar",
@@ -267,12 +260,6 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 func = function()
                     self:DeleteBar(barName)
                 end,
-            },
-            space2 = {
-                name = "",
-                type = "description",
-                order = 1.5,
-                width = 0.1,
             },
             test = {
                 name = "Test Bar",
@@ -286,7 +273,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
             settings = {
                 name = "Settings",
                 type = "group",
-                order = 1,
+                order = 3,
                 get = function(info) return bar[info[#info]] end,
                 set = function(info, val)
                     if InCombatLockdown() then
@@ -435,7 +422,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
             },
             anchoring = {
                 name = "Anchoring",
-                order = 2,
+                order = 4,
                 type = "group",
                 get = function(info) return bar[info[#info]] end,
                 set = function(info, val)
@@ -524,7 +511,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 },
             },
             spells = {
-                order = 3,
+                order = 5,
                 name = "Spells",
                 type = "group",
                 args = {
@@ -579,8 +566,6 @@ function BuffOverlay:UpdateBarOptionsTable()
     for name, bar in pairs(self.db.profile.bars) do
         self:AddBarToOptions(bar, name)
     end
-
-    self:UpdateSpellOptionsTable()
 end
 
 local customSpellInfo = {
@@ -721,9 +706,7 @@ local customSpells = {
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
-                    BuffOverlay.print(format("%s %s is already being tracked.",
-                        GetIconString(icon, 20) or customIcons["?"],
-                        name))
+                    BuffOverlay.print(format("%s %s is already being tracked.", GetIconString(icon, 20) or customIcons["?"], name))
                 end
             else
                 BuffOverlay.print(format("Invalid Spell ID |cffffd700%s|r", state))
@@ -745,7 +728,6 @@ function BuffOverlay:Options()
     end
     self.options = {
         name = "BuffOverlay",
-        descStyle = "inline",
         type = "group",
         plugins = { profiles = { profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) } },
         childGroups = "tab",
@@ -777,7 +759,7 @@ function BuffOverlay:Options()
                 name = "Bars",
                 type = "group",
                 childGroups = "tab",
-                order = 5.5,
+                order = 5,
                 args = {
                     addBar = {
                         order = 1,
