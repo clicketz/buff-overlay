@@ -420,7 +420,7 @@ local function ValidateBarAttributes()
         end
 
         for attribute in pairs(bar) do
-            if defaultBarSettings[attribute] == nil then
+            if attribute ~= "name" and defaultBarSettings[attribute] == nil then
                 bar[attribute] = nil
             end
         end
