@@ -117,7 +117,6 @@ BuffOverlay.defaultSpells = {
     [871] = { class = "WARRIOR", prio = 50 }, --Shield Wall
     [118038] = { class = "WARRIOR", prio = 50 }, --Die by the Sword
     [147833] = { class = "WARRIOR", prio = 50 }, --Intervene
-    [213915] = { class = "WARRIOR", prio = 50 }, --Mass Spell Reflection
     [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection (Prot)
     [216890] = { parent = 23920 }, --Spell Reflection (Arms/Fury)
     [184364] = { class = "WARRIOR", prio = 50 }, --Enraged Regeneration
