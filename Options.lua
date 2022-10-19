@@ -24,6 +24,10 @@ local customSpellDescriptions = {
     [362486] = 353114, -- Keeper of the Grove
 }
 
+local customSpellNames = {
+    [228050] = "Guardian of the Forgotten Queen",
+}
+
 local customIcons = {
     ["Eating/Drinking"] = 134062,
     ["?"] = 134400,
@@ -148,6 +152,10 @@ local function GetSpells(class, barName)
 
                 if customIcons[k] then
                     icon = customIcons[k]
+                end
+
+                if customSpellNames[k] then
+                    spellName = customSpellNames[k]
                 end
 
                 local formattedName = spellName and format("%s %s", GetIconString(icon, 20), spellName) or
