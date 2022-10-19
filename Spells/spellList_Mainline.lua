@@ -15,7 +15,7 @@ BuffOverlay.defaultSpells = {
     -- Death Knight
     [48707] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Shell
     [48792] = { class = "DEATHKNIGHT", prio = 50 }, --Icebound Fortitude
-    [287081] = { class = "DEATHKNIGHT", prio = 50 }, --Lichborne
+    [49039] = { class = "DEATHKNIGHT", prio = 50 }, --Lichborne
     [55233] = { class = "DEATHKNIGHT", prio = 50 }, --Vampiric Blood
     [194679] = { class = "DEATHKNIGHT", prio = 50 }, --Rune Tap
     [145629] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Zone
@@ -61,7 +61,9 @@ BuffOverlay.defaultSpells = {
     [108978] = { parent = 342246 },
 
     -- Monk
+    [353319] = { class = "MONK", prio = 10 }, --Peaceweaver
     [125174] = { class = "MONK", prio = 10 }, --Touch of Karma
+    [202577] = { class = "MONK", prio = 50 }, --Dome of Mist
     [120954] = { class = "MONK", prio = 50 }, --Fortifying Brew
     [115176] = { class = "MONK", prio = 50 }, --Zen Meditation
     [116849] = { class = "MONK", prio = 50 }, --Life Cocoon
