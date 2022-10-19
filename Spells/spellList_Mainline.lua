@@ -24,6 +24,7 @@ BuffOverlay.defaultSpells = {
     -- Demon Hunter
     [221527] = { class = "DEMONHUNTER", prio = 10 }, -- Imprison (PVP Immunity)
     [196555] = { class = "DEMONHUNTER", prio = 10 }, --Netherwalk
+    [209426] = { class = "DEMONHUNTER", prio = 50 }, --Darkness
     [206804] = { class = "DEMONHUNTER", prio = 50 }, --Rain from Above
     [187827] = { class = "DEMONHUNTER", prio = 50 }, --Metamorphosis (Vengeance)
     [212800] = { class = "DEMONHUNTER", prio = 50 }, --Blur
