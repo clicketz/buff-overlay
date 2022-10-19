@@ -22,7 +22,6 @@ BuffOverlay.defaultSpells = {
     [81256] = { class = "DEATHKNIGHT", prio = 50 }, --Dancing Rune Weapon
 
     -- Demon Hunter
-    [221527] = { class = "DEMONHUNTER", prio = 10 }, -- Imprison (PVP Immunity)
     [196555] = { class = "DEMONHUNTER", prio = 10 }, --Netherwalk
     [209426] = { class = "DEMONHUNTER", prio = 50 }, --Darkness
     [206804] = { class = "DEMONHUNTER", prio = 50 }, --Rain from Above
