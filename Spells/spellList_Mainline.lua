@@ -36,6 +36,14 @@ BuffOverlay.defaultSpells = {
     [61336] = { class = "DRUID", prio = 50 }, --Survival Instincts
     [5215] = { class = "DRUID", prio = 70 }, --Prowl
 
+    -- Evoker
+    [363916] = { class = "EVOKER", prio = 50 }, --Obsidian Scales
+    [357170] = { class = "EVOKER", prio = 50 }, --Time Dilation
+    [378441] = { class = "EVOKER", prio = 10 }, --Time Stop
+    [383005] = { class = "EVOKER", prio = 50 }, --Chrono Loop
+    [374348] = { class = "EVOKER", prio = 50 }, --Renewing Blaze
+    [370960] = { class = "EVOKER", prio = 50 }, --Emerald Communion
+
     -- Hunter
     [186265] = { class = "HUNTER", prio = 10 }, --Aspect of the Turtle
     [53480] = { class = "HUNTER", prio = 50 }, --Roar of Sacrifice
