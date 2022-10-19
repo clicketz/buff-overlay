@@ -8,7 +8,7 @@ BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
  Use the /buffoverlay or /bo command.
 
-------------------------------------------------]]--
+------------------------------------------------]] --
 
 -- Lower prio = shown above other buffs
 BuffOverlay.defaultSpells = {
@@ -62,9 +62,7 @@ BuffOverlay.defaultSpells = {
 
     -- Monk
     [125174] = { class = "MONK", prio = 10 }, --Touch of Karma
-    [120954] = { class = "MONK", prio = 50 }, --Fortifying Brew (Brewmaster)
-    [243435] = { class = "MONK", prio = 50 }, --Fortifying Brew (Mistweaver)
-    [201318] = { class = "MONK", prio = 50 }, --Fortifying Brew (Windwalker)
+    [120954] = { class = "MONK", prio = 50 }, --Fortifying Brew
     [115176] = { class = "MONK", prio = 50 }, --Zen Meditation
     [116849] = { class = "MONK", prio = 50 }, --Life Cocoon
     [122278] = { class = "MONK", prio = 50 }, --Dampen Harm
