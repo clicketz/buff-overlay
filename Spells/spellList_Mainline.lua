@@ -103,6 +103,7 @@ BuffOverlay.defaultSpells = {
     [5277] = { class = "ROGUE", prio = 50 }, --Evasion
     [1966] = { class = "ROGUE", prio = 50 }, --Feint
     [1784] = { class = "ROGUE", prio = 70 }, --Stealth
+    [115191] = { parent = 1784 }, --Stealth (Shadowrunner)
     [11327] = { class = "ROGUE", prio = 70 }, --Vanish
     [114018] = { class = "ROGUE", prio = 70 }, --Shroud of Concealment
 
