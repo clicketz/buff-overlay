@@ -76,7 +76,7 @@ BuffOverlay.defaultSpells = {
     -- Paladin
     [204018] = { class = "PALADIN", prio = 10 }, --Blessing of Spellwarding
     [642] = { class = "PALADIN", prio = 10 }, --Divine Shield
-    [228050] = { parent = 642 }, --Divine Shield (Protection)
+    [228050] = { class = "PALADIN", prio = 10 }, --Guardian of the Forgotten Queen
     [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
     [6940] = { class = "PALADIN", prio = 50 }, --Blessing of Sacrifice
     [199448] = { parent = 6940 }, --Blessing of Ultimate Sacrifice
@@ -86,6 +86,7 @@ BuffOverlay.defaultSpells = {
     [205191] = { class = "PALADIN", prio = 50 }, --Eye for an Eye
     [184662] = { class = "PALADIN", prio = 50 }, --Shield of Vengeance
     [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
+    [327193] = { class = "PALADIN", prio = 50 }, --Moment of Glory
 
     -- Priest
     [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
