@@ -87,7 +87,6 @@ BuffOverlay.defaultSpells = {
     [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
     [47585] = { class = "PRIEST", prio = 50 }, --Dispersion
     [33206] = { class = "PRIEST", prio = 50 }, --Pain Suppression
-    [213602] = { class = "PRIEST", prio = 10 }, --Greater Fade
     [81782] = { class = "PRIEST", prio = 50 }, --Power Word: Barrier
     [271466] = { class = "PRIEST", prio = 50 }, --Luminous Barrier
     [20711] = { class = "PRIEST", prio = 50 }, --Spirit of Redemption
