@@ -275,58 +275,81 @@ end
 
 local function ValidateBuffData()
     for k, v in pairs(BuffOverlay.db.profile.buffs) do
-        if v.custom then
-            if v.parent and not BuffOverlay.db.global.customBuffs[v.parent] then
-                v.custom = nil
-            elseif not BuffOverlay.db.global.customBuffs[k] then
-                v.custom = nil
-            end
-        end
-
-        -- Check for orphaned bar data
-        for barName in pairs(v.enabled) do
-            if not BuffOverlay.db.profile.bars[barName] then
-                v.enabled[barName] = nil
-            end
-        end
-
-        -- Check for old buffs from a previous DB
         if (not BuffOverlay.defaultSpells[k]) and (not BuffOverlay.db.global.customBuffs[k]) then
             BuffOverlay.db.profile.buffs[k] = nil
-        elseif v.parent then -- child found
-            -- Fix for switching an old parent to a child
+        else
+            if v.custom then
+                if v.parent and not BuffOverlay.db.global.customBuffs[v.parent] then
+                    v.custom = nil
+                elseif not BuffOverlay.db.global.customBuffs[k] then
+                    v.custom = nil
+                end
+            end
+
+            -- Check for orphaned bar data
+            for barName in pairs(v.enabled) do
+                if not BuffOverlay.db.profile.bars[barName] then
+                    v.enabled[barName] = nil
+                end
+            end
+
+            if v.parent then -- child found
+                -- Fix for updating parent info or updating a child to a non-parent
+                if not BuffOverlay.defaultSpells[k].parent then
+                    v.parent = nil
+                else
+                    -- Fix for switching an old parent to a child
+                    if v.children then
+                        v.children = nil
+                    end
+
+                    if v.UpdateChildren then
+                        v.UpdateChildren = nil
+                    end
+
+                    local parent = BuffOverlay.db.profile.buffs[v.parent]
+
+                    if not parent.children then
+                        parent.children = {}
+                    end
+
+                    parent.children[k] = true
+
+                    if not parent.UpdateChildren then
+                        parent.UpdateChildren = UpdateChildren
+                    end
+
+                    -- Give child the same fields as parent
+                    for key, val in pairs(parent) do
+                        if key ~= "children" and key ~= "UpdateChildren" then
+                            if type(val) == "table" then
+                                BuffOverlay.db.profile.buffs[k][key] = CopyTable(val)
+                            else
+                                BuffOverlay.db.profile.buffs[k][key] = val
+                            end
+                        end
+                    end
+                end
+            else
+                InsertTestBuff(k)
+            end
+
+            -- Check to see if any children were deleted and update DB accordingly
             if v.children then
-                v.children = nil
-            end
+                for child in pairs(v.children) do
+                    local childData = BuffOverlay.defaultSpells[child]
+                    if not childData or not childData.parent or childData.parent ~= k then
+                        v.children[child] = nil
+                    end
+                end
 
-            if v.UpdateChildren then
-                v.UpdateChildren = nil
-            end
-
-            local parent = BuffOverlay.db.profile.buffs[v.parent]
-
-            if not parent.children then
-                parent.children = {}
-            end
-
-            parent.children[k] = true
-
-            if not parent.UpdateChildren then
-                parent.UpdateChildren = UpdateChildren
-            end
-
-            -- Give child the same fields as parent
-            for key, val in pairs(parent) do
-                if key ~= "children" and key ~= "UpdateChildren" then
-                    if type(val) == "table" then
-                        BuffOverlay.db.profile.buffs[k][key] = CopyTable(val)
-                    else
-                        BuffOverlay.db.profile.buffs[k][key] = val
+                if next(v.children) == nil then
+                    v.children = nil
+                    if v.UpdateChildren then
+                        v.UpdateChildren = nil
                     end
                 end
             end
-        else
-            InsertTestBuff(k)
         end
     end
     BuffOverlay:UpdateCustomBuffs()
