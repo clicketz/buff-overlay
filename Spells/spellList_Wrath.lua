@@ -35,6 +35,7 @@ BuffOverlay.defaultSpells = {
     -- Mage
     [45438] = { class = "MAGE", prio = 10 }, --Ice Block
     [66] = { class = "MAGE", prio = 50 }, --Invisibility
+        [32612] = { parent = 66 },
     [543] = { class = "MAGE", prio = 50 }, --Fire Ward
         [8457] = { parent = 543 },
         [8458] = { parent = 543 },
