@@ -85,6 +85,7 @@ BuffOverlay.defaultSpells = {
     [86659] = { class = "PALADIN", prio = 50 }, --Guardian of Ancient Kings
     [205191] = { class = "PALADIN", prio = 50 }, --Eye for an Eye
     [184662] = { class = "PALADIN", prio = 50 }, --Shield of Vengeance
+    [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
 
     -- Priest
     [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
