@@ -105,6 +105,7 @@ BuffOverlay.defaultSpells = {
     [1966] = { class = "ROGUE", prio = 50 }, --Feint
     [1784] = { class = "ROGUE", prio = 70 }, --Stealth
     [11327] = { class = "ROGUE", prio = 70 }, --Vanish
+    [114018] = { class = "ROGUE", prio = 70 }, --Shroud of Concealment
 
     -- Shaman
     [210918] = { class = "SHAMAN", prio = 10 }, --Ethereal Form
