@@ -701,7 +701,7 @@ function BuffOverlay:Test(barName)
 
         if GetNumGroupMembers() == 0 or
             not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
-            if CompactRaidFrameManager then
+            if CompactRaidFrameManager and not EditModeManagerFrame.editModeActive then
                 CompactRaidFrameManager:Hide()
                 CompactRaidFrameContainer:Hide()
                 if CompactPartyFrame then
