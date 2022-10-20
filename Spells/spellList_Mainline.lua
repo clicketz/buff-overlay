@@ -114,6 +114,7 @@ BuffOverlay.defaultSpells = {
     [201633] = { class = "SHAMAN", prio = 50 }, --Earthen Wall Totem
     [383018] = { class = "SHAMAN", prio = 50 }, --Stoneskin Totem
     [325174] = { class = "SHAMAN", prio = 50 }, --Spirit Link Totem
+    [207498] = { class = "SHAMAN", prio = 50 }, --Ancestral Protection Totem
 
     -- Warlock
     [212295] = { class = "WARLOCK", prio = 50 }, --Nether Ward
