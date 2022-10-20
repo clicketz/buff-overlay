@@ -639,6 +639,7 @@ function BuffOverlay:Test(barName)
                 CompactRaidFrameContainer:Show()
                 if CompactPartyFrame then
                     CompactPartyFrame:Show()
+                    PartyFrame:UpdatePaddingAndLayout()
                 end
             end
         end
