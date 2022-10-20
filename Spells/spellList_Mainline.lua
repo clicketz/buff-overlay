@@ -130,6 +130,7 @@ BuffOverlay.defaultSpells = {
     [97463] = { class = "WARRIOR", prio = 50 }, --Rallying Cry
     [12975] = { class = "WARRIOR", prio = 50 }, --Last Stand
     [190456] = { class = "WARRIOR", prio = 50 }, --Ignore Pain
+    [213871] = { class = "WARRIOR", prio = 50 }, --Bodyguard
 
     -- Misc
     ["Eating/Drinking"] = { class = "MISC", prio = 90 }, -- Food umbrella
