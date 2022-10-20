@@ -99,8 +99,11 @@ local deleteSpellDelegate = {
     end,
 }
 
+-- Change the path for the new options menu in 10.0
+local path = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and "|cffFFFF00Options > Gameplay > Action Bars > Show Numbers for Cooldowns|r" or "|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r"
+
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
-    text = "In order for |cff83b2ffShow Blizzard Cooldown Text|r setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r\n\nWould you like BuffOverlay to enable this setting for you?\n\n",
+    text = "In order for |cff83b2ffShow Blizzard Cooldown Text|r setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n"..path.."\n\nWould you like BuffOverlay to enable this setting for you?\n\n",
     buttons = {
         {
             text = YES,
