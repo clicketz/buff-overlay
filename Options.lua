@@ -158,7 +158,7 @@ local function GetSpells(class, barName)
                     spellName = customSpellNames[k]
                 end
 
-                local formattedName = spellName and format("%s %s", GetIconString(icon, 20), spellName) or
+                local formattedName = (spellName and icon) and format("%s %s", GetIconString(icon, 20), spellName) or
                     icon and format("%s %s", GetIconString(icon, 20), k) or tostring(k)
 
                 if spellName then
