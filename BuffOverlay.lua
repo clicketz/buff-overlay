@@ -24,8 +24,9 @@ local DebuffTypeColor = DebuffTypeColor
 
 local TestBuffs = {}
 local TestBuffIds = {}
-local testTextFrame
 local testBarNames = {}
+local testTextFrame
+local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
 local defaultBarSettings = {
     iconCount = 4,
@@ -597,9 +598,22 @@ local function GetTestAnchor()
     return anchor
 end
 
+local function HideTestFrames()
+    if isRetail then
+        if EditModeManagerFrame and EditModeManagerFrame.editModeActive then return end
+        UpdateRaidAndPartyFrames()
+    elseif CompactRaidFrameManager then
+        CompactRaidFrameManager:Hide()
+        CompactRaidFrameContainer:Hide()
+        if CompactPartyFrame then
+            CompactPartyFrame:Hide()
+        end
+    end
+end
+
 local combatDropUpdate = CreateFrame("Frame")
 combatDropUpdate:SetScript("OnEvent", function(self)
-    UpdateRaidAndPartyFrames()
+    HideTestFrames()
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
 end)
 
@@ -644,7 +658,9 @@ function BuffOverlay:Test(barName)
                 CompactRaidFrameContainer:Show()
                 if CompactPartyFrame then
                     CompactPartyFrame:Show()
-                    PartyFrame:UpdatePaddingAndLayout()
+                    if PartyFrame then
+                        PartyFrame:UpdatePaddingAndLayout()
+                    end
                 end
             end
         end
@@ -707,7 +723,7 @@ function BuffOverlay:Test(barName)
             combatDropUpdate:RegisterEvent("PLAYER_REGEN_ENABLED")
             self.print("Exiting test mode. Frame visibility will update out of combat.")
         else
-            UpdateRaidAndPartyFrames()
+            HideTestFrames()
             self.print("Exiting test mode.")
         end
         testTextFrame:Hide()
