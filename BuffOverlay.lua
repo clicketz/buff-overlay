@@ -9,10 +9,6 @@ local GetSpellTexture = GetSpellTexture
 local UnitIsPlayer = UnitIsPlayer
 local InCombatLockdown = InCombatLockdown
 local GetNumGroupMembers = GetNumGroupMembers
-local IsInRaid = IsInRaid
-local GetCVarBool = GetCVarBool
-local IsInInstance = IsInInstance
-local select = select
 local next = next
 local pairs = pairs
 local ipairs = ipairs
@@ -601,15 +597,24 @@ local function GetTestAnchor()
     return anchor
 end
 
+local combatDropUpdate = CreateFrame("Frame")
+combatDropUpdate:SetScript("OnEvent", function(self)
+    UpdateRaidAndPartyFrames()
+    self:UnregisterEvent("PLAYER_REGEN_ENABLED")
+end)
+
 function BuffOverlay:Test(barName)
+    self:UpdateUnits()
+
     if InCombatLockdown() then
         if self.test then
             self.test = false
             if testTextFrame then
                 testTextFrame:Hide()
             end
-            self:UpdateUnits()
-            self.print("Exiting test mode.")
+            self:RefreshOverlays()
+            combatDropUpdate:RegisterEvent("PLAYER_REGEN_ENABLED")
+            self.print("Exiting test mode. Frame visibility will update out of combat.")
             return
         else
             self.print("You are in combat.")
@@ -698,18 +703,13 @@ function BuffOverlay:Test(barName)
 
     if next(testBarNames) == nil and self.test then
         self.test = false
-
-        if GetNumGroupMembers() == 0 or
-            not IsInRaid() and not select(2, IsInInstance()) == "arena" and GetCVarBool("useCompactPartyFrames") then
-            if CompactRaidFrameManager and not EditModeManagerFrame.editModeActive then
-                CompactRaidFrameManager:Hide()
-                CompactRaidFrameContainer:Hide()
-                if CompactPartyFrame then
-                    CompactPartyFrame:Hide()
-                end
-            end
+        if InCombatLockdown() then
+            combatDropUpdate:RegisterEvent("PLAYER_REGEN_ENABLED")
+            self.print("Exiting test mode. Frame visibility will update out of combat.")
+        else
+            UpdateRaidAndPartyFrames()
+            self.print("Exiting test mode.")
         end
-        self.print("Exiting test mode.")
         testTextFrame:Hide()
         self:RefreshOverlays()
         return
