@@ -34,6 +34,7 @@ globals = {
     "CompactRaidFrameManager",
     "CompactRaidFrameContainer",
     "CompactPartyFrame",
+    "EditModeManagerFrame",
     "PartyFrame",
     "UnitBuff",
     "UnitAura",
