@@ -8,7 +8,7 @@ BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
  Use the /buffoverlay or /bo command.
 
-------------------------------------------------]] --
+------------------------------------------------]]--
 
 -- Lower prio = shown above other buffs
 BuffOverlay.defaultSpells = {

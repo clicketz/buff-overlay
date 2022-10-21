@@ -34,6 +34,7 @@ globals = {
     "CompactRaidFrameManager",
     "CompactRaidFrameContainer",
     "CompactPartyFrame",
+    "PartyFrame",
     "UnitBuff",
     "UnitAura",
     "BUFF_STACKS_OVERFLOW",
@@ -69,4 +70,5 @@ globals = {
     "debugprofilestop",
     "CopyTable",
     "DebuffTypeColor",
+    "UpdateRaidAndPartyFrames",
 }
