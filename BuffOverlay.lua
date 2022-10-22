@@ -22,6 +22,7 @@ local string_find = string.find
 local math_floor = math.floor
 local math_min = math.min
 local DebuffTypeColor = DebuffTypeColor
+local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 
 local TestBuffs = {}
 local TestBuffIds = {}
@@ -75,6 +76,12 @@ local hexFontColors = {
     ["value"] = "ffffe981",
     ["blizzardFont"] = NORMAL_FONT_COLOR:GenerateHexColor(),
 }
+
+do
+    for class, val in pairs(RAID_CLASS_COLORS) do
+        hexFontColors[class] = val.colorStr
+    end
+end
 
 function BuffOverlay:Colorize(text, color)
     if not text then return end
