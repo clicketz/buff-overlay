@@ -761,7 +761,7 @@ local customSpells = {
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
-                    BuffOverlay:Print(format("%s %s is already being tracked.", GetIconString(icon, 20) or customIcons["?"], name))
+                    BuffOverlay:Print(format("%s %s is already being tracked.", GetIconString(icon, 20), name))
                 end
             else
                 BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(state)))
