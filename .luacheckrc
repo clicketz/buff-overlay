@@ -72,4 +72,5 @@ globals = {
     "CopyTable",
     "DebuffTypeColor",
     "UpdateRaidAndPartyFrames",
+    "NORMAL_FONT_COLOR",
 }

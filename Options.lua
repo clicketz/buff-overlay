@@ -100,10 +100,10 @@ local deleteSpellDelegate = {
 }
 
 -- Change the path for the new options menu in 10.0
-local path = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and "|cffFFFF00Options > Gameplay > Action Bars > Show Numbers for Cooldowns|r" or "|cffFFFF00Interface > ActionBars > Show Numbers for Cooldowns|r"
+local path = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and "Options > Gameplay > Action Bars > Show Numbers for Cooldowns" or "Interface > ActionBars > Show Numbers for Cooldowns"
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
-    text = "In order for |cff83b2ffShow Blizzard Cooldown Text|r setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n"..path.."\n\nWould you like BuffOverlay to enable this setting for you?\n\n",
+    text = format("In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n%s\n\nWould you like BuffOverlay to enable this setting for you?\n\n", BuffOverlay:Colorize("Show Blizzard Cooldown Text", "logo"), BuffOverlay:Colorize(path)),
     buttons = {
         {
             text = YES,
@@ -146,7 +146,7 @@ local function GetSpells(class, barName)
             -- Check if spell is valid for new db structure. If not, likely from old profile. Reset needed.
             if type(v) ~= "table" or not v.prio or not v.class then
                 wipe(BuffOverlay.db.profile.buffs)
-                BuffOverlay.print("Corrupted buff database found. This is likely due to updating from an older version of Buff Overlay. Resetting buff database to default. Your other settings (including custom buffs) will be preserved.")
+                BuffOverlay:Print("Corrupted buff database found. This is likely due to updating from an older version of Buff Overlay. Resetting buff database to default. Your other settings (including custom buffs) will be preserved.")
                 return
             end
 
@@ -180,13 +180,13 @@ local function GetSpells(class, barName)
                         local description = spellDescriptions[k] and spellDescriptions[k] ~= "" and
                             spellDescriptions[k] .. "\n" or ""
 
-                        description = description .. format("\n|cffffd100Priority|r %d", v.prio)
+                        description = description .. format("\n%s %d", BuffOverlay:Colorize("Priority"), v.prio)
 
                         local spellId = tonumber(k)
                         if spellId then
-                            description = description .. format("\n|cffffd100Spell ID|r %d", spellId)
+                            description = description .. format("\n%s %d", BuffOverlay:Colorize("Spell ID"), spellId)
                             if BuffOverlay.db.profile.buffs[spellId].children then
-                                description = description .. " |cffffd700 " .. "\nChild Spell ID(s)" .. "|r\n"
+                                description = description .. BuffOverlay:Colorize("\nChild Spell ID(s)\n")
                                 for child in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
                                     description = description .. child .. "\n"
                                 end
@@ -288,7 +288,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 get = function(info) return bar[info[#info]] end,
                 set = function(info, val)
                     if InCombatLockdown() then
-                        self.print("Cannot change settings in combat.")
+                        self:Print("Cannot change settings in combat.")
                         return
                     end
                     bar[info[#info]] = val
@@ -417,7 +417,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         end,
                         set = function(info, val)
                             if InCombatLockdown() then
-                                self.print("Cannot change settings in combat.")
+                                self:Print("Cannot change settings in combat.")
                                 return
                             end
 
@@ -438,7 +438,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 get = function(info) return bar[info[#info]] end,
                 set = function(info, val)
                     if InCombatLockdown() then
-                        self.print("Cannot change settings in combat.")
+                        self:Print("Cannot change settings in combat.")
                         return
                     end
                     bar[info[#info]] = val
@@ -586,9 +586,9 @@ local customSpellInfo = {
         width = "full",
         name = function(info)
             local spellId = tonumber(info[#info - 1])
-            local str = "|cffffd700" .. "Spell ID" .. "|r " .. spellId
+            local str = BuffOverlay:Colorize("Spell ID ") .. spellId
             if BuffOverlay.db.profile.buffs[spellId].children then
-                str = str .. " |cffffd700 " .. "\n\nChild Spell ID(s)" .. "|r\n"
+                str = str .. BuffOverlay:Colorize("\n\nChild Spell ID(s)\n")
                 for child in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
                     str = str .. child .. "\n"
                 end
@@ -606,8 +606,7 @@ local customSpellInfo = {
             local spellName, _, icon = GetSpellInfo(spellId)
             local text = format("Are you sure you want to delete\n\n%s %s?\n\n", GetIconString(icon, 20), spellName)
             if BuffOverlay.defaultSpells[spellId] then
-                text = text ..
-                    "(|cff9b6ef3Note|r: This is a default spell. Deleting it from this tab will simply reset all its values to default and disable it, but it will not be removed from the spells tab.)"
+                text = text .. format("(%s: This is a default spell. Deleting it from this tab will simply reset all its values to default and disable it, but it will not be removed from the spells tab.)", BuffOverlay:Colorize("Note", "accent"))
             end
             deleteSpellDelegate.text = text
 
@@ -726,10 +725,10 @@ local customSpells = {
                     }
                     BuffOverlay:UpdateCustomBuffs()
                 else
-                    BuffOverlay.print(format("%s %s is already being tracked.", GetIconString(icon, 20) or customIcons["?"], name))
+                    BuffOverlay:Print(format("%s %s is already being tracked.", GetIconString(icon, 20) or customIcons["?"], name))
                 end
             else
-                BuffOverlay.print(format("Invalid Spell ID |cffffd700%s|r", state))
+                BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(state)))
             end
         end,
     }
@@ -754,13 +753,13 @@ function BuffOverlay:Options()
         args = {
             author = {
                 order = 1,
-                name = "|cffffd700" .. "Author:" .. "|r " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n",
+                name = self:Colorize("Author") .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n",
                 type = "description",
                 cmdHidden = true
             },
             vers = {
                 order = 2,
-                name = "|cffffd700" .. "Version:" .. "|r " .. GetAddOnMetadata("BuffOverlay", "Version") .. "\n\n",
+                name = self:Colorize("Version") .. ": " .. GetAddOnMetadata("BuffOverlay", "Version") .. "\n\n",
                 type = "description",
                 cmdHidden = true
             },

@@ -15,6 +15,7 @@ local ipairs = ipairs
 local wipe = wipe
 local type = type
 local rawset = rawset
+local format = format
 local CreateFrame = CreateFrame
 local table_sort = table.sort
 local string_find = string.find
@@ -68,9 +69,23 @@ local filters = {
     "HARMFUL",
 }
 
-function BuffOverlay.print(msg)
-    local newMsg = "|cff83b2ffBuffOverlay|r: " .. msg
-    print(newMsg)
+local hexFontColors = {
+    ["logo"] = "ff83b2ff",
+    ["accent"] = "ff9b6ef3",
+    ["value"] = "ffffe981",
+    ["blizzardFont"] = NORMAL_FONT_COLOR:GenerateHexColor(),
+}
+
+function BuffOverlay:Colorize(text, color)
+    if not text then return end
+    if not color then
+        color = "blizzardFont"
+    end
+    return "|c" .. hexFontColors[color] .. text .. "|r"
+end
+
+function BuffOverlay:Print(msg)
+    print(self:Colorize("BuffOverlay", "logo") .. ": " .. msg)
 end
 
 local function GetFirstUnusedNum()
@@ -460,7 +475,7 @@ function BuffOverlay:OnInitialize()
     end
 
     if self.db.profile.welcomeMessage then
-        self.print("Type |cff9b6ef3/buffoverlay|r or |cff9b6ef3/bo|r to open the options panel or |cff9b6ef3/bo help|r for more commands.")
+        self:Print(format("Type %s or %s to open the options panel or %s for more commands.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent"), self:Colorize("/bo help", "accent")))
     end
 
     self.overlays = {}
@@ -473,7 +488,7 @@ function BuffOverlay:OnInitialize()
     for _, content in pairs(self.db.profiles) do
         for attr in pairs(defaultBarSettings) do
             if content[attr] ~= nil then
-                self.print("There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing |cff9b6ef3/bo|r in chat.")
+                self:Print(format("There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing %s in chat.", self:Colorize("/bo", "accent")))
                 wipe(self.db.profile)
                 self.db:ResetProfile()
                 break
@@ -514,10 +529,10 @@ function BuffOverlay:OnInitialize()
     SLASH_BuffOverlay2 = "/buffoverlay"
     function SlashCmdList.BuffOverlay(msg)
         if msg == "help" or msg == "?" then
-            self.print("Command List")
-            print("|cff9b6ef3/buffoverlay|r or |cff9b6ef3/bo|r: Opens options panel.")
-            print("|cff9b6ef3/bo|r |cffffe981test|r: Shows test icons on all visible raid/party frames.")
-            print("|cff9b6ef3/bo|r |cffffe981reset|r: Resets current profile to default settings. This does not remove any custom buffs.")
+            self:Print("Command List")
+            print(format("%s or %s: Opens options panel.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
+            print(format("%s %s: Shows test icons on all visible raid/party frames.", self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
+            print(format("%s %s: Resets current profile to default settings. This does not remove any custom auras.", self:Colorize("/bo", "accent"), self:Colorize("reset", "value")))
         elseif msg == "test" then
             self:Test()
         elseif msg == "reset" or msg == "default" then
@@ -628,10 +643,10 @@ function BuffOverlay:Test(barName)
             end
             self:RefreshOverlays()
             combatDropUpdate:RegisterEvent("PLAYER_REGEN_ENABLED")
-            self.print("Exiting test mode. Frame visibility will update out of combat.")
+            self:Print("Exiting test mode. Frame visibility will update out of combat.")
             return
         else
-            self.print("You are in combat.")
+            self:Print("You are in combat.")
         end
 
         return
@@ -665,7 +680,7 @@ function BuffOverlay:Test(barName)
             end
         end
 
-        self.print("Test mode activated.")
+        self:Print("Test mode activated.")
         testTextFrame:ClearAllPoints()
 
         local anchor = false
@@ -687,7 +702,7 @@ function BuffOverlay:Test(barName)
                 anchor = GetTestAnchor()
 
                 if not anchor then
-                    self.print("|cff9b6ef3(Note)|r Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.")
+                    self:Print(format("%s Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.", self:Colorize("Note", "accent")))
                     testTextFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
                 else
                     testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
@@ -721,10 +736,10 @@ function BuffOverlay:Test(barName)
         self.test = false
         if InCombatLockdown() then
             combatDropUpdate:RegisterEvent("PLAYER_REGEN_ENABLED")
-            self.print("Exiting test mode. Frame visibility will update out of combat.")
+            self:Print("Exiting test mode. Frame visibility will update out of combat.")
         else
             HideTestFrames()
-            self.print("Exiting test mode.")
+            self:Print("Exiting test mode.")
         end
         testTextFrame:Hide()
         self:RefreshOverlays()
