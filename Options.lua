@@ -656,7 +656,7 @@ local customSpellInfo = {
         name = "Priority (Lower is Higher Prio)",
         validate = function(_, value)
             local num = tonumber(value)
-            if num and num >= 0 and num < 1000000 and value:match("^%d+$") then
+            if num and num < 1000000 and value:match("^%d+$") then
                 if BuffOverlay.errorStatusText then
                     -- Clear error text on successful validation
                     local rootFrame = LibStub("AceConfigDialog-3.0").OpenFrames["BuffOverlay"]
@@ -704,6 +704,23 @@ local customSpells = {
         name = "Spell ID",
         desc = "Enter the spell ID of the spell you want to keep track of.",
         type = "input",
+        validate = function(_, value)
+            local num = tonumber(value)
+            if num and num < 10000000 and value:match("^%d+$") then
+                if BuffOverlay.errorStatusText then
+                    -- Clear error text on successful validation
+                    local rootFrame = LibStub("AceConfigDialog-3.0").OpenFrames["BuffOverlay"]
+                    if rootFrame and rootFrame.SetStatusText then
+                        rootFrame:SetStatusText("")
+                    end
+                    BuffOverlay.errorStatusText = nil
+                end
+                return true
+            else
+                BuffOverlay.errorStatusText = true
+                return "Spell ID must be a positive integer from 0 to 9999999"
+            end
+        end,
         set = function(_, state)
             local spellId = tonumber(state)
 
