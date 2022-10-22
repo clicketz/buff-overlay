@@ -85,10 +85,8 @@ end
 
 function BuffOverlay:Colorize(text, color)
     if not text then return end
-    if not color then
-        color = "blizzardFont"
-    end
-    return "|c" .. hexFontColors[color] .. text .. "|r"
+    local hexColor = hexFontColors[color] or hexFontColors["blizzardFont"]
+    return "|c" .. hexColor .. text .. "|r"
 end
 
 function BuffOverlay:Print(msg)
