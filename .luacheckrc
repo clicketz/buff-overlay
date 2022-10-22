@@ -73,4 +73,5 @@ globals = {
     "DebuffTypeColor",
     "UpdateRaidAndPartyFrames",
     "NORMAL_FONT_COLOR",
+    "RAID_CLASS_COLORS",
 }

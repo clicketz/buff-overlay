@@ -15,7 +15,11 @@ local tonumber = tonumber
 local tostring = tostring
 local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
-local CLASS_SORT_ORDER = CLASS_SORT_ORDER
+local CLASS_SORT_ORDER = CopyTable(CLASS_SORT_ORDER)
+do
+    -- Why oh why is this "sort order" table not actually sorted Blizzard?
+    table.sort(CLASS_SORT_ORDER)
+end
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 
 local spellDescriptions = {}
@@ -132,10 +136,14 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
 
 local function GetIconString(icon, iconSize)
     local size = iconSize or 0
-    local ltTexel = 0.08 * 64
-    local rbTexel = 0.92 * 64
+    local ltTexel = 0.08 * 256
+    local rbTexel = 0.92 * 256
 
-    return format("|T%s:%d:%d:0:0:64:64:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
+    if not icon then
+        icon = customIcons["?"]
+    end
+
+    return format("|T%s:%d:%d:0:0:256:256:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
 end
 
 local function GetSpells(class, barName)
@@ -219,7 +227,7 @@ local function GetClasses(barName)
     local classes = {}
     classes["MISC"] = {
         name = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"], 15)),
-        order = 1,
+        order = 99,
         type = "group",
         args = GetSpells("MISC", barName),
     }
@@ -227,9 +235,8 @@ local function GetClasses(barName)
     for i = 1, MAX_CLASSES do
         local className = CLASS_SORT_ORDER[i]
         classes[className] = {
-            -- format icons directly in case user is using a custom icon pack
-            name = format("%s %s", GetIconString(classIcons[className], 15), LOCALIZED_CLASS_NAMES_MALE[className]),
-            order = 0,
+            name = format("%s %s", GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className)),
+            order = i,
             type = "group",
             args = GetSpells(className, barName),
         }
@@ -624,18 +631,30 @@ local customSpellInfo = {
         name = "Class",
         values = function()
             local classes = {}
-            classes["MISC"] = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"], 15))
+            -- Use "_MISC" to put Miscellaneous at the end of the list since Ace sorts the dropdown by key. (Hacky, but it works)
+            -- _MISC gets converted in the setters/getters, so it won't affect other structures.
+            classes["_MISC"] = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"], 15))
             for i = 1, MAX_CLASSES do
                 local className = CLASS_SORT_ORDER[i]
-                local icon = classIcons[className] or customIcons["?"]
-                classes[className] = format("%s %s", GetIconString(icon, 15), LOCALIZED_CLASS_NAMES_MALE[className])
+                classes[className] = format("%s %s", GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
             end
             return classes
+        end,
+        get = function(info)
+            local spellId = tonumber(info[#info - 1])
+            local class = BuffOverlay.db.global.customBuffs[spellId].class
+            if class == "MISC" then
+                class = "_MISC"
+            end
+            return class
         end,
         set = function(info, state)
             local option = info[#info]
             local spellId = info[#info - 1]
             spellId = tonumber(spellId)
+            if state == "_MISC" then
+                state = "MISC"
+            end
             BuffOverlay.db.global.customBuffs[spellId][option] = state
             BuffOverlay.db.profile.buffs[spellId][option] = state
             if BuffOverlay.db.profile.buffs[spellId].children then
@@ -838,5 +857,5 @@ function BuffOverlay:Options()
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 635, 605)
+    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 635, 660)
 end
