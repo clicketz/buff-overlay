@@ -10,7 +10,7 @@
 ## DefaultState: Enabled
 ## SavedVariables: BuffOverlayDB
 
-BuffOverlay.xml
+Border.xml
 embeds.xml
 
 Spells\spellList_TBC.lua
