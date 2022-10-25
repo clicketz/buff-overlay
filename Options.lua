@@ -1,5 +1,7 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local LibDialog = LibStub("LibDialog-1.0")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local AceRegistry = LibStub("AceConfigRegistry-3.0")
 
 local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
@@ -60,6 +62,7 @@ local deleteSpellDelegate = {
             text = YES,
             on_click = function(self)
                 local spellId = tonumber(self.data)
+                if not spellId then return end
 
                 BuffOverlay.db.global.customBuffs[spellId] = nil
 
@@ -84,10 +87,14 @@ local deleteSpellDelegate = {
                 end
 
                 BuffOverlay.options.args.customSpells.args[self.data] = nil
+                if AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
+                    BuffOverlay.priorityListDialog.args[self.data] = nil
+                    AceRegistry:NotifyChange("BuffOverlayDialog")
+                end
                 BuffOverlay:UpdateSpellOptionsTable()
                 BuffOverlay:RefreshOverlays()
 
-                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+                AceRegistry:NotifyChange("BuffOverlay")
             end,
         },
         {
@@ -118,7 +125,7 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
                 bar.showCooldownNumbers = true
                 BuffOverlay:RefreshOverlays(true)
 
-                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+                AceRegistry:NotifyChange("BuffOverlay")
             end,
         },
         {
@@ -146,6 +153,40 @@ local function GetIconString(icon, iconSize)
     return format("|T%s:%d:%d:0:0:256:256:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
 end
 
+local function IsDifferentDialogBar(barName)
+    return BuffOverlay.priorityListDialog.args.bar.name ~= barName
+end
+
+local function AddToPriorityDialog(spellIdStr, remove)
+    local list = BuffOverlay.priorityListDialog.args
+    local spellId = tonumber(spellIdStr) or spellIdStr
+    local spell = BuffOverlay.db.profile.buffs[spellId]
+    local spellName, _, icon = GetSpellInfo(spellId)
+
+    if not spell then return end
+
+    if customIcons[spellId] then
+        icon = customIcons[spellId]
+    end
+
+    if customSpellNames[spellId] then
+        spellName = customSpellNames[spellId]
+    end
+
+    local formattedName = (spellName and icon) and format("%s %s", GetIconString(icon, 20), spellName) or
+        icon and format("%s %s", GetIconString(icon, 20), spellId) or spellIdStr
+
+    if remove then
+        list[spellIdStr] = nil
+    else
+        list[spellIdStr] = {
+            name = BuffOverlay:Colorize(formattedName, spell.class) .. " [" .. spell.prio .. "]",
+            type = "description",
+            order = spell.prio + 1,
+        }
+    end
+end
+
 local function GetSpells(class, barName)
     local spells = {}
 
@@ -160,6 +201,7 @@ local function GetSpells(class, barName)
 
             if not v.parent and (v.class == class) then
                 local spellName, _, icon = GetSpellInfo(k)
+                local spellIdStr = tostring(k)
 
                 if customIcons[k] then
                     icon = customIcons[k]
@@ -169,8 +211,8 @@ local function GetSpells(class, barName)
                     spellName = customSpellNames[k]
                 end
 
-                local formattedName = (spellName and icon) and format("%s %s", GetIconString(icon, 20), spellName) or
-                    icon and format("%s %s", GetIconString(icon, 20), k) or tostring(k)
+                local formattedName = (spellName and icon) and format("%s %s", GetIconString(icon, 20), spellName)
+                    or icon and format("%s %s", GetIconString(icon, 20), k) or spellIdStr
 
                 if spellName then
                     local id = customSpellDescriptions[k] or k
@@ -180,24 +222,22 @@ local function GetSpells(class, barName)
                     end)
                 end
 
-                spells[tostring(k)] = {
+                spells[spellIdStr] = {
                     name = formattedName,
                     type = "toggle",
                     order = v.prio,
                     desc = function()
-                        local description = spellDescriptions[k] and spellDescriptions[k] ~= "" and
-                            spellDescriptions[k] .. "\n" or ""
+                        local description = spellDescriptions[k] and spellDescriptions[k] ~= ""
+                            and spellDescriptions[k] .. "\n" or ""
 
-                        description = description .. format("\n%s %d", BuffOverlay:Colorize("Priority"), v.prio)
+                        description = description
+                            .. format("\n%s %d", BuffOverlay:Colorize("Priority"), v.prio)
+                            .. (spellName and format("\n%s %d", BuffOverlay:Colorize("Spell ID"), k) or "")
 
-                        local spellId = tonumber(k)
-                        if spellId then
-                            description = description .. format("\n%s %d", BuffOverlay:Colorize("Spell ID"), spellId)
-                            if BuffOverlay.db.profile.buffs[spellId].children then
-                                description = description .. BuffOverlay:Colorize("\nChild Spell ID(s)\n")
-                                for child in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
-                                    description = description .. child .. "\n"
-                                end
+                        if BuffOverlay.db.profile.buffs[k].children then
+                            description = description .. BuffOverlay:Colorize("\nChild Spell ID(s)\n")
+                            for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
+                                description = description .. child .. "\n"
                             end
                         end
 
@@ -205,7 +245,7 @@ local function GetSpells(class, barName)
                     end,
                     width = "full",
                     get = function()
-                        return BuffOverlay.db.profile.buffs[k].enabled[barName] or false
+                        return BuffOverlay.db.profile.buffs[k].enabled[barName]
                     end,
                     set = function(_, value)
                         BuffOverlay.db.profile.buffs[k].enabled[barName] = value
@@ -213,6 +253,13 @@ local function GetSpells(class, barName)
                             for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
                                 BuffOverlay.db.profile.buffs[child].enabled[barName] = value
                             end
+                        end
+                        if AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
+                            if IsDifferentDialogBar(barName) then
+                                BuffOverlay:CreatePriorityDialog(barName)
+                            end
+                            AddToPriorityDialog(spellIdStr, not value)
+                            AceRegistry:NotifyChange("BuffOverlayDialog")
                         end
                         BuffOverlay:RefreshOverlays()
                     end,
@@ -223,10 +270,60 @@ local function GetSpells(class, barName)
     return spells
 end
 
+function BuffOverlay:CreatePriorityDialog(barName)
+    local bar = self.db.profile.bars[barName]
+
+    local spells = {
+        bar = {
+            name = barName,
+            type = "description",
+            hidden = true,
+        },
+        desc = {
+            name = "This informational panel is the full list of spells currently enabled for " .. self:Colorize((bar.name or barName), "logo") .. " in order of priority. Any aura changes made while this panel is open will be reflected here in real time.",
+            type = "description",
+            order = 0,
+        },
+        space = {
+            name = " ",
+            type = "description",
+            order = 0.5,
+        },
+    }
+
+    for spellIdStr, info in pairs(GetSpells("MISC", barName)) do
+        local spellId = tonumber(spellIdStr) or spellIdStr
+        if self.db.profile.buffs[spellId].enabled[barName] then
+            spells[spellIdStr] = {
+                name = self:Colorize(info.name, "MISC") .. " [" .. info.order .. "]",
+                type = "description",
+                order = info.order + 1,
+            }
+        end
+    end
+
+    for i = 1, MAX_CLASSES do
+        local className = CLASS_SORT_ORDER[i]
+        for spellIdStr, info in pairs(GetSpells(className, barName)) do
+            local spellId = tonumber(spellIdStr) or spellIdStr
+            if self.db.profile.buffs[spellId].enabled[barName] then
+                spells[spellIdStr] = {
+                    name = self:Colorize(info.name, className) .. " [" .. info.order .. "]",
+                    type = "description",
+                    order = info.order + 1,
+                }
+            end
+        end
+    end
+
+    self.priorityListDialog.name = self:Colorize((bar.name or barName), "logo") .. " Enabled Auras Priority List"
+    self.priorityListDialog.args = spells
+end
+
 local function GetClasses(barName)
     local classes = {}
     classes["MISC"] = {
-        name = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"], 15)),
+        name = format("%s %s", GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC")),
         order = 99,
         type = "group",
         args = GetSpells("MISC", barName),
@@ -268,6 +365,14 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 set = function(info, val)
                     bar[info[#info]] = val
                     self.options.args.bars.args[barName].name = val
+                    if AceConfigDialog.OpenFrames["BuffOverlayDialog"] and not IsDifferentDialogBar(barName) then
+                        self.priorityListDialog.name = self:Colorize(val, "logo") .. " Enabled Auras Priority List"
+                        self.priorityListDialog.args.desc.name = "This informational panel is the full list of spells currently enabled for "
+                            .. self:Colorize((val or barName), "logo")
+                            .. " in order of priority. Any aura changes made while this panel is open will be reflected here in real time."
+
+                        AceRegistry:NotifyChange("BuffOverlayDialog")
+                    end
                 end,
             },
             delete = {
@@ -277,6 +382,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 width = 0.75,
                 func = function()
                     self:DeleteBar(barName)
+
+                    if AceConfigDialog.OpenFrames["BuffOverlayDialog"] and not IsDifferentDialogBar(barName) then
+                        AceConfigDialog:Close("BuffOverlayDialog")
+                    end
                 end,
             },
             test = {
@@ -418,7 +527,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         get = function(info)
                             if not GetCVarBool("countdownForCooldowns") and bar[info[#info]] then
                                 bar[info[#info]] = false
-                                LibStub("AceConfigRegistry-3.0"):NotifyChange("BuffOverlay")
+                                AceRegistry:NotifyChange("BuffOverlay")
                             end
                             return bar[info[#info]]
                         end,
@@ -537,12 +646,26 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         order = 1,
                         name = "Enable All",
                         type = "execute",
-                        width = 0.75,
+                        width = 0.70,
                         desc = "Enable all spells.",
                         func = function()
-                            for k in pairs(self.db.profile.buffs) do
-                                self.db.profile.buffs[k].enabled[barName] = true
+                            local dialogIsOpen = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
+
+                            if dialogIsOpen and IsDifferentDialogBar(barName) then
+                                self:CreatePriorityDialog(barName)
                             end
+
+                            for k, v in pairs(self.db.profile.buffs) do
+                                self.db.profile.buffs[k].enabled[barName] = true
+                                if not v.parent and dialogIsOpen then
+                                    AddToPriorityDialog(tostring(k))
+                                end
+                            end
+
+                            if dialogIsOpen then
+                                AceRegistry:NotifyChange("BuffOverlayDialog")
+                            end
+
                             self:RefreshOverlays()
                         end,
                     },
@@ -550,18 +673,78 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         order = 2,
                         name = "Disable All",
                         type = "execute",
-                        width = 0.75,
+                        width = 0.70,
                         desc = "Disable all spells.",
                         func = function()
+                            local dialogIsOpen = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
+
+                            if dialogIsOpen and IsDifferentDialogBar(barName) then
+                                self:CreatePriorityDialog(barName)
+                            end
+
                             for k in pairs(self.db.profile.buffs) do
                                 self.db.profile.buffs[k].enabled[barName] = false
+
+                                if dialogIsOpen then
+                                    BuffOverlay.priorityListDialog.args[tostring(k)] = nil
+                                end
                             end
+
+                            if dialogIsOpen then
+                                AceRegistry:NotifyChange("BuffOverlayDialog")
+                            end
+
                             self:RefreshOverlays()
                         end,
                     },
-                    space4 = {
+                    fullPriorityList = {
                         order = 3,
-                        name = "\n",
+                        name = "Aura List",
+                        type = "execute",
+                        width = 0.70,
+                        desc = "Shows a list of all enabled auras for this bar in order of priority.",
+                        func = function()
+                            local dialog = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
+                            if dialog and not IsDifferentDialogBar(barName) then
+                                AceConfigDialog:Close("BuffOverlayDialog")
+                            else
+                                self:CreatePriorityDialog(barName)
+                                AceConfigDialog:Open("BuffOverlayDialog")
+                                dialog = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
+                                dialog:EnableResize(false)
+                                local baseDialog = AceConfigDialog.OpenFrames["BuffOverlay"]
+                                local width = (baseDialog and baseDialog.frame.width) or (InterfaceOptionsFrame and InterfaceOptionsFrame:GetWidth()) or 900
+
+                                if not dialog.frame:IsUserPlaced() then
+                                    dialog.frame:ClearAllPoints()
+                                    dialog.frame:SetPoint("LEFT", UIParent, "CENTER", width / 2, 0)
+                                end
+
+                                if not dialog.frame.hooked then
+                                    -- Avoid the dialog being moved unless the user drags it
+                                    hooksecurefunc(dialog.frame, "SetPoint", function(widget, point, relativeTo, relativePoint, x, y)
+                                        if widget:IsUserPlaced() then return end
+
+                                        local appName = widget.obj.userdata.appName
+                                        if (appName and appName == "BuffOverlayDialog")
+                                            and (point ~= "LEFT"
+                                                or relativeTo ~= UIParent
+                                                or relativePoint ~= "CENTER"
+                                                or x ~= width / 2
+                                                or y ~= 0)
+                                        then
+                                            widget:ClearAllPoints()
+                                            widget:SetPoint("LEFT", UIParent, "CENTER", width / 2, 0)
+                                        end
+                                    end)
+                                    dialog.frame.hooked = true
+                                end
+                            end
+                        end,
+                    },
+                    space4 = {
+                        order = 4,
+                        name = " ",
                         type = "description",
                         width = "full",
                     },
@@ -633,7 +816,7 @@ local customSpellInfo = {
             local classes = {}
             -- Use "_MISC" to put Miscellaneous at the end of the list since Ace sorts the dropdown by key. (Hacky, but it works)
             -- _MISC gets converted in the setters/getters, so it won't affect other structures.
-            classes["_MISC"] = format("%s Miscellaneous", GetIconString(customIcons["Cogwheel"], 15))
+            classes["_MISC"] = format("%s %s", GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC"))
             for i = 1, MAX_CLASSES do
                 local className = CLASS_SORT_ORDER[i]
                 classes[className] = format("%s %s", GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
@@ -660,6 +843,11 @@ local customSpellInfo = {
             if BuffOverlay.db.profile.buffs[spellId].children then
                 BuffOverlay.db.profile.buffs[spellId]:UpdateChildren()
             end
+            local spell = BuffOverlay.priorityListDialog.args[info[#info - 1]]
+            if spell and AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
+                AddToPriorityDialog(info[#info - 1])
+                AceRegistry:NotifyChange("BuffOverlayDialog")
+            end
             BuffOverlay:UpdateSpellOptionsTable()
         end,
     },
@@ -678,7 +866,7 @@ local customSpellInfo = {
             if num and num < 1000000 and value:match("^%d+$") then
                 if BuffOverlay.errorStatusText then
                     -- Clear error text on successful validation
-                    local rootFrame = LibStub("AceConfigDialog-3.0").OpenFrames["BuffOverlay"]
+                    local rootFrame = AceConfigDialog.OpenFrames["BuffOverlay"]
                     if rootFrame and rootFrame.SetStatusText then
                         rootFrame:SetStatusText("")
                     end
@@ -699,6 +887,12 @@ local customSpellInfo = {
             BuffOverlay.db.profile.buffs[spellId][option] = val
             if BuffOverlay.db.profile.buffs[spellId].children then
                 BuffOverlay.db.profile.buffs[spellId]:UpdateChildren()
+            end
+            local spell = BuffOverlay.priorityListDialog.args[info[#info - 1]]
+            if spell and AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
+                spell.name = string.gsub(spell.name, tostring(spell.order - 1) .. "]", state .. "]")
+                spell.order = val + 1
+                AceRegistry:NotifyChange("BuffOverlayDialog")
             end
             BuffOverlay:RefreshOverlays()
             BuffOverlay:UpdateSpellOptionsTable()
@@ -728,7 +922,7 @@ local customSpells = {
             if num and num < 10000000 and value:match("^%d+$") then
                 if BuffOverlay.errorStatusText then
                     -- Clear error text on successful validation
-                    local rootFrame = LibStub("AceConfigDialog-3.0").OpenFrames["BuffOverlay"]
+                    local rootFrame = AceConfigDialog.OpenFrames["BuffOverlay"]
                     if rootFrame and rootFrame.SetStatusText then
                         rootFrame:SetStatusText("")
                     end
@@ -751,7 +945,7 @@ local customSpells = {
 
             if name then
                 if BuffOverlay:InsertBuff(spellId) then
-                    BuffOverlay.options.args.customSpells.args[tostring(spellId)] = {
+                    BuffOverlay.options.args.customSpells.args[state] = {
                         name = format("%s %s", GetIconString(icon, 15), name),
                         desc = function()
                             return spellDescriptions[spellId] or ""
@@ -760,6 +954,10 @@ local customSpells = {
                         args = customSpellInfo,
                     }
                     BuffOverlay:UpdateCustomBuffs()
+                    if AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
+                        AddToPriorityDialog(state)
+                        AceRegistry:NotifyChange("BuffOverlayDialog")
+                    end
                 else
                     BuffOverlay:Print(format("%s %s is already being tracked.", GetIconString(icon, 20), name))
                 end
@@ -852,10 +1050,18 @@ function BuffOverlay:Options()
         },
     }
 
+    self.priorityListDialog = {
+        name = "Temp",
+        type = "group",
+        args = {},
+    }
+
     self:UpdateBarOptionsTable()
 
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
-    LibStub("AceConfigDialog-3.0"):AddToBlizOptions("BuffOverlay", "BuffOverlay")
-    LibStub("AceConfigDialog-3.0"):SetDefaultSize("BuffOverlay", 635, 660)
+    LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlayDialog", self.priorityListDialog)
+    AceConfigDialog:AddToBlizOptions("BuffOverlay", "BuffOverlay")
+    AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 660)
+    AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 660)
 end
