@@ -1,4 +1,5 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
+local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 
 local _G = _G
 local C_Spell = C_Spell
@@ -130,6 +131,7 @@ end
 function BuffOverlay:DeleteBar(barName)
     self.db.profile.bars[barName] = nil
     self.options.args.bars.args[barName] = nil
+    testBarNames[barName] = nil
 
     for _, v in pairs(self.db.profile.buffs) do
         if v.enabled then
@@ -543,7 +545,11 @@ function BuffOverlay:OnInitialize()
         elseif msg == "reset" or msg == "default" then
             self.db:ResetProfile()
         else
-            LibStub("AceConfigDialog-3.0"):Open("BuffOverlay")
+            AceConfigDialog:Open("BuffOverlay")
+            local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]
+            if dialog then
+                dialog:EnableResize(false)
+            end
         end
     end
 end
