@@ -794,7 +794,7 @@ local customSpellInfo = {
         func = function(info)
             local spellId = tonumber(info[#info - 1])
             local spellName, _, icon = GetSpellInfo(spellId)
-            local text = format("Are you sure you want to delete\n\n%s %s?\n\n", GetIconString(icon, 20), spellName)
+            local text = format("Are you sure you want to delete this spell?\n\n%s %s\n\n", GetIconString(icon, 20), spellName)
             if BuffOverlay.defaultSpells[spellId] then
                 text = text .. format("(%s: This is a default spell. Deleting it from this tab will simply reset all its values to default and disable it, but it will not be removed from the spells tab.)", BuffOverlay:Colorize("Note", "accent"))
             end
