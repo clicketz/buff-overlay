@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
-    <Script file="BuffOverlay_Border_Script.lua" />
+    <Script file="BorderScript.lua" />
 
     <Frame name="BuffOverlayBorderTemplate" mixin="BuffOverlayBorderTemplateMixin" ignoreParentScale="true" setAllPoints="true" useParentLevel="false" virtual="true">
         <Layers>
@@ -11,7 +11,7 @@
                         <Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.0" />
                         <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-1.0" />
                     </Anchors>
-                    <Color r="1" g="1" b="1" a="1"/>
+                    <Color r="1" g="1" b="1" a="1" />
                 </Texture>
 
                 <!-- Right -->
@@ -21,7 +21,7 @@
                         <Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.0" />
                         <Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1.0" />
                     </Anchors>
-                    <Color r="1" g="1" b="1" a="1"/>
+                    <Color r="1" g="1" b="1" a="1" />
                 </Texture>
 
                 <!-- Bottom -->
@@ -31,7 +31,7 @@
                         <Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
                         <Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
                     </Anchors>
-                    <Color r="1" g="1" b="1" a="1"/>
+                    <Color r="1" g="1" b="1" a="1" />
                 </Texture>
 
                 <!-- Top -->
@@ -41,7 +41,7 @@
                         <Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
                         <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
                     </Anchors>
-                    <Color r="1" g="1" b="1" a="1"/>
+                    <Color r="1" g="1" b="1" a="1" />
                 </Texture>
             </Layer>
         </Layers>
