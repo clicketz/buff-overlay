@@ -1,7 +1,5 @@
 BuffOverlayBorderTemplateMixin = {};
 
-local PixelUtil = PixelUtil
-
 function BuffOverlayBorderTemplateMixin:SetVertexColor(r, g, b, a)
     for _, texture in ipairs(self.Textures) do
         texture:SetVertexColor(r, g, b, a);
