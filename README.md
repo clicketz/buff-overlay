@@ -47,14 +47,9 @@ AddOns supported as of `v11.9`:
 
 Now supports the ability to control your overlays completely through the in-game menu with persistent custom buffs that will stay through updates.
 
+![Settings](https://i.imgur.com/sRWBj42.png "Settings")
 
-<p align="center">
-    <img src="https://i.imgur.com/dUHflOh.png" alt="Settings" />
-</p>
-
-<p align="center">
-    <img src="https://i.imgur.com/CGKUIpl.png" alt="Spell Tab" />
-</p>
+![Spell Tab](https://i.imgur.com/9QeQ3CE.png "Spell Tab")
 
 
 **Contribution:**
