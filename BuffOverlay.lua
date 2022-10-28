@@ -625,6 +625,7 @@ local function GetTestAnchor()
 end
 
 local function HideTestFrames()
+    if BuffOverlay.test then return end
     if isRetail then
         if EditModeManagerFrame and EditModeManagerFrame.editModeActive then return end
         UpdateRaidAndPartyFrames()
