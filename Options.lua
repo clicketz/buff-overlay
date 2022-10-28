@@ -23,6 +23,7 @@ do
     table.sort(CLASS_SORT_ORDER)
 end
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
+local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
 local spellDescriptions = {}
 
@@ -111,7 +112,7 @@ local deleteSpellDelegate = {
 }
 
 -- Change the path for the new options menu in 10.0
-local path = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE and "Options > Gameplay > Action Bars > Show Numbers for Cooldowns" or "Interface > ActionBars > Show Numbers for Cooldowns"
+local path = isRetail and "Options > Gameplay > Action Bars > Show Numbers for Cooldowns" or "Interface > ActionBars > Show Numbers for Cooldowns"
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
     text = format("In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n%s\n\nWould you like BuffOverlay to enable this setting for you?\n\n", BuffOverlay:Colorize("Show Blizzard Cooldown Text", "logo"), BuffOverlay:Colorize(path)),
@@ -1061,7 +1062,56 @@ function BuffOverlay:Options()
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlayDialog", self.priorityListDialog)
-    AceConfigDialog:AddToBlizOptions("BuffOverlay", "BuffOverlay")
     AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 660)
     AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 660)
+
+    -------------------------------------------------------------------
+    -- Create a simple blizzard options panel to direct users to "/bo"
+    -------------------------------------------------------------------
+    local panel = CreateFrame("Frame")
+    panel.name = "BuffOverlay"
+
+    local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetText("BuffOverlay")
+    title:SetFont("Fonts\\FRIZQT__.TTF", 72, "OUTLINE")
+    title:ClearAllPoints()
+    title:SetPoint("TOP", 0, -70)
+
+    local ver = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    ver:SetText(GetAddOnMetadata("BuffOverlay", "Version"))
+    ver:SetFont("Fonts\\FRIZQT__.TTF", 48, "OUTLINE")
+    ver:ClearAllPoints()
+    ver:SetPoint("TOP", title, "BOTTOM", 0, -20)
+
+    local slash = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
+    slash:SetText("/bo")
+    slash:SetFont("Fonts\\FRIZQT__.TTF", 69, "OUTLINE")
+    slash:ClearAllPoints()
+    slash:SetPoint("BOTTOM", 0, 150)
+
+    local btn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    btn:SetText("Open Options")
+    btn.Text:SetTextColor(1, 1, 1)
+    btn:SetWidth(150)
+    btn:SetHeight(30)
+    btn:SetPoint("BOTTOM", 0, 100)
+    btn.Left:SetDesaturated(true)
+    btn.Right:SetDesaturated(true)
+    btn.Middle:SetDesaturated(true)
+    btn:SetScript("OnClick", function()
+        AceConfigDialog:Open("BuffOverlay")
+    end)
+
+    local bg = panel:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints()
+    bg:SetTexture("Interface\\GLUES\\Models\\UI_MainMenu\\MM_sky_01")
+    bg:SetAlpha(0.2)
+    bg:SetTexCoord(0, 1, 1, 0)
+
+    if isRetail then
+        local category = Settings.RegisterCanvasLayoutCategory(panel, "BuffOverlay")
+        Settings.RegisterAddOnCategory(category)
+    else
+        InterfaceOptions_AddCategory(panel)
+    end
 end
