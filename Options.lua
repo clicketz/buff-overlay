@@ -519,8 +519,15 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         width = "full",
                         desc = "Toggle showing of the cooldown spiral.",
                     },
-                    showCooldownNumbers = {
+                    showTooltip = {
                         order = 10,
+                        name = "Show Tooltip On Hover",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the tooltip when hovering over an icon.",
+                    },
+                    showCooldownNumbers = {
+                        order = 11,
                         name = "Show Blizzard Cooldown Text",
                         type = "toggle",
                         width = "full",

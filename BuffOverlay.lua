@@ -53,6 +53,7 @@ local defaultBarSettings = {
     },
     debuffIconBorderColorByDispelType = true,
     iconBorderSize = 1,
+    showTooltip = true,
 }
 
 local defaultSettings = {
@@ -802,6 +803,7 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
     end
 
     overlay:SetID(index)
+    overlay.filter = filter
 
     local enabled = expirationTime and expirationTime ~= 0
     if enabled then
@@ -884,8 +886,6 @@ local function sortAuras(a, b)
     return a[2] < b[2]
 end
 
--- TODO: Look into how this function works with multiple bars. Currently a lot of wasted cycles. Needs entire rework, probably.
---  Might be good to save rework until dragonflight since UNIT_AURA seems to be getting efficiency changes with payload updates.
 function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string_find(unit, "target") or unit == "focus" then return end
@@ -933,13 +933,35 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     overlay.cooldown:SetHideCountdownNumbers(not bar.showCooldownNumbers)
                     overlay.cooldown:SetScale(bar.cooldownNumberScale * overlay.size / 36)
 
+                    if bar.showTooltip and not overlay:GetScript("OnEnter") then
+                        overlay:SetScript("OnEnter", function(s)
+                            if self.test then return end
+
+                            if s:GetID() > 0 then
+                                GameTooltip:SetOwner(s, "ANCHOR_BOTTOMRIGHT")
+                                GameTooltip:SetUnitAura(s.unit, s:GetID(), s.filter)
+                            end
+                        end)
+
+                        overlay:SetScript("OnLeave", function()
+                            GameTooltip:Hide()
+                        end)
+                    elseif not bar.showTooltip and overlay:GetScript("OnEnter") then
+                        overlay:SetScript("OnEnter", nil)
+                        overlay:SetScript("OnLeave", nil)
+                    end
+
                     overlay.count:SetScale(0.8)
                     overlay.count:ClearPointsOffset()
 
                     overlay:SetScale(bar.iconScale)
                     overlay:SetAlpha(bar.iconAlpha)
                     overlay:SetSize(overlaySize, overlaySize)
-                    overlay:EnableMouse(false)
+                    if bar.showTooltip then
+                        overlay:SetMouseClickEnabled(false)
+                    else
+                        overlay:EnableMouse(false)
+                    end
                     overlay:RegisterForClicks()
                     overlay:SetFrameLevel(999)
 
@@ -965,6 +987,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     self.overlays[overlayName .. i] = overlay
                 end
+                overlay.unit = unit
                 overlay:Hide()
             end
 
