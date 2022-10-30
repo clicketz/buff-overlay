@@ -77,4 +77,6 @@ globals = {
     "InterfaceOptionsFrame",
     "Settings",
     "InterfaceOptions_AddCategory",
+    "GameTooltip",
+    "IsShiftKeyDown",
 }
