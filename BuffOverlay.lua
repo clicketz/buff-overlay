@@ -1034,6 +1034,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     end
                     overlay:RegisterForClicks()
                     overlay:SetFrameLevel(999)
+                    overlay.SetFrameLevel = nop
 
                     overlay:ClearAllPoints()
 
