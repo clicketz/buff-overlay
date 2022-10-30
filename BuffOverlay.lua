@@ -930,6 +930,7 @@ local function UpdateBorder(overlay)
     if not overlay.border then
         overlay.border = CreateFrame("Frame", nil, overlay, "BuffOverlayBorderTemplate")
         overlay.border:SetFrameLevel(overlay:GetFrameLevel() + 5)
+        overlay.border.SetFrameLevel = nop
 
         DisablePixelSnap(overlay.border)
     end
@@ -1035,9 +1036,15 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     end
                     overlay:RegisterForClicks()
 
+                    -- Fix for addons that recursively change its children's frame levels
                     if overlay.SetFrameLevel ~= nop then
                         overlay:SetFrameLevel(math_max(frame:GetFrameLevel() + 20, 999))
                         overlay.SetFrameLevel = nop
+                    end
+
+                    if overlay.cooldown.SetFrameLevel ~= nop then
+                        overlay.cooldown:SetFrameLevel(overlay:GetFrameLevel() + 1)
+                        overlay.cooldown.SetFrameLevel = nop
                     end
 
                     overlay:ClearAllPoints()
