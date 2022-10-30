@@ -93,7 +93,7 @@ local broker = LDB:NewDataObject("BuffOverlay", {
     OnTooltipShow = function(tooltip)
         tooltip:AddDoubleLine(BuffOverlay:Colorize("BuffOverlay", "logo"), BuffOverlay:Colorize(version, "accent"))
         tooltip:AddLine(" ")
-        tooltip:AddLine(format("%s to open options.", BuffOverlay:Colorize("Left-click")), 1, 1, 1, true)
+        tooltip:AddLine(format("%s to toggle options window.", BuffOverlay:Colorize("Left-click")), 1, 1, 1, true)
         tooltip:AddLine(format("%s to toggle test icons.", BuffOverlay:Colorize("Right-click")), 1, 1, 1, true)
         tooltip:AddLine(format("%s to toggle the minimap icon.", BuffOverlay:Colorize("Shift+Right-click")), 1, 1, 1, true)
     end,
