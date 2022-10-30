@@ -1025,41 +1025,21 @@ function BuffOverlay:Options()
                 order = 1,
                 name = self:Colorize("Author") .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n",
                 type = "description",
+                fontSize = "medium",
                 cmdHidden = true
             },
             vers = {
                 order = 2,
                 name = self:Colorize("Version") .. ": " .. version .. "\n\n",
                 type = "description",
+                fontSize = "medium",
                 cmdHidden = true
-            },
-            welcomeMessage = {
-                order = 4,
-                name = "Welcome Message",
-                type = "toggle",
-                width = "full",
-                desc = "Toggle showing of the welcome message on login.",
-                get = function(info) return self.db.profile[info[#info]] end,
-                set = function(info, val)
-                    self.db.profile[info[#info]] = val
-                end,
-            },
-            minimap = {
-                order = 4.5,
-                name = "Minimap Icon",
-                type = "toggle",
-                width = "full",
-                desc = "Toggle the minimap icon.",
-                get = function(info) return not self.db.profile[info[#info]].hide end,
-                set = function()
-                    self:ToggleMinimapIcon()
-                end,
             },
             bars = {
                 name = "Bars",
                 type = "group",
                 childGroups = "tab",
-                order = 5,
+                order = 3,
                 args = {
                     addBar = {
                         order = 1,
@@ -1082,7 +1062,7 @@ function BuffOverlay:Options()
                 },
             },
             customSpells = {
-                order = 7,
+                order = 4,
                 name = "Custom Spells",
                 type = "group",
                 args = customSpells,
@@ -1094,6 +1074,35 @@ function BuffOverlay:Options()
                     return self.db.global.customBuffs[spellId][option]
                 end,
             },
+            globalSettings = {
+                order = 5,
+                name = "Global Settings",
+                type = "group",
+                args = {
+                    welcomeMessage = {
+                        order = 1,
+                        name = "Welcome Message",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the welcome message on login.",
+                        get = function(info) return self.db.profile[info[#info]] end,
+                        set = function(info, val)
+                            self.db.profile[info[#info]] = val
+                        end,
+                    },
+                    minimap = {
+                        order = 2,
+                        name = "Minimap Icon",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle the minimap icon.",
+                        get = function(info) return not self.db.profile[info[#info]].hide end,
+                        set = function()
+                            self:ToggleMinimapIcon()
+                        end,
+                    },
+                },
+            }
         },
     }
 
@@ -1145,7 +1154,7 @@ function BuffOverlay:Options()
     btn.Right:SetDesaturated(true)
     btn.Middle:SetDesaturated(true)
     btn:SetScript("OnClick", function()
-        AceConfigDialog:Open("BuffOverlay")
+        BuffOverlay:OpenOptions()
     end)
 
     local bg = panel:CreateTexture(nil, "BACKGROUND")
