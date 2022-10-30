@@ -99,12 +99,7 @@ local broker = LDB:NewDataObject("BuffOverlay", {
     end,
     OnClick = function(self, button)
         if button == "LeftButton" then
-            if AceConfigDialog.OpenFrames["BuffOverlay"] then
-                AceConfigDialog:Close("BuffOverlay")
-                AceConfigDialog:Close("BuffOverlayDialog")
-            else
-                AceConfigDialog:Open("BuffOverlay")
-            end
+            BuffOverlay:ToggleOptions()
         elseif button == "RightButton" then
             if IsShiftKeyDown() then
                 BuffOverlay:ToggleMinimapIcon()
@@ -121,6 +116,23 @@ local broker = LDB:NewDataObject("BuffOverlay", {
         GameTooltip:Hide()
     end,
 })
+
+function BuffOverlay:OpenOptions()
+    AceConfigDialog:Open("BuffOverlay")
+    local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]
+    if dialog then
+        dialog:EnableResize(false)
+    end
+end
+
+function BuffOverlay:ToggleOptions()
+    if AceConfigDialog.OpenFrames["BuffOverlay"] then
+        AceConfigDialog:Close("BuffOverlay")
+        AceConfigDialog:Close("BuffOverlayDialog")
+    else
+        self:OpenOptions()
+    end
+end
 
 local function UpdateMinimapIcon()
     if BuffOverlay.db.profile.minimap.hide then
@@ -596,7 +608,7 @@ function BuffOverlay:OnInitialize()
     function SlashCmdList.BuffOverlay(msg)
         if msg == "help" or msg == "?" then
             self:Print("Command List")
-            print(format("%s or %s: Opens options panel.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
+            print(format("%s or %s: Toggles the options panel.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
             print(format("%s %s: Shows test icons on all visible raid/party frames.", self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
             print(format("%s %s or %s: Toggles the minimap icon.", self:Colorize("/bo", "accent"), self:Colorize("toggle", "value"), self:Colorize("minimap", "value")))
             print(format("%s %s: Resets current profile to default settings. This does not remove any custom auras.", self:Colorize("/bo", "accent"), self:Colorize("reset", "value")))
@@ -607,11 +619,7 @@ function BuffOverlay:OnInitialize()
         elseif msg == "toggle" or msg == "minimap" then
             self:ToggleMinimapIcon()
         else
-            AceConfigDialog:Open("BuffOverlay")
-            local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]
-            if dialog then
-                dialog:EnableResize(false)
-            end
+            self:ToggleOptions()
         end
     end
 end
