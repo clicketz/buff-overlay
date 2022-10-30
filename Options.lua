@@ -111,6 +111,34 @@ local deleteSpellDelegate = {
     end,
 }
 
+local deleteBarDelegate = {
+    buttons = {
+        {
+            text = YES,
+            on_click = function(self)
+                local barName = self.data
+                BuffOverlay:DeleteBar(barName)
+
+                if AceConfigDialog.OpenFrames["BuffOverlayDialog"] and not IsDifferentDialogBar(barName) then
+                    AceConfigDialog:Close("BuffOverlayDialog")
+                end
+
+                AceRegistry:NotifyChange("BuffOverlay")
+            end,
+        },
+        {
+            text = NO,
+        },
+    },
+    no_close_button = true,
+    show_while_dead = true,
+    hide_on_escape = true,
+    on_show = function(self)
+        self:SetFrameStrata("FULLSCREEN_DIALOG")
+        self:Raise()
+    end,
+}
+
 -- Change the path for the new options menu in 10.0
 local path = isRetail and "Options > Gameplay > Action Bars > Show Numbers for Cooldowns" or "Interface > ActionBars > Show Numbers for Cooldowns"
 
@@ -382,11 +410,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 order = 1,
                 width = 0.75,
                 func = function()
-                    self:DeleteBar(barName)
+                    local text = format("Are you sure you want to delete this bar?\n\n%s\n\n", BuffOverlay:Colorize(bar.name or barName, "logo"))
+                    deleteBarDelegate.text = text
 
-                    if AceConfigDialog.OpenFrames["BuffOverlayDialog"] and not IsDifferentDialogBar(barName) then
-                        AceConfigDialog:Close("BuffOverlayDialog")
-                    end
+                    LibDialog:Spawn(deleteBarDelegate, barName)
                 end,
             },
             test = {
