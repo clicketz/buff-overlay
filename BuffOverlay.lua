@@ -1,5 +1,9 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
+local AceRegistry = LibStub("AceConfigRegistry-3.0")
+local LDB = LibStub("LibDataBroker-1.1")
+local LDBIcon = LibStub("LibDBIcon-1.0")
+local version = GetAddOnMetadata("BuffOverlay", "Version")
 
 local _G = _G
 local C_Spell = C_Spell
@@ -59,6 +63,9 @@ local defaultBarSettings = {
 local defaultSettings = {
     profile = {
         welcomeMessage = true,
+        minimap = {
+            hide = false,
+        },
         bars = {},
         buffs = {},
     },
@@ -78,6 +85,56 @@ local hexFontColors = {
     ["value"] = "ffffe981",
     ["blizzardFont"] = NORMAL_FONT_COLOR:GenerateHexColor(),
 }
+
+local broker = LDB:NewDataObject("BuffOverlay", {
+    type = "launcher",
+    text = "BuffOverlay",
+    icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo",
+    OnTooltipShow = function(tooltip)
+        tooltip:AddDoubleLine(BuffOverlay:Colorize("BuffOverlay", "logo"), BuffOverlay:Colorize(version, "accent"))
+        tooltip:AddLine(" ")
+        tooltip:AddLine(format("%s to open options.", BuffOverlay:Colorize("Left-click")), 1, 1, 1, true)
+        tooltip:AddLine(format("%s to toggle test icons.", BuffOverlay:Colorize("Right-click")), 1, 1, 1, true)
+        tooltip:AddLine(format("%s to toggle the minimap icon.", BuffOverlay:Colorize("Shift+Right-click")), 1, 1, 1, true)
+    end,
+    OnClick = function(self, button)
+        if button == "LeftButton" then
+            if AceConfigDialog.OpenFrames["BuffOverlay"] then
+                AceConfigDialog:Close("BuffOverlay")
+                AceConfigDialog:Close("BuffOverlayDialog")
+            else
+                AceConfigDialog:Open("BuffOverlay")
+            end
+        elseif button == "RightButton" then
+            if IsShiftKeyDown() then
+                BuffOverlay:ToggleMinimapIcon()
+                if BuffOverlay.db.profile.minimap.hide then
+                    BuffOverlay:Print(format("Minimap icon is now hidden. Type %s %s to show it again.", BuffOverlay:Colorize("/bo", "accent"), BuffOverlay:Colorize("minimap", "accent")))
+                end
+                AceRegistry:NotifyChange("BuffOverlay")
+            else
+                BuffOverlay:Test()
+            end
+        end
+    end,
+    OnLeave = function()
+        GameTooltip:Hide()
+    end,
+})
+
+local function UpdateMinimapIcon()
+    if BuffOverlay.db.profile.minimap.hide then
+        LDBIcon:Hide("BuffOverlay")
+    else
+        LDBIcon:Show("BuffOverlay")
+    end
+end
+
+function BuffOverlay:ToggleMinimapIcon()
+    self.db.profile.minimap.hide = not self.db.profile.minimap.hide
+
+    UpdateMinimapIcon()
+end
 
 do
     for class, val in pairs(RAID_CLASS_COLORS) do
@@ -472,6 +529,7 @@ end
 
 function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
+    LDBIcon:Register("BuffOverlay", broker, self.db.profile.minimap)
 
     if not self.registered then
         self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
@@ -540,11 +598,14 @@ function BuffOverlay:OnInitialize()
             self:Print("Command List")
             print(format("%s or %s: Opens options panel.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
             print(format("%s %s: Shows test icons on all visible raid/party frames.", self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
+            print(format("%s %s or %s: Toggles the minimap icon.", self:Colorize("/bo", "accent"), self:Colorize("toggle", "value"), self:Colorize("minimap", "value")))
             print(format("%s %s: Resets current profile to default settings. This does not remove any custom auras.", self:Colorize("/bo", "accent"), self:Colorize("reset", "value")))
         elseif msg == "test" then
             self:Test()
         elseif msg == "reset" or msg == "default" then
             self.db:ResetProfile()
+        elseif msg == "toggle" or msg == "minimap" then
+            self:ToggleMinimapIcon()
         else
             AceConfigDialog:Open("BuffOverlay")
             local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]
@@ -602,6 +663,7 @@ function BuffOverlay:FullRefresh()
     self:UpdateBarOptionsTable()
     self:UpdateBuffs()
     self:RefreshOverlays(true)
+    UpdateMinimapIcon()
 end
 
 local function GetTestAnchor()

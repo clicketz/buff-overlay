@@ -2,6 +2,7 @@ local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local LibDialog = LibStub("LibDialog-1.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceRegistry = LibStub("AceConfigRegistry-3.0")
+local version = GetAddOnMetadata("BuffOverlay", "Version")
 
 local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
@@ -1028,7 +1029,7 @@ function BuffOverlay:Options()
             },
             vers = {
                 order = 2,
-                name = self:Colorize("Version") .. ": " .. GetAddOnMetadata("BuffOverlay", "Version") .. "\n\n",
+                name = self:Colorize("Version") .. ": " .. version .. "\n\n",
                 type = "description",
                 cmdHidden = true
             },
@@ -1041,6 +1042,17 @@ function BuffOverlay:Options()
                 get = function(info) return self.db.profile[info[#info]] end,
                 set = function(info, val)
                     self.db.profile[info[#info]] = val
+                end,
+            },
+            minimap = {
+                order = 4.5,
+                name = "Minimap Icon",
+                type = "toggle",
+                width = "full",
+                desc = "Toggle the minimap icon.",
+                get = function(info) return not self.db.profile[info[#info]].hide end,
+                set = function()
+                    self:ToggleMinimapIcon()
                 end,
             },
             bars = {
@@ -1112,7 +1124,7 @@ function BuffOverlay:Options()
     title:SetPoint("TOP", 0, -70)
 
     local ver = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    ver:SetText(GetAddOnMetadata("BuffOverlay", "Version"))
+    ver:SetText(version)
     ver:SetFont("Fonts\\FRIZQT__.TTF", 48, "OUTLINE")
     ver:ClearAllPoints()
     ver:SetPoint("TOP", title, "BOTTOM", 0, -20)
