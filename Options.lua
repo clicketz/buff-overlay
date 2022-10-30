@@ -112,6 +112,10 @@ local deleteSpellDelegate = {
     end,
 }
 
+local function IsDifferentDialogBar(barName)
+    return BuffOverlay.priorityListDialog.args.bar.name ~= barName
+end
+
 local deleteBarDelegate = {
     buttons = {
         {
@@ -181,10 +185,6 @@ local function GetIconString(icon, iconSize)
     end
 
     return format("|T%s:%d:%d:0:0:256:256:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
-end
-
-local function IsDifferentDialogBar(barName)
-    return BuffOverlay.priorityListDialog.args.bar.name ~= barName
 end
 
 local function AddToPriorityDialog(spellIdStr, remove)
