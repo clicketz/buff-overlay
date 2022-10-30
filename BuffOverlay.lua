@@ -26,6 +26,7 @@ local table_sort = table.sort
 local string_find = string.find
 local math_floor = math.floor
 local math_min = math.min
+local math_max = math.max
 local DebuffTypeColor = DebuffTypeColor
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 
@@ -1033,8 +1034,11 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay:EnableMouse(false)
                     end
                     overlay:RegisterForClicks()
-                    overlay:SetFrameLevel(999)
-                    overlay.SetFrameLevel = nop
+
+                    if overlay.SetFrameLevel ~= nop then
+                        overlay:SetFrameLevel(math_max(frame:GetFrameLevel() + 20, 999))
+                        overlay.SetFrameLevel = nop
+                    end
 
                     overlay:ClearAllPoints()
 
