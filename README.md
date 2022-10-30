@@ -1,4 +1,4 @@
-# **Buff Overlay**
+# **BuffOverlay**
 
 <img src="https://i.imgur.com/NRKVqfA.png" alt="BuffOverlay" />
 
@@ -10,7 +10,7 @@ By default, all immunity and damage reduction abilities have been added.
 
 Type `/bo` or `/buffoverlay` to open the options panel.
 
-# **Multi Aura Bar Support**
+# **Multi Aura-Bar Support**
 
 You can have multiple (as many as you want) separate "bars" of auras on your frames, each with their own unique configuration.
 
