@@ -2,7 +2,7 @@
 
 <img src="https://i.imgur.com/NRKVqfA.png" alt="BuffOverlay" />
 
-This extremely lightweight addon was created for people to quickly and easily see defensive cooldowns active on other players so they can adjust their gameplay accordingly.
+This extremely lightweight addon was created for people to quickly and easily see active auras on other players by overlaying that aura on that player's unitframe so you can adjust your gameplay accordingly. Despite its name, BuffOverlay can track both buffs and debuffs.
 
 
 By default, all immunity and damage reduction abilities have been added.
