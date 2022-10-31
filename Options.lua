@@ -1021,25 +1021,21 @@ function BuffOverlay:Options()
         plugins = { profiles = { profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) } },
         childGroups = "tab",
         args = {
-            author = {
+            logo = {
                 order = 1,
-                name = self:Colorize("Author") .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n",
                 type = "description",
+                name = self:Colorize("Author") .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n" .. self:Colorize("Version") .. ": " .. version .. "\n\n",
                 fontSize = "medium",
-                cmdHidden = true
-            },
-            vers = {
-                order = 2,
-                name = self:Colorize("Version") .. ": " .. version .. "\n\n",
-                type = "description",
-                fontSize = "medium",
-                cmdHidden = true
+                -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
+                image = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo_transparent",
+                imageWidth = 64,
+                imageHeight = 64,
             },
             bars = {
                 name = "Bars",
                 type = "group",
                 childGroups = "tab",
-                order = 3,
+                order = 2,
                 args = {
                     addBar = {
                         order = 1,
@@ -1062,7 +1058,7 @@ function BuffOverlay:Options()
                 },
             },
             customSpells = {
-                order = 4,
+                order = 3,
                 name = "Custom Spells",
                 type = "group",
                 args = customSpells,
@@ -1075,7 +1071,7 @@ function BuffOverlay:Options()
                 end,
             },
             globalSettings = {
-                order = 5,
+                order = 4,
                 name = "Global Settings",
                 type = "group",
                 args = {
