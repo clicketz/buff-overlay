@@ -90,6 +90,7 @@ local hexFontColors = {
 local broker = LDB:NewDataObject("BuffOverlay", {
     type = "launcher",
     text = "BuffOverlay",
+    -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
     icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo",
     OnTooltipShow = function(tooltip)
         tooltip:AddDoubleLine(BuffOverlay:Colorize("BuffOverlay", "logo"), BuffOverlay:Colorize(version, "accent"))
