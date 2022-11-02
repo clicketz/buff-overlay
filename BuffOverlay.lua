@@ -982,9 +982,9 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
             for i = 1, bar.iconCount do
                 local overlay = self.overlays[overlayName .. i]
 
-                if not overlay or
-                    overlay.needsUpdate or
-                    overlay.size ~= overlaySize then
+                if not overlay
+                or overlay.needsUpdate
+                or overlay.size ~= overlaySize then
 
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")

@@ -49,19 +49,19 @@ BuffOverlay.defaultSpells = {
     [186265] = { class = "HUNTER", prio = 10 }, --Aspect of the Turtle
     [53480] = { class = "HUNTER", prio = 50 }, --Roar of Sacrifice
     [264735] = { class = "HUNTER", prio = 50 }, --Survival of the Fittest (Pet Ability)
-    [281195] = { parent = 264735 }, --Survival of the Fittest (Lone Wolf)
+        [281195] = { parent = 264735 }, --Survival of the Fittest (Lone Wolf)
     [199483] = { class = "HUNTER", prio = 70 }, --Camouflage
 
     -- Mage
     [45438] = { class = "MAGE", prio = 10 }, --Ice Block
     [66] = { class = "MAGE", prio = 50 }, --Invisibility
-    [32612] = { parent = 66 },
+        [32612] = { parent = 66 },
     [198158] = { class = "MAGE", prio = 50 }, --Mass Invisibility
     [198111] = { class = "MAGE", prio = 50 }, --Temporal Shield
     [110960] = { class = "MAGE", prio = 50 }, --Greater Invisibility
     [342246] = { class = "MAGE", prio = 50 }, --Alter Time
-    [110909] = { parent = 342246 },
-    [108978] = { parent = 342246 },
+        [110909] = { parent = 342246 },
+        [108978] = { parent = 342246 },
 
     -- Monk
     [353319] = { class = "MONK", prio = 10 }, --Peaceweaver
@@ -79,7 +79,7 @@ BuffOverlay.defaultSpells = {
     [228050] = { class = "PALADIN", prio = 10 }, --Guardian of the Forgotten Queen
     [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
     [6940] = { class = "PALADIN", prio = 50 }, --Blessing of Sacrifice
-    [199448] = { parent = 6940 }, --Blessing of Ultimate Sacrifice
+        [199448] = { parent = 6940 }, --Blessing of Ultimate Sacrifice
     [498] = { class = "PALADIN", prio = 50 }, --Divine Protection
     [31850] = { class = "PALADIN", prio = 50 }, --Ardent Defender
     [86659] = { class = "PALADIN", prio = 50 }, --Guardian of Ancient Kings
@@ -103,9 +103,10 @@ BuffOverlay.defaultSpells = {
     [5277] = { class = "ROGUE", prio = 50 }, --Evasion
     [1966] = { class = "ROGUE", prio = 50 }, --Feint
     [1784] = { class = "ROGUE", prio = 70 }, --Stealth
-    [115191] = { parent = 1784 }, --Stealth (Shadowrunner)
+        [115191] = { parent = 1784 }, --Stealth (Shadowrunner)
     [11327] = { class = "ROGUE", prio = 70 }, --Vanish
     [114018] = { class = "ROGUE", prio = 70 }, --Shroud of Concealment
+        [115834] = { parent = 114018 },
 
     -- Shaman
     [210918] = { class = "SHAMAN", prio = 10 }, --Ethereal Form
@@ -134,11 +135,11 @@ BuffOverlay.defaultSpells = {
 
     -- Misc
     ["Eating/Drinking"] = { class = "MISC", prio = 90 }, -- Food umbrella
-    ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
-    ["Food"] = { parent = "Eating/Drinking" }, --Food
-    ["Drink"] = { parent = "Eating/Drinking" }, --Drink
-    ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
-    [185710] = { parent = "Eating/Drinking" }, --Sugar-Crusted Fish Feast
+        ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
+        ["Food"] = { parent = "Eating/Drinking" }, --Food
+        ["Drink"] = { parent = "Eating/Drinking" }, --Drink
+        ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
+        [185710] = { parent = "Eating/Drinking" }, --Sugar-Crusted Fish Feast
     [320224] = { class = "MISC", prio = 70 }, -- Podtender
     [363522] = { class = "MISC", prio = 70 }, -- Gladiator's Eternal Aegis
     [345231] = { class = "MISC", prio = 70 }, -- Gladiator's Emblem
