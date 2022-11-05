@@ -763,11 +763,11 @@ function BuffOverlay:AddBarToOptions(bar, barName)
 
                                         local appName = widget.obj.userdata.appName
                                         if (appName and appName == "BuffOverlayDialog")
-                                            and (point ~= "LEFT"
-                                                or relativeTo ~= UIParent
-                                                or relativePoint ~= "CENTER"
-                                                or x ~= width / 2
-                                                or y ~= 0)
+                                        and (point ~= "LEFT"
+                                            or relativeTo ~= UIParent
+                                            or relativePoint ~= "CENTER"
+                                            or x ~= width / 2
+                                            or y ~= 0)
                                         then
                                             widget:ClearAllPoints()
                                             widget:SetPoint("LEFT", UIParent, "CENTER", width / 2, 0)
@@ -1150,6 +1150,11 @@ function BuffOverlay:Options()
     btn.Right:SetDesaturated(true)
     btn.Middle:SetDesaturated(true)
     btn:SetScript("OnClick", function()
+        if not InCombatLockdown() then
+            HideUIPanel(SettingsPanel)
+            HideUIPanel(InterfaceOptionsFrame)
+            HideUIPanel(GameMenuFrame)
+        end
         BuffOverlay:OpenOptions()
     end)
 
