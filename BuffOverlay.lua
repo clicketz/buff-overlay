@@ -1051,18 +1051,18 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     overlay:ClearAllPoints()
 
                     if i == 1 then
-                        PixelUtil.SetPoint(overlay, bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
+                        overlay:SetPoint(bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
                     else
                         local prevOverlay = self.overlays[overlayName .. (i - 1)]
 
                         if bar.growDirection == "DOWN" then
-                            PixelUtil.SetPoint(overlay, "TOP", prevOverlay, "BOTTOM", 0, -relativeSpacing)
+                            overlay:SetPoint("TOP", prevOverlay, "BOTTOM", 0, -relativeSpacing)
                         elseif bar.growDirection == "LEFT" then
-                            PixelUtil.SetPoint(overlay, "BOTTOMRIGHT", prevOverlay, "BOTTOMLEFT", -relativeSpacing, 0)
+                            overlay:SetPoint("BOTTOMRIGHT", prevOverlay, "BOTTOMLEFT", -relativeSpacing, 0)
                         elseif bar.growDirection == "UP" or bar.growDirection == "VERTICAL" then
-                            PixelUtil.SetPoint(overlay, "BOTTOM", prevOverlay, "TOP", 0, relativeSpacing)
+                            overlay:SetPoint("BOTTOM", prevOverlay, "TOP", 0, relativeSpacing)
                         else
-                            PixelUtil.SetPoint(overlay, "BOTTOMLEFT", prevOverlay, "BOTTOMRIGHT", relativeSpacing, 0)
+                            overlay:SetPoint("BOTTOMLEFT", prevOverlay, "BOTTOMRIGHT", relativeSpacing, 0)
                         end
                     end
 
@@ -1134,7 +1134,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 local x = bar.growDirection == "HORIZONTAL" and (-(width / 2) * (overlayNum - 1) + bar.iconXOff - (((overlayNum - 1) / 2) * overlay1.spacing)) or xOfs
                 local y = bar.growDirection == "VERTICAL" and (-(height / 2) * (overlayNum - 1) + bar.iconYOff - (((overlayNum - 1) / 2) * overlay1.spacing)) or yOfs
 
-                PixelUtil.SetPoint(overlay1, point, relativeTo, relativePoint, x, y)
+                overlay1:SetPoint(point, relativeTo, relativePoint, x, y)
             end
         end
     end
