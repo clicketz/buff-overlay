@@ -80,4 +80,7 @@ globals = {
     "GameTooltip",
     "IsShiftKeyDown",
     "nop",
+    "HideUIPanel",
+    "SettingsPanel",
+    "GameMenuFrame",
 }
