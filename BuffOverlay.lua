@@ -702,7 +702,7 @@ local function HideTestFrames()
     if isRetail then
         if EditModeManagerFrame and EditModeManagerFrame.editModeActive then return end
         UpdateRaidAndPartyFrames()
-    elseif CompactRaidFrameManager then
+    elseif CompactRaidFrameManager and GetNumGroupMembers() == 0 then
         CompactRaidFrameManager:Hide()
         CompactRaidFrameContainer:Hide()
         if CompactPartyFrame then
