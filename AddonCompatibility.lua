@@ -364,6 +364,7 @@ hooksecurefunc("CreateFrame", function(frameType, frameName)
 
         if frame
         and type(frame) == "table"
+        and frame.IsForbidden
         and not frame:IsForbidden() then
             if not frameName:match("BuffOverlayBar") then
                 tempFrameCache[frame] = true
