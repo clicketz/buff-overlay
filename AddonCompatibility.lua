@@ -1,6 +1,6 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
-local _G, pairs, IsAddOnLoaded, next = _G, pairs, IsAddOnLoaded, next
+local _G, pairs, IsAddOnLoaded, next, type = _G, pairs, IsAddOnLoaded, next, type
 local addOnsExist = true
 local enabledPatterns = {}
 local framesToFind = {}
@@ -356,14 +356,16 @@ function BuffOverlay:InitFrames()
     end)
 end
 
-hooksecurefunc("CreateFrame", function(type, name)
+hooksecurefunc("CreateFrame", function(frameType, frameName)
     if not addOnsExist then return end
 
-    if name and type == "Button" then
-        local frame = _G[name]
+    if frameName and frameType == "Button" then
+        local frame = _G[frameName]
 
-        if frame and not frame:IsForbidden() then
-            if not name:match("BuffOverlayBar") then
+        if frame
+        and type(frame) == "table"
+        and not frame:IsForbidden() then
+            if not frameName:match("BuffOverlayBar") then
                 tempFrameCache[frame] = true
             end
         end
