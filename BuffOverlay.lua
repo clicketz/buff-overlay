@@ -1051,7 +1051,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     overlay:ClearAllPoints()
 
                     if i == 1 then
-                        overlay:SetPoint(bar.iconAnchor, frame, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
+                        overlay:SetPoint(bar.iconAnchor, frame.BuffOverlays, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
                     else
                         local prevOverlay = self.overlays[overlayName .. (i - 1)]
 
