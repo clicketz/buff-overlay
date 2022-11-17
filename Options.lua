@@ -540,6 +540,14 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         desc = "Change the icon border color based on the dispel type of the debuff.",
                         disabled = function() return not bar.iconBorder end,
                     },
+                    buffIconBorderColorByDispelType = {
+                        order = 8.6,
+                        name = "Color Buff Icon Border by Dispel Type",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Change the icon border color based on the dispel type of the buff.",
+                        disabled = function() return not bar.iconBorder end,
+                    },
                     showCooldownSpiral = {
                         order = 9,
                         name = "Cooldown Spiral",

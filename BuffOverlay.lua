@@ -27,6 +27,7 @@ local string_find = string.find
 local math_floor = math.floor
 local math_min = math.min
 local math_max = math.max
+local math_rand = math.random
 local DebuffTypeColor = DebuffTypeColor
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 
@@ -57,6 +58,7 @@ local defaultBarSettings = {
         a = 1,
     },
     debuffIconBorderColorByDispelType = true,
+    buffIconBorderColorByDispelType = false,
     iconBorderSize = 1,
     showTooltip = true,
 }
@@ -78,6 +80,14 @@ local defaultSettings = {
 local filters = {
     "HELPFUL",
     "HARMFUL",
+}
+
+local dispelTypes = {
+    "Magic",
+    "Curse",
+    "Disease",
+    "Poison",
+    "none",
 }
 
 local hexFontColors = {
@@ -229,8 +239,9 @@ end
 
 local function UnitAuraTest(_, index, filter)
     local buff = TestBuffs[index]
+    local dispelType = dispelTypes[math_rand(1, 5)]
     if not buff then return end
-    return "TestBuff", buff[2], 0, nil, 60, GetTime() + 60, nil, nil, nil, buff[1]
+    return "TestBuff", buff[2], 0, dispelType, 60, GetTime() + 60, nil, nil, nil, buff[1]
 end
 
 function BuffOverlay:InsertBuff(spellId)
@@ -886,13 +897,12 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
     end
 
     if overlay.border and bar.iconBorder then
-        if bar.debuffIconBorderColorByDispelType then
-            if filter == "HARMFUL" then
-                local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"]
-                overlay.border:SetVertexColor(color.r, color.g, color.b, bar.iconBorderColor.a)
-            else
-                overlay.border:SetVertexColor(bar.iconBorderColor.r, bar.iconBorderColor.g, bar.iconBorderColor.b, bar.iconBorderColor.a)
-            end
+        if bar.debuffIconBorderColorByDispelType and filter == "HARMFUL" then
+            local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"]
+            overlay.border:SetVertexColor(color.r, color.g, color.b, bar.iconBorderColor.a)
+        elseif bar.buffIconBorderColorByDispelType and filter == "HELPFUL" then
+            local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"]
+            overlay.border:SetVertexColor(color.r, color.g, color.b, bar.iconBorderColor.a)
         else
             overlay.border:SetVertexColor(bar.iconBorderColor.r, bar.iconBorderColor.g, bar.iconBorderColor.b, bar.iconBorderColor.a)
         end
