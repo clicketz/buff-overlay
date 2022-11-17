@@ -457,6 +457,9 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     for _, v in pairs(self.db.profile.buffs) do
                         v.enabled[barName] = v.enabled[val]
                     end
+
+                    self:Print("Copied settings from " .. self:Colorize((self.db.profile.bars[val].name or val), "accent") .. " to " .. self:Colorize((bar.name or barName), "accent"))
+                    self:RefreshOverlays(true, barName)
                 end,
             },
             settings = {
