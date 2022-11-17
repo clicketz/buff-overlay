@@ -1121,7 +1121,7 @@ function BuffOverlay:Options()
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlayDialog", self.priorityListDialog)
-    AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 660)
+    AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 690)
     AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 660)
 
     -------------------------------------------------------------------
