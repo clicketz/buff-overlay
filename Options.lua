@@ -66,7 +66,27 @@ local deleteSpellDelegate = {
                 local spellId = tonumber(self.data)
                 if not spellId then return end
 
+                if BuffOverlay.db.profile.buffs[spellId].children then
+                    for childId in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
+                        if BuffOverlay.db.global.customBuffs[childId] then
+                            BuffOverlay.db.profile.buffs[childId] = nil
+                            BuffOverlay.db.profile.buffs[spellId].children[childId] = nil
+                        end
+                    end
+
+                    if next(BuffOverlay.db.profile.buffs[spellId].children) == nil then
+                        BuffOverlay.db.profile.buffs[spellId].children = nil
+                        BuffOverlay.db.profile.buffs[spellId].UpdateChildren = nil
+                    end
+                end
+
                 BuffOverlay.db.global.customBuffs[spellId] = nil
+
+                for id, spell in pairs(BuffOverlay.db.global.customBuffs) do
+                    if spell.parent and spell.parent == spellId then
+                        BuffOverlay.db.global.customBuffs[id] = nil
+                    end
+                end
 
                 if BuffOverlay.defaultSpells[spellId] then
                     for k, v in pairs(BuffOverlay.defaultSpells[spellId]) do
@@ -77,9 +97,9 @@ local deleteSpellDelegate = {
                         end
                     end
                     BuffOverlay.db.profile.buffs[spellId].custom = nil
-                    for barName in pairs(BuffOverlay.db.profile.bars) do
-                        BuffOverlay.db.profile.buffs[spellId].enabled[barName] = false
-                    end
+                    -- for barName in pairs(BuffOverlay.db.profile.bars) do
+                    --     BuffOverlay.db.profile.buffs[spellId].enabled[barName] = false
+                    -- end
                 else
                     BuffOverlay.db.profile.buffs[spellId] = nil
                 end
@@ -175,7 +195,7 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
     end,
 })
 
-local function GetIconString(icon, iconSize)
+function BuffOverlay:GetIconString(icon, iconSize)
     local size = iconSize or 0
     local ltTexel = 0.08 * 256
     local rbTexel = 0.92 * 256
@@ -203,8 +223,8 @@ local function AddToPriorityDialog(spellIdStr, remove)
         spellName = customSpellNames[spellId]
     end
 
-    local formattedName = (spellName and icon) and format("%s %s", GetIconString(icon, 20), spellName) or
-        icon and format("%s %s", GetIconString(icon, 20), spellId) or spellIdStr
+    local formattedName = (spellName and icon) and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellName) or
+        icon and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellId) or spellIdStr
 
     if remove then
         list[spellIdStr] = nil
@@ -241,8 +261,8 @@ local function GetSpells(class, barName)
                     spellName = customSpellNames[k]
                 end
 
-                local formattedName = (spellName and icon) and format("%s %s", GetIconString(icon, 20), spellName)
-                    or icon and format("%s %s", GetIconString(icon, 20), k) or spellIdStr
+                local formattedName = (spellName and icon) and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellName)
+                    or icon and format("%s %s", BuffOverlay:GetIconString(icon, 20), k) or spellIdStr
 
                 if spellName then
                     local id = customSpellDescriptions[k] or k
@@ -353,7 +373,7 @@ end
 local function GetClasses(barName)
     local classes = {}
     classes["MISC"] = {
-        name = format("%s %s", GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC")),
+        name = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC")),
         order = 99,
         type = "group",
         args = GetSpells("MISC", barName),
@@ -362,7 +382,7 @@ local function GetClasses(barName)
     for i = 1, MAX_CLASSES do
         local className = CLASS_SORT_ORDER[i]
         classes[className] = {
-            name = format("%s %s", GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className)),
+            name = format("%s %s", BuffOverlay:GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className)),
             order = i,
             type = "group",
             args = GetSpells(className, barName),
@@ -427,7 +447,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 end,
             },
             copyFrom = {
-                name = "Copy From",
+                name = "Copy Settings From",
                 type = "select",
                 order = 2.5,
                 width = 1,
@@ -734,19 +754,19 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         width = "full",
                         desc = "Never show this bar.",
                     },
-                    showInWorld = {
-                        order = 2,
-                        name = "Show In World",
-                        type = "toggle",
-                        width = "full",
-                        desc = "Toggle showing of the icons in the world/outside of instances.",
-                    },
                     showSolo = {
-                        order = 3,
+                        order = 2,
                         name = "Show When Solo",
                         type = "toggle",
                         width = "full",
                         desc = "Toggle showing of the icons when you are solo.",
+                    },
+                    showInWorld = {
+                        order = 3,
+                        name = "Show When Non-Instanced",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons in the world/outside of instances.",
                     },
                     showInArena = {
                         order = 4,
@@ -771,7 +791,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     showInDungeon = {
                         order = 7,
-                        name = "Show In 5-man Dungeon",
+                        name = "Show In Dungeon",
                         type = "toggle",
                         width = "full",
                         desc = "Toggle showing of the icons in party.",
@@ -952,7 +972,7 @@ local customSpellInfo = {
         func = function(info)
             local spellId = tonumber(info[#info - 1])
             local spellName, _, icon = GetSpellInfo(spellId)
-            local text = format("Are you sure you want to delete this spell?\n\n%s %s\n\n", GetIconString(icon, 20), spellName)
+            local text = format("Are you sure you want to delete this spell?\n\n%s %s\n\n", BuffOverlay:GetIconString(icon, 20), spellName)
             if BuffOverlay.defaultSpells[spellId] then
                 text = text .. format("(%s: This is a default spell. Deleting it from this tab will simply reset all its values to default and disable it, but it will not be removed from the spells tab.)", BuffOverlay:Colorize("Note", "accent"))
             end
@@ -974,10 +994,10 @@ local customSpellInfo = {
             local classes = {}
             -- Use "_MISC" to put Miscellaneous at the end of the list since Ace sorts the dropdown by key. (Hacky, but it works)
             -- _MISC gets converted in the setters/getters, so it won't affect other structures.
-            classes["_MISC"] = format("%s %s", GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC"))
+            classes["_MISC"] = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC"))
             for i = 1, MAX_CLASSES do
                 local className = CLASS_SORT_ORDER[i]
-                classes[className] = format("%s %s", GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
+                classes[className] = format("%s %s", BuffOverlay:GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
             end
             return classes
         end,
@@ -1011,7 +1031,7 @@ local customSpellInfo = {
     },
     space = {
         order = 5,
-        name = "\n\n",
+        name = "\n",
         type = "description",
         width = "full",
     },
@@ -1019,6 +1039,7 @@ local customSpellInfo = {
         order = 6,
         type = "input",
         name = "Priority (Lower is Higher Prio)",
+        desc = "The priority of this spell. Lower numbers are higher priority. If two spells have the same priority, it will show alphabetically.",
         validate = function(_, value)
             local num = tonumber(value)
             if num and num < 1000000 and value:match("^%d+$") then
@@ -1062,6 +1083,81 @@ local customSpellInfo = {
             return tostring(BuffOverlay.db.global.customBuffs[spellId][option])
         end,
     },
+    space2 = {
+        order = 7,
+        name = " ",
+        type = "description",
+        width = 2,
+    },
+    addChild = {
+        order = 8,
+        type = "input",
+        name = "Add Child Spell ID",
+        desc = "Add a child spell ID to this spell. Child spells will be displayed when this spell is active and any changes made to the parent spell gets made to all its children. This is useful for spells that have multiple ids (e.g. different ranks of the same spell).",
+        width = 1,
+        validate = function(_, value)
+            local num = tonumber(value)
+            if num and num < 10000000 and value:match("^%d+$") then
+                if BuffOverlay.errorStatusText then
+                    -- Clear error text on successful validation
+                    local rootFrame = AceConfigDialog.OpenFrames["BuffOverlay"]
+                    if rootFrame and rootFrame.SetStatusText then
+                        rootFrame:SetStatusText("")
+                    end
+                    BuffOverlay.errorStatusText = nil
+                end
+                return true
+            else
+                BuffOverlay.errorStatusText = true
+                return "Spell ID must be a positive integer from 0 to 9999999"
+            end
+        end,
+        set = function(info, value)
+            local parentId = tonumber(info[#info - 1])
+            local childId = tonumber(value)
+
+            BuffOverlay:InsertCustomChild(childId, parentId)
+            BuffOverlay:UpdateCustomBuffs()
+        end,
+    },
+    space3 = {
+        order = 9,
+        name = " ",
+        type = "description",
+        width = 2,
+    },
+    removeChild = {
+        order = 10,
+        type = "select",
+        name = "Remove Custom Child Spell ID",
+        width = 1,
+        values = function(info)
+            local spellId = tonumber(info[#info - 1])
+            local values = {}
+            for id in pairs(BuffOverlay.db.global.customBuffs) do
+                if BuffOverlay.db.global.customBuffs[id].parent == spellId then
+                    values[id] = id
+                end
+            end
+            return values
+        end,
+        hidden = function(info)
+            local spellId = tonumber(info[#info - 1])
+            for id in pairs(BuffOverlay.db.global.customBuffs) do
+                if BuffOverlay.db.global.customBuffs[id].parent == spellId then
+                    return false
+                end
+            end
+            return true
+        end,
+        set = function(info, value)
+            local parentId = tonumber(info[#info - 1])
+            local childId = tonumber(value)
+
+            BuffOverlay:RemoveCustomChild(childId, parentId)
+            BuffOverlay:UpdateCustomBuffs()
+        end,
+    },
 }
 
 local customSpells = {
@@ -1102,9 +1198,9 @@ local customSpells = {
             local name, _, icon = GetSpellInfo(spellId)
 
             if name then
-                if BuffOverlay:InsertBuff(spellId) then
+                if BuffOverlay:InsertCustomAura(spellId) then
                     BuffOverlay.options.args.customSpells.args[state] = {
-                        name = format("%s %s", GetIconString(icon, 15), name),
+                        name = format("%s %s", BuffOverlay:GetIconString(icon, 15), name),
                         desc = function()
                             return spellDescriptions[spellId] or ""
                         end,
@@ -1117,7 +1213,7 @@ local customSpells = {
                         AceRegistry:NotifyChange("BuffOverlayDialog")
                     end
                 else
-                    BuffOverlay:Print(format("%s %s is already being tracked.", GetIconString(icon, 20), name))
+                    BuffOverlay:Print(format("%s %s is already being tracked.", BuffOverlay:GetIconString(icon, 20), name))
                 end
             else
                 BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(state)))
@@ -1127,15 +1223,17 @@ local customSpells = {
 }
 
 function BuffOverlay:Options()
-    for spellId in pairs(self.db.global.customBuffs) do
-        customSpells[tostring(spellId)] = {
-            name = format("%s %s", GetIconString(select(3, GetSpellInfo(spellId)), 15), GetSpellInfo(spellId)),
-            desc = function()
-                return spellDescriptions[spellId] or ""
-            end,
-            type = "group",
-            args = customSpellInfo,
-        }
+    for spellId, v in pairs(self.db.global.customBuffs) do
+        if not v.parent then
+            customSpells[tostring(spellId)] = {
+                name = format("%s %s", self:GetIconString(select(3, GetSpellInfo(spellId)), 15), GetSpellInfo(spellId)),
+                desc = function()
+                    return spellDescriptions[spellId] or ""
+                end,
+                type = "group",
+                args = customSpellInfo,
+            }
+        end
     end
     self.options = {
         name = "BuffOverlay",

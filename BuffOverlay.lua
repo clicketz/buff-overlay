@@ -11,6 +11,7 @@ local C_Timer = C_Timer
 local PixelUtil = PixelUtil
 local CopyTable = CopyTable
 local GetSpellTexture = GetSpellTexture
+local GetSpellInfo = GetSpellInfo
 local UnitIsPlayer = UnitIsPlayer
 local InCombatLockdown = InCombatLockdown
 local GetNumGroupMembers = GetNumGroupMembers
@@ -255,14 +256,19 @@ local function UnitAuraTest(_, index, filter)
     return "TestBuff", buff[2], 0, dispelType, 60, GetTime() + 60, nil, nil, nil, buff[1]
 end
 
-function BuffOverlay:InsertBuff(spellId)
+function BuffOverlay:InsertCustomAura(spellId)
     if not C_Spell.DoesSpellExist(spellId) then
         return false
     end
 
     local custom = self.db.global.customBuffs
+
     if not custom[spellId] and not self.db.profile.buffs[spellId] then
-        custom[spellId] = { class = "MISC", prio = 100, custom = true }
+        custom[spellId] = {
+            class = "MISC",
+            prio = 100,
+            custom = true
+        }
         return true
     elseif not custom[spellId] and self.db.profile.buffs[spellId] then
         custom[spellId] = {
@@ -274,6 +280,52 @@ function BuffOverlay:InsertBuff(spellId)
     end
 
     return false
+end
+
+function BuffOverlay:InsertCustomChild(childId, parentId)
+    if not C_Spell.DoesSpellExist(childId) then
+        self:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(childId)))
+        return false
+    end
+
+    local custom = self.db.global.customBuffs
+
+    if not custom[childId] and not self.db.profile.buffs[childId] then
+        custom[childId] = {
+            parent = parentId,
+            custom = true,
+        }
+        return true
+    end
+
+    local pId = (custom[childId] and custom[childId].parent) or (self.db.profile.buffs[childId] and self.db.profile.buffs[childId].parent)
+
+    if pId then
+        local name, _, icon = GetSpellInfo(pId)
+        self:Print(format("%s is already being tracked under %s %s.", self:Colorize(childId), self:GetIconString(icon, 20), name))
+    else
+        local name, _, icon = GetSpellInfo(childId)
+        self:Print(format("%s %s is already being tracked.", self:GetIconString(icon, 20), name))
+    end
+
+    return false
+end
+
+function BuffOverlay:RemoveCustomChild(childId, parentId)
+    local custom = self.db.global.customBuffs
+    local profile = self.db.profile.buffs
+
+    if profile[parentId] and profile[parentId].children then
+        profile[parentId].children[childId] = nil
+
+        if next(profile[parentId].children) == nil then
+            profile[parentId].children = nil
+            profile[parentId].UpdateChildren = nil
+        end
+    end
+
+    custom[childId] = nil
+    profile[childId] = nil
 end
 
 local function InitUnitFrames()
@@ -327,9 +379,6 @@ end
 
 local function UpdateChildren(self)
     for child in pairs(self.children) do
-        if BuffOverlay.db.profile.buffs[child].custom and not self.custom then
-            BuffOverlay.db.profile.buffs[child].custom = nil
-        end
         for k, v in pairs(self) do
             if k ~= "children" and k ~= "UpdateChildren" then
                 if type(v) == "table" then
@@ -339,6 +388,20 @@ local function UpdateChildren(self)
                 end
             end
         end
+
+        if BuffOverlay.db.profile.buffs[child].custom and not self.custom then
+            BuffOverlay.db.global.customBuffs[child] = nil
+            if BuffOverlay.defaultSpells[child] then
+                BuffOverlay.db.profile.buffs[child].custom = nil
+            else
+                self.children[child] = nil
+            end
+        end
+    end
+
+    if next(self.children) == nil then
+        self.children = nil
+        self.UpdateChildren = nil
     end
 end
 
@@ -367,11 +430,31 @@ function BuffOverlay:UpdateCustomBuffs()
             end
         end
 
-        for field, value in pairs(v) do
+        local t = v.parent and self.db.global.customBuffs[v.parent] or v
+
+        for field, value in pairs(t) do
             if type(value) == "table" then
                 buff[field] = CopyTable(value)
             else
                 buff[field] = value
+            end
+        end
+
+        if v.parent then
+            local parent = self.db.profile.buffs[v.parent]
+
+            buff.parent = v.parent
+
+            if parent then
+                if not parent.children then
+                    parent.children = {}
+                    parent.UpdateChildren = UpdateChildren
+                end
+                parent.children[spellId] = true
+            end
+
+            if buff.UpdateChildren then
+                buff.UpdateChildren = nil
             end
         end
 
@@ -408,7 +491,7 @@ local function ValidateBuffData()
 
             if v.parent then -- child found
                 -- Fix for updating parent info or updating a child to a non-parent
-                if not BuffOverlay.defaultSpells[k].parent then
+                if BuffOverlay.defaultSpells[k] and not BuffOverlay.defaultSpells[k].parent then
                     v.parent = nil
                 else
                     -- Fix for switching an old parent to a child
@@ -1140,6 +1223,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
 
                 if aura then
+                    if aura.parent then
+                        icon = select(3, GetSpellInfo(aura.parent)) or icon
+                    end
+
                     for barName, bar in pairs(bars) do
                         if ShouldShow(bar)
                         and not (barNameToApply and barName ~= barNameToApply)
