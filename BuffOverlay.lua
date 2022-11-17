@@ -14,6 +14,7 @@ local GetSpellTexture = GetSpellTexture
 local UnitIsPlayer = UnitIsPlayer
 local InCombatLockdown = InCombatLockdown
 local GetNumGroupMembers = GetNumGroupMembers
+local IsInInstance = IsInInstance
 local next = next
 local pairs = pairs
 local ipairs = ipairs
@@ -21,6 +22,7 @@ local wipe = wipe
 local type = type
 local rawset = rawset
 local format = format
+local select = select
 local CreateFrame = CreateFrame
 local table_sort = table.sort
 local string_find = string.find
@@ -61,6 +63,15 @@ local defaultBarSettings = {
     buffIconBorderColorByDispelType = false,
     iconBorderSize = 1,
     showTooltip = true,
+    neverShow = false,
+    showInWorld = true,
+    showSolo = true,
+    showInArena = true,
+    showInBattleground = true,
+    showInRaid = true,
+    showInDungeon = true,
+    showInScenario = true,
+    maxGroupSize = 40,
 }
 
 local defaultSettings = {
@@ -569,6 +580,7 @@ function BuffOverlay:OnInitialize()
         self:Print(format("Type %s or %s to open the options panel or %s for more commands.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent"), self:Colorize("/bo help", "accent")))
     end
 
+    self.numGroupMembers = GetNumGroupMembers()
     self.overlays = {}
     self.priority = {}
     self.units = {}
@@ -597,15 +609,24 @@ function BuffOverlay:OnInitialize()
 
     -- EventHandler for third-party addons
     -- Note: More events get added in InitFrames()
+    -- TODO: Separate this into event methods
     self.eventHandler = CreateFrame("Frame")
     self.eventHandler:RegisterEvent("PLAYER_LOGIN")
+    self.eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
+    self.eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
     self.eventHandler:SetScript("OnEvent", function(_, event)
         if event == "PLAYER_LOGIN" then
             self:InitFrames()
         elseif event == "GROUP_ROSTER_UPDATE" then
-            self:UpdateUnits()
+            self.numGroupMembers = GetNumGroupMembers()
+            if self.addons then
+                self:UpdateUnits()
+            end
         elseif event == "PLAYER_ENTERING_WORLD" then
-            self:UpdateUnits()
+            self.instanceType = select(2, IsInInstance())
+            if self.addons then
+                self:UpdateUnits()
+            end
         elseif event == "UNIT_EXITED_VEHICLE" or event == "UNIT_ENTERED_VEHICLE" then
             -- Wait for the next frame for the vehicle to be fully loaded/unloaded
             C_Timer.After(0, function()
@@ -969,6 +990,23 @@ local function sortAuras(a, b)
     return a[2] < b[2]
 end
 
+local function ShouldShow(bar)
+    if bar.neverShow
+    or BuffOverlay.numGroupMembers <= 1 and not bar.showSolo
+    or BuffOverlay.numGroupMembers > bar.maxGroupSize
+    or BuffOverlay.instanceType == "none" and not bar.showInWorld
+    or BuffOverlay.instanceType == "pvp" and not bar.showInBattleground
+    or BuffOverlay.instanceType == "arena" and not bar.showInArena
+    or BuffOverlay.instanceType == "party" and not bar.showInDungeon
+    or BuffOverlay.instanceType == "raid" and not bar.showInRaid
+    or BuffOverlay.instanceType == "scenario" and not bar.showInScenario
+    then
+        return false
+    end
+
+    return true
+end
+
 function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string_find(unit, "target") or unit == "focus" then return end
@@ -985,7 +1023,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     local bars = next(testBarNames) ~= nil and testBarNames or self.db.profile.bars
 
     for barName, bar in pairs(bars) do
-        if not (barNameToApply and barName ~= barNameToApply) then
+        if ShouldShow(bar) and not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
 
@@ -1102,8 +1140,11 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
 
                 if aura then
-                    for barName in pairs(bars) do
-                        if not (barNameToApply and barName ~= barNameToApply) and (aura.enabled[barName] or self.test) then
+                    for barName, bar in pairs(bars) do
+                        if ShouldShow(bar)
+                        and not (barNameToApply and barName ~= barNameToApply)
+                        and (aura.enabled[barName] or self.test)
+                        then
                             rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter })
                         end
                     end
@@ -1116,7 +1157,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     end
 
     for barName, bar in pairs(bars) do
-        if not (barNameToApply and barName ~= barNameToApply) then
+        if ShouldShow(bar) and not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local overlayNum = 1
 

@@ -573,7 +573,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         name = "Color Debuff Icon Border by Dispel Type",
                         type = "toggle",
                         width = "full",
-                        desc = "Change the icon border color based on the dispel type of the debuff.",
+                        desc = "Change the icon border color based on the dispel type of the debuff. This overrides the icon border color.",
                         disabled = function() return not bar.iconBorder end,
                     },
                     buffIconBorderColorByDispelType = {
@@ -581,7 +581,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         name = "Color Buff Icon Border by Dispel Type",
                         type = "toggle",
                         width = "full",
-                        desc = "Change the icon border color based on the dispel type of the buff.",
+                        desc = "Change the icon border color based on the dispel type of the buff. This overrides the icon border color.",
                         disabled = function() return not bar.iconBorder end,
                     },
                     showCooldownSpiral = {
@@ -717,8 +717,86 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                 },
             },
-            spells = {
+            visibility = {
                 order = 5,
+                name = "Visibility",
+                type = "group",
+                get = function(info) return bar[info[#info]] end,
+                set = function(info, val)
+                    bar[info[#info]] = val
+                    self:RefreshOverlays(true, barName)
+                end,
+                args = {
+                    neverShow = {
+                        order = 1,
+                        name = "Never Show",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Never show this bar.",
+                    },
+                    showInWorld = {
+                        order = 2,
+                        name = "Show In World",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons in the world/outside of instances.",
+                    },
+                    showSolo = {
+                        order = 3,
+                        name = "Show When Solo",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons when you are solo.",
+                    },
+                    showInArena = {
+                        order = 4,
+                        name = "Show In Arena",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons in arena.",
+                    },
+                    showInBattleground = {
+                        order = 5,
+                        name = "Show In Battleground",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons in battleground.",
+                    },
+                    showInRaid = {
+                        order = 6,
+                        name = "Show In Raid",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons in raid.",
+                    },
+                    showInDungeon = {
+                        order = 7,
+                        name = "Show In 5-man Dungeon",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons in party.",
+                    },
+                    showInScenario = {
+                        order = 8,
+                        name = "Show In Scenario",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the icons in scenario.",
+                    },
+                    maxGroupSize = {
+                        order = 9,
+                        name = "Party Size Maximum",
+                        type = "range",
+                        width = 1,
+                        desc = "Show overlays when the party size is equal to or less than this value.",
+                        min = 0,
+                        max = 40,
+                        step = 1,
+                    },
+                },
+            },
+            spells = {
+                order = 6,
                 name = "Spells",
                 type = "group",
                 args = {

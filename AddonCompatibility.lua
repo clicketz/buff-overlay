@@ -275,6 +275,7 @@ local function AddOnsExist()
         end
     end
     addOnsExist = addonsExist
+    BuffOverlay.addons = addonsExist
     return addonsExist
 end
 
@@ -345,8 +346,6 @@ function BuffOverlay:InitFrames()
             -- Blizzard frames are handled differently so if we have no supported addons
             -- installed then we don't need to waste cycles scanning for frames.
             if AddOnsExist() then
-                self.eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
-                self.eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
                 self.eventHandler:RegisterEvent("UNIT_EXITED_VEHICLE")
                 self.eventHandler:RegisterEvent("UNIT_ENTERED_VEHICLE")
 
