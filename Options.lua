@@ -426,6 +426,39 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     self:Test(barName)
                 end,
             },
+            copyFrom = {
+                name = "Copy From",
+                type = "select",
+                order = 2.5,
+                width = 1,
+                values = function()
+                    local values = {}
+                    for k, v in pairs(self.db.profile.bars) do
+                        if k ~= barName then
+                            values[k] = v.name or k
+                        end
+                    end
+                    return values
+                end,
+                hidden = function()
+                    local count = 0
+                    for _ in pairs(self.db.profile.bars) do
+                        count = count + 1
+                    end
+                    return count < 2
+                end,
+                set = function(info, val)
+                    for k, v in pairs(self.db.profile.bars[val]) do
+                        if k ~= "name" then
+                            bar[k] = type(v) == "table" and CopyTable(v) or v
+                        end
+                    end
+
+                    for _, v in pairs(self.db.profile.buffs) do
+                        v.enabled[barName] = v.enabled[val]
+                    end
+                end,
+            },
             settings = {
                 name = "Settings",
                 type = "group",
@@ -1121,8 +1154,8 @@ function BuffOverlay:Options()
     -- Main options dialog.
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
     LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlayDialog", self.priorityListDialog)
-    AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 690)
-    AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 660)
+    AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 720)
+    AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 720)
 
     -------------------------------------------------------------------
     -- Create a simple blizzard options panel to direct users to "/bo"
