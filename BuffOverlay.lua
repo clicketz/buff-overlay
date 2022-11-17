@@ -1074,6 +1074,10 @@ local function sortAuras(a, b)
 end
 
 local function ShouldShow(bar)
+    if BuffOverlay.test then
+        return true
+    end
+
     if bar.neverShow
     or BuffOverlay.numGroupMembers <= 1 and not bar.showSolo
     or BuffOverlay.numGroupMembers > bar.maxGroupSize
