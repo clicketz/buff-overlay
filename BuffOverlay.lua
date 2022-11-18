@@ -66,7 +66,6 @@ local defaultBarSettings = {
     showTooltip = true,
     neverShow = false,
     showInWorld = true,
-    showSolo = true,
     showInArena = true,
     showInBattleground = true,
     showInRaid = true,
@@ -1080,7 +1079,6 @@ local function ShouldShow(bar)
     end
 
     if bar.neverShow
-    or BuffOverlay.numGroupMembers <= 1 and not bar.showSolo
     or BuffOverlay.numGroupMembers > bar.maxGroupSize
     or BuffOverlay.numGroupMembers < bar.minGroupSize
     or BuffOverlay.instanceType == "none" and not bar.showInWorld
