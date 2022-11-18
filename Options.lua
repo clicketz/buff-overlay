@@ -792,10 +792,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     maxGroupSize = {
                         order = 9,
-                        name = "Party Size Maximum",
+                        name = "Group Size Maximum",
                         type = "range",
                         width = 1,
-                        desc = "Show overlays when the party size is equal to or less than this value.",
+                        desc = "Show overlays when the group size is equal to or less than this value.",
                         min = 0,
                         max = 40,
                         step = 1,
