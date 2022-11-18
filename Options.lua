@@ -488,10 +488,6 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 order = 3,
                 get = function(info) return bar[info[#info]] end,
                 set = function(info, val)
-                    if InCombatLockdown() then
-                        self:Print("Cannot change settings in combat.")
-                        return
-                    end
                     bar[info[#info]] = val
                     self:RefreshOverlays(true, barName)
                 end,
@@ -632,11 +628,6 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                             return bar[info[#info]]
                         end,
                         set = function(info, val)
-                            if InCombatLockdown() then
-                                self:Print("Cannot change settings in combat.")
-                                return
-                            end
-
                             if val and not GetCVarBool("countdownForCooldowns") then
                                 LibDialog:Spawn("ConfirmEnableBlizzardCooldownText", bar)
                             else
@@ -653,10 +644,6 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 type = "group",
                 get = function(info) return bar[info[#info]] end,
                 set = function(info, val)
-                    if InCombatLockdown() then
-                        self:Print("Cannot change settings in combat.")
-                        return
-                    end
                     bar[info[#info]] = val
                     self:RefreshOverlays(true, barName)
                 end,
