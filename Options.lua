@@ -790,15 +790,44 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         width = "full",
                         desc = "Toggle showing of the icons in scenario.",
                     },
-                    maxGroupSize = {
+                    header = {
                         order = 9,
+                        name = "Group Size",
+                        type = "header",
+                    },
+                    minGroupSize = {
+                        order = 10,
+                        name = "Group Size Minimum",
+                        type = "range",
+                        width = 1.5,
+                        desc = "Show overlays when the group size is equal to or greater than this value.",
+                        min = 0,
+                        max = 40,
+                        step = 1,
+                        set = function(info, val)
+                            bar[info[#info]] = val
+                            if val > bar.maxGroupSize then
+                                bar.maxGroupSize = val
+                            end
+                            self:RefreshOverlays(true, barName)
+                        end,
+                    },
+                    maxGroupSize = {
+                        order = 11,
                         name = "Group Size Maximum",
                         type = "range",
-                        width = 1,
+                        width = 1.5,
                         desc = "Show overlays when the group size is equal to or less than this value.",
                         min = 0,
                         max = 40,
                         step = 1,
+                        set = function(info, val)
+                            bar[info[#info]] = val
+                            if val < bar.minGroupSize then
+                                bar.minGroupSize = val
+                            end
+                            self:RefreshOverlays(true, barName)
+                        end,
                     },
                 },
             },

@@ -73,6 +73,7 @@ local defaultBarSettings = {
     showInDungeon = true,
     showInScenario = true,
     maxGroupSize = 40,
+    minGroupSize = 0,
 }
 
 local defaultSettings = {
@@ -1081,6 +1082,7 @@ local function ShouldShow(bar)
     if bar.neverShow
     or BuffOverlay.numGroupMembers <= 1 and not bar.showSolo
     or BuffOverlay.numGroupMembers > bar.maxGroupSize
+    or BuffOverlay.numGroupMembers < bar.minGroupSize
     or BuffOverlay.instanceType == "none" and not bar.showInWorld
     or BuffOverlay.instanceType == "pvp" and not bar.showInBattleground
     or BuffOverlay.instanceType == "arena" and not bar.showInArena
