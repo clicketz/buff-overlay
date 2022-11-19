@@ -2,9 +2,13 @@ name: Giftwrap
 
 on:
   push:
+    branches:
+      - master
     tags:
       - "*"
       - "!**-beta**"
+    paths-ignore:
+      - ".github/**"
 
 jobs:
   build:
