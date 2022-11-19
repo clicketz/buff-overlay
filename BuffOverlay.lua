@@ -103,9 +103,10 @@ local dispelTypes = {
 }
 
 local hexFontColors = {
-    ["logo"] = "ff83b2ff",
+    ["main"] = "ff83b2ff",
     ["accent"] = "ff9b6ef3",
     ["value"] = "ffffe981",
+    ["logo"] = "ffff7a00",
     ["blizzardFont"] = NORMAL_FONT_COLOR:GenerateHexColor(),
 }
 
@@ -115,7 +116,7 @@ local broker = LDB:NewDataObject("BuffOverlay", {
     -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
     icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo",
     OnTooltipShow = function(tooltip)
-        tooltip:AddDoubleLine(BuffOverlay:Colorize("BuffOverlay", "logo"), BuffOverlay:Colorize(version, "accent"))
+        tooltip:AddDoubleLine(BuffOverlay:Colorize("BuffOverlay", "main"), BuffOverlay:Colorize(version, "accent"))
         tooltip:AddLine(" ")
         tooltip:AddLine(format("%s to toggle options window.", BuffOverlay:Colorize("Left-click")), 1, 1, 1, false)
         tooltip:AddLine(format("%s to toggle test icons.", BuffOverlay:Colorize("Right-click")), 1, 1, 1, false)
@@ -185,7 +186,7 @@ function BuffOverlay:Colorize(text, color)
 end
 
 function BuffOverlay:Print(msg)
-    print(self:Colorize("BuffOverlay", "logo") .. ": " .. msg)
+    print(self:Colorize("BuffOverlay", "main") .. ": " .. msg)
 end
 
 local function GetFirstUnusedNum()

@@ -168,7 +168,7 @@ local deleteBarDelegate = {
 local path = isRetail and "Options > Gameplay > Action Bars > Show Numbers for Cooldowns" or "Interface > ActionBars > Show Numbers for Cooldowns"
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
-    text = format("In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n%s\n\nWould you like BuffOverlay to enable this setting for you?\n\n", BuffOverlay:Colorize("Show Blizzard Cooldown Text", "logo"), BuffOverlay:Colorize(path)),
+    text = format("In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n%s\n\nWould you like BuffOverlay to enable this setting for you?\n\n", BuffOverlay:Colorize("Show Blizzard Cooldown Text", "main"), BuffOverlay:Colorize(path)),
     buttons = {
         {
             text = YES,
@@ -330,7 +330,7 @@ function BuffOverlay:CreatePriorityDialog(barName)
             hidden = true,
         },
         desc = {
-            name = "This informational panel is the full list of spells currently enabled for " .. self:Colorize((bar.name or barName), "logo") .. " in order of priority. Any aura changes made while this panel is open will be reflected here in real time.",
+            name = "This informational panel is the full list of spells currently enabled for " .. self:Colorize((bar.name or barName), "main") .. " in order of priority. Any aura changes made while this panel is open will be reflected here in real time.",
             type = "description",
             order = 0,
         },
@@ -366,7 +366,7 @@ function BuffOverlay:CreatePriorityDialog(barName)
         end
     end
 
-    self.priorityListDialog.name = self:Colorize((bar.name or barName), "logo") .. " Enabled Auras Priority List"
+    self.priorityListDialog.name = self:Colorize((bar.name or barName), "main") .. " Enabled Auras Priority List"
     self.priorityListDialog.args = spells
 end
 
@@ -416,9 +416,9 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     bar[info[#info]] = val
                     self.options.args.bars.args[barName].name = val
                     if AceConfigDialog.OpenFrames["BuffOverlayDialog"] and not IsDifferentDialogBar(barName) then
-                        self.priorityListDialog.name = self:Colorize(val, "logo") .. " Enabled Auras Priority List"
+                        self.priorityListDialog.name = self:Colorize(val, "main") .. " Enabled Auras Priority List"
                         self.priorityListDialog.args.desc.name = "This informational panel is the full list of spells currently enabled for "
-                            .. self:Colorize((val or barName), "logo")
+                            .. self:Colorize((val or barName), "main")
                             .. " in order of priority. Any aura changes made while this panel is open will be reflected here in real time."
 
                         AceRegistry:NotifyChange("BuffOverlayDialog")
@@ -431,7 +431,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 order = 1,
                 width = 0.75,
                 func = function()
-                    local text = format("Are you sure you want to delete this bar?\n\n%s\n\n", BuffOverlay:Colorize(bar.name or barName, "logo"))
+                    local text = format("Are you sure you want to delete this bar?\n\n%s\n\n", BuffOverlay:Colorize(bar.name or barName, "main"))
                     deleteBarDelegate.text = text
 
                     LibDialog:Spawn(deleteBarDelegate, barName)
