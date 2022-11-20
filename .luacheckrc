@@ -87,9 +87,9 @@ globals = {
 
     -- Global Strings
     "BUFF_STACKS_OVERFLOW",
-    "OKAY", -- localized "Okay"
     "MAX_CLASSES",
     "NO", -- localized "No"
+    "OKAY", -- localized "Okay"
     "WOW_PROJECT_BURNING_CRUSADE_CLASSIC",
     "WOW_PROJECT_CLASSIC",
     "WOW_PROJECT_ID",
