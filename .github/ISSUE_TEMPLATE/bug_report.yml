@@ -21,7 +21,7 @@ body:
   attributes:
     label: BuffOverlay Version
     description: |
-      Please copy the version by typing '/bo version' in-game. If the options do not open, check the CurseForge app or the `## Version:` field in the BuffOverlay.toc file.
+      Please copy the version by typing `/bo version` in-game. If the options do not open, check the CurseForge app or the `## Version:` field in the BuffOverlay.toc file.
     placeholder: "v11.0.0"
   validations:
     required: true
