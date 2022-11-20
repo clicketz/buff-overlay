@@ -729,6 +729,7 @@ function BuffOverlay:OnInitialize()
             print(format("%s or %s: Toggles the options panel.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
             print(format("%s %s: Shows test icons on all visible raid/party frames.", self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
             print(format("%s %s: Toggles the minimap icon.", self:Colorize("/bo", "accent"), self:Colorize("minimap", "value")))
+            print(format("%s %s: Shows a copyable version string for bug reports.", self:Colorize("/bo", "accent"), self:Colorize("version", "value")))
             print(format("%s %s: Resets current profile to default settings. This does not remove any custom auras.", self:Colorize("/bo", "accent"), self:Colorize("reset", "value")))
         elseif msg == "test" then
             self:Test()
@@ -736,6 +737,8 @@ function BuffOverlay:OnInitialize()
             self.db:ResetProfile()
         elseif msg == "minimap" then
             self:ToggleMinimapIcon()
+        elseif msg == "version" then
+            self:ShowVersion()
         else
             self:ToggleOptions()
         end

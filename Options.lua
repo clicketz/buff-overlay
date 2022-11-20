@@ -195,6 +195,33 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
     end,
 })
 
+LibDialog:Register("ShowVersion", {
+    text = format("%s\nCopy this version number and send it to the author if you need help with a bug.", BuffOverlay:Colorize("Version", "main")),
+    buttons = {
+        {
+            text = OKAY,
+        },
+    },
+    editboxes = {
+        {
+            auto_focus = false,
+            text = format("%s", version),
+            width = 200,
+        },
+    },
+    no_close_button = true,
+    show_while_dead = true,
+    hide_on_escape = true,
+    on_show = function(self)
+        self:SetFrameStrata("FULLSCREEN_DIALOG")
+        self:Raise()
+    end,
+})
+
+function BuffOverlay:ShowVersion()
+    LibDialog:Spawn("ShowVersion")
+end
+
 function BuffOverlay:GetIconString(icon, iconSize)
     local size = iconSize or 0
     local ltTexel = 0.08 * 256
