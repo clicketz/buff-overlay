@@ -185,8 +185,8 @@ function BuffOverlay:Colorize(text, color)
     return "|c" .. hexColor .. text .. "|r"
 end
 
-function BuffOverlay:Print(msg)
-    print(self:Colorize("BuffOverlay", "main") .. ": " .. msg)
+function BuffOverlay:Print(...)
+    print(self:Colorize("BuffOverlay", "main") .. ":", ...)
 end
 
 local function GetFirstUnusedNum()
