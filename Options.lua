@@ -428,6 +428,14 @@ function BuffOverlay:UpdateSpellOptionsTable()
     end
 end
 
+local function HasLessThanTwoBars()
+    local count = 0
+    for _ in pairs(BuffOverlay.db.profile.bars) do
+        count = count + 1
+    end
+    return count < 2
+end
+
 function BuffOverlay:AddBarToOptions(bar, barName)
     self.options.args.bars.args[barName] = {
         name = bar.name or barName,
@@ -473,42 +481,6 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     self:Test(barName)
                 end,
             },
-            copyFrom = {
-                name = "Copy Settings From",
-                type = "select",
-                order = 2.5,
-                width = 1,
-                values = function()
-                    local values = {}
-                    for k, v in pairs(self.db.profile.bars) do
-                        if k ~= barName then
-                            values[k] = v.name or k
-                        end
-                    end
-                    return values
-                end,
-                hidden = function()
-                    local count = 0
-                    for _ in pairs(self.db.profile.bars) do
-                        count = count + 1
-                    end
-                    return count < 2
-                end,
-                set = function(info, val)
-                    for k, v in pairs(self.db.profile.bars[val]) do
-                        if k ~= "name" then
-                            bar[k] = type(v) == "table" and CopyTable(v) or v
-                        end
-                    end
-
-                    for _, v in pairs(self.db.profile.buffs) do
-                        v.enabled[barName] = v.enabled[val]
-                    end
-
-                    self:Print("Copied settings from " .. self:Colorize((self.db.profile.bars[val].name or val), "accent") .. " to " .. self:Colorize((bar.name or barName), "accent"))
-                    self:RefreshOverlays(true, barName)
-                end,
-            },
             settings = {
                 name = "Settings",
                 type = "group",
@@ -519,6 +491,40 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     self:RefreshOverlays(true, barName)
                 end,
                 args = {
+                    copySettings = {
+                        name = "Copy Settings From",
+                        desc = "This copies settings from 'Settings', 'Anchoring', and 'Visibility' tabs.",
+                        type = "select",
+                        order = 0,
+                        width = 1,
+                        values = function()
+                            local values = {}
+                            for k, v in pairs(self.db.profile.bars) do
+                                if k ~= barName then
+                                    values[k] = v.name or k
+                                end
+                            end
+                            return values
+                        end,
+                        hidden = HasLessThanTwoBars,
+                        set = function(info, val)
+                            for k, v in pairs(self.db.profile.bars[val]) do
+                                if k ~= "name" then
+                                    bar[k] = type(v) == "table" and CopyTable(v) or v
+                                end
+                            end
+
+                            self:Print("Copied settings, anchoring, and visibility tabs from " .. self:Colorize((self.db.profile.bars[val].name or val), "accent") .. " to " .. self:Colorize((bar.name or barName), "accent"))
+                            self:RefreshOverlays(true, barName)
+                        end,
+                    },
+                    space = {
+                        name = " ",
+                        type = "description",
+                        order = 0.5,
+                        width = "full",
+                        hidden = HasLessThanTwoBars,
+                    },
                     iconCount = {
                         order = 1,
                         name = "Icon Count",
@@ -856,6 +862,50 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 name = "Spells",
                 type = "group",
                 args = {
+                    copySpells = {
+                        name = "Copy Spells From",
+                        type = "select",
+                        order = 0,
+                        width = 1,
+                        values = function()
+                            local values = {}
+                            for k, v in pairs(self.db.profile.bars) do
+                                if k ~= barName then
+                                    values[k] = v.name or k
+                                end
+                            end
+                            return values
+                        end,
+                        hidden = HasLessThanTwoBars,
+                        set = function(info, val)
+                            for _, v in pairs(self.db.profile.buffs) do
+                                v.enabled[barName] = v.enabled[val]
+                            end
+
+                            local dialog = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
+
+                            if dialog and IsDifferentDialogBar(barName) then
+                                self:CreatePriorityDialog(barName)
+                            end
+
+                            if dialog then
+                                if IsDifferentDialogBar(barName) then
+                                    self:CreatePriorityDialog(barName)
+                                end
+
+                                for k, v in pairs(self.db.profile.buffs) do
+                                    if not v.parent then
+                                        AddToPriorityDialog(tostring(k), not v.enabled[barName])
+                                    end
+                                end
+
+                                AceRegistry:NotifyChange("BuffOverlayDialog")
+                            end
+
+                            self:Print("Copied spells from " .. self:Colorize((self.db.profile.bars[val].name or val), "accent") .. " to " .. self:Colorize((bar.name or barName), "accent"))
+                            self:RefreshOverlays(true, barName)
+                        end,
+                    },
                     enableAll = {
                         order = 1,
                         name = "Enable All",
@@ -1304,12 +1354,13 @@ function BuffOverlay:Options()
                     },
                     test = {
                         order = 2,
-                        name = "Toggle All Test Auras",
+                        name = "Test All",
                         type = "execute",
+                        desc = "Toggle testing for auras on all bars.",
                         func = function()
                             self:Test()
                         end,
-                        width = 1,
+                        width = 0.75,
                     },
                 },
             },
