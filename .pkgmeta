@@ -14,6 +14,7 @@ externals:
   Libs/LibDialog-1.0: https://repos.curseforge.com/wow/libdialog-1-0
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
   Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk
+  Libs/LibCustomGlow-1.0: https://github.com/Stanzilla/LibCustomGlow
 
 manual-changelog:
   filename: CHANGELOG.md
