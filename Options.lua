@@ -43,6 +43,10 @@ local customIcons = {
     ["Cogwheel"] = 136243,
 }
 
+local disabledCustom = {
+    ["Eating/Drinking"] = true,
+}
+
 local classIcons = {
     ["DEATHKNIGHT"] = 135771,
     ["DEMONHUNTER"] = 1260827,
@@ -251,14 +255,18 @@ local function AddToPriorityDialog(spellIdStr, remove)
         spellName = customSpellNames[spellId]
     end
 
-    local formattedName = (spellName and icon) and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellName) or
-        icon and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellId) or spellIdStr
+    -- local formattedName = (spellName and icon) and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellName) or
+    --     icon and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellId) or spellIdStr
 
     if remove then
         list[spellIdStr] = nil
     else
         list[spellIdStr] = {
-            name = BuffOverlay:Colorize(formattedName, spell.class) .. " [" .. spell.prio .. "]",
+            name = BuffOverlay:Colorize(spellName or spellIdStr, spell.class) .. " [" .. spell.prio .. "]",
+            image = icon,
+            imageCoords = { 0.08, 0.92, 0.08, 0.92 },
+            imageWidth = 16,
+            imageHeight = 16,
             type = "description",
             order = spell.prio + 1,
         }
@@ -289,8 +297,8 @@ local function GetSpells(class, barName)
                     spellName = customSpellNames[k]
                 end
 
-                local formattedName = (spellName and icon) and format("%s %s", BuffOverlay:GetIconString(icon, 18), spellName)
-                    or icon and format("%s %s", BuffOverlay:GetIconString(icon, 20), k) or spellIdStr
+                local formattedName = (spellName and icon) and format("%s%s", BuffOverlay:GetIconString(icon), spellName)
+                    or icon and format("%s%s", BuffOverlay:GetIconString(icon), k) or spellIdStr
 
                 if spellName then
                     local id = customSpellDescriptions[k] or k
@@ -360,22 +368,8 @@ local function GetSpells(class, barName)
                             order = 1,
                             width = 0.1,
                             func = function()
-                                local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]
-
-                                if dialog and dialog.children then
-                                    for cKey, child in pairs(dialog.children) do
-                                        if child.tabs then
-                                            for tKey, tab in pairs(child.tabs) do
-                                                if tab.value == "customSpells" then
-                                                    C_Timer.After(0, function()
-                                                        dialog.children[cKey].tabs[tKey]:Click()
-                                                    end)
-                                                    return
-                                                end
-                                            end
-                                        end
-                                    end
-                                end
+                                local key = k .. barName
+                                BuffOverlay[key] = not BuffOverlay[key]
                             end,
                         },
                         glowColor = {
@@ -427,6 +421,95 @@ local function GetSpells(class, barName)
                                 BuffOverlay:RefreshOverlays()
                             end,
                         },
+                        additionalSettings = {
+                            name = " ",
+                            desc = "Show a test overlay for this spell.",
+                            type = "group",
+                            inline = true,
+                            order = 4,
+                            hidden = function()
+                                local key = k .. barName
+                                return disabledCustom[k] or (BuffOverlay[key] == nil and true or not BuffOverlay[key])
+                            end,
+                            args = {
+                                header = {
+                                    name = BuffOverlay:GetIconString(icon, 25) or "",
+                                    type = "header",
+                                    order = 0,
+                                },
+                                glowType = {
+                                    name = "Glow Type",
+                                    type = "select",
+                                    order = 4,
+                                    width = 0.75,
+                                    values = {
+                                        ["blizz"] = "Action Button",
+                                        ["pixel"] = "Pixel",
+                                    },
+                                    get = function()
+                                        return BuffOverlay.db.profile.buffs[k].state[barName].glow.type
+                                    end,
+                                    set = function(_, value)
+                                        BuffOverlay.db.profile.buffs[k].state[barName].glow.type = value
+                                        BuffOverlay:RefreshOverlays(true, barName, true)
+                                    end,
+                                },
+                                space = {
+                                    name = " ",
+                                    type = "description",
+                                    order = 5,
+                                    width = 0.05,
+                                    hidden = function()
+                                        local key = k .. barName
+                                        return disabledCustom[k] or (BuffOverlay[key] == nil and true or not BuffOverlay[key])
+                                    end,
+                                },
+                                addToCustom = {
+                                    name = "Edit Global Options",
+                                    type = "execute",
+                                    desc = format("Add %s to the custom spell list, opening up global options to edit for this spell.", formattedName),
+                                    order = 6,
+                                    width = 0.95,
+                                    hidden = function()
+                                        local key = k .. barName
+                                        return disabledCustom[k] or (BuffOverlay[key] == nil and true or not BuffOverlay[key])
+                                    end,
+                                    func = function()
+                                        BuffOverlay:AddToCustom(k)
+
+                                        local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]
+
+                                        if dialog and dialog.children then
+                                            for cKey, child in pairs(dialog.children) do
+                                                if child.tabs then
+                                                    for tKey, tab in pairs(child.tabs) do
+                                                        if tab.value == "customSpells" then
+                                                            C_Timer.After(0, function()
+                                                                -- Click over to custom spells tab
+                                                                dialog.children[cKey].tabs[tKey]:Click()
+
+                                                                -- Find and select the spell in the list
+                                                                for _, va in pairs(dialog.children[cKey].children) do
+                                                                    if va.SelectByValue then
+                                                                        for _, vb in pairs(va.lines) do
+                                                                            if vb.value == tostring(k) then
+                                                                                va:SelectByValue(vb.uniquevalue)
+                                                                                return
+                                                                            end
+                                                                        end
+                                                                    end
+                                                                end
+                                                            end)
+                                                            return
+                                                        end
+                                                    end
+                                                end
+                                            end
+                                        end
+                                    end,
+                                },
+                            },
+                        },
                     },
                 }
             end
@@ -461,6 +544,10 @@ function BuffOverlay:CreatePriorityDialog(barName)
         if self.db.profile.buffs[spellId].state[barName].enabled then
             spells[spellIdStr] = {
                 name = self:Colorize(info.args.toggle.name, "MISC") .. " [" .. info.order .. "]",
+                image = info.args.toggle.image,
+                imageCoords = info.args.toggle.imageCoords,
+                imageWidth = 16,
+                imageHeight = 16,
                 type = "description",
                 order = info.order + 1,
             }
@@ -474,6 +561,10 @@ function BuffOverlay:CreatePriorityDialog(barName)
             if self.db.profile.buffs[spellId].state[barName].enabled then
                 spells[spellIdStr] = {
                     name = self:Colorize(info.args.toggle.name, className) .. " [" .. info.order .. "]",
+                    image = info.args.toggle.image,
+                    imageCoords = info.args.toggle.imageCoords,
+                    imageWidth = 16,
+                    imageHeight = 16,
                     type = "description",
                     order = info.order + 1,
                 }
@@ -1395,6 +1486,31 @@ local customSpells = {
         end,
     }
 }
+
+function BuffOverlay:AddToCustom(spellId)
+    local spellIdStr = tostring(spellId)
+    local name, _, icon = GetSpellInfo(spellId)
+
+    if name then
+        if BuffOverlay:InsertCustomAura(spellId) then
+            BuffOverlay.options.args.customSpells.args[spellIdStr] = {
+                name = format("%s %s", BuffOverlay:GetIconString(icon, 15), name),
+                desc = function()
+                    return spellDescriptions[spellId] or ""
+                end,
+                type = "group",
+                args = customSpellInfo,
+            }
+            BuffOverlay:UpdateCustomBuffs()
+            if AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
+                AddToPriorityDialog(spellIdStr)
+                AceRegistry:NotifyChange("BuffOverlayDialog")
+            end
+        end
+    else
+        BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(spellIdStr)))
+    end
+end
 
 function BuffOverlay:Options()
     for spellId, v in pairs(self.db.global.customBuffs) do
