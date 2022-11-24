@@ -2,6 +2,7 @@ local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceRegistry = LibStub("AceConfigRegistry-3.0")
 local LDB = LibStub("LibDataBroker-1.1")
+local LCG = LibStub("LibCustomGlow-1.0")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 local version = GetAddOnMetadata("BuffOverlay", "Version")
 
@@ -110,6 +111,24 @@ local hexFontColors = {
     ["blizzardFont"] = NORMAL_FONT_COLOR:GenerateHexColor(),
 }
 
+local auraState = {
+    enabled = true,
+    glow = {
+        enabled = false,
+        color = { 1, 1, 1, 1 },
+        n = 8, -- number of lines
+        freq = 0.25, -- frequency of the lines
+        length = nil, -- length of each line
+        thickness = 1, -- thickness of each line
+        xOff = 0, -- x offset
+        yOff = 0, -- y offset
+        border = false, -- show a border
+        key = nil, -- key used to register the glow for multiple glows
+        type = "blizz", -- blizz / pixel
+    },
+    ownOnly = false,
+}
+
 local broker = LDB:NewDataObject("BuffOverlay", {
     type = "launcher",
     text = "BuffOverlay",
@@ -215,8 +234,8 @@ function BuffOverlay:AddBar()
     self:AddBarToOptions(self.db.profile.bars[barName], barName)
 
     for _, v in pairs(self.db.profile.buffs) do
-        if v.enabled[barName] == nil then
-            v.enabled[barName] = true
+        if v.state[barName] == nil then
+            v.state[barName] = CopyTable(auraState)
         end
     end
 
@@ -229,8 +248,8 @@ function BuffOverlay:DeleteBar(barName)
     testBarNames[barName] = nil
 
     for _, v in pairs(self.db.profile.buffs) do
-        if v.enabled then
-            v.enabled[barName] = nil
+        if v.state then
+            v.state[barName] = nil
         end
     end
 
@@ -406,6 +425,40 @@ local function UpdateChildren(self)
     end
 end
 
+-- Expensive. Run as few times as possible (once on startup preferrably).
+-- Will need to be recursive if table depth increases on default state.
+local function UpdateAuraState()
+    local auras = BuffOverlay.db.profile.buffs
+
+    for _, aura in pairs(auras) do
+        for _, state in pairs(aura.state) do
+            for attr in pairs(auraState) do
+                if state[attr] == nil then
+                    state[attr] = type(auraState[attr]) == "table" and CopyTable(auraState[attr]) or auraState[attr]
+                elseif type(state[attr]) == "table" then
+                    for k, v in pairs(auraState[attr]) do
+                        if state[attr][k] == nil then
+                            state[attr][k] = type(v) == "table" and CopyTable(v) or v
+                        end
+                    end
+                end
+            end
+
+            for attr, data in pairs(state) do
+                if type(data) == "table" then
+                    for k in pairs(data) do
+                        if auraState[attr][k] == nil then
+                            state[attr][k] = nil
+                        end
+                    end
+                elseif auraState[attr] == nil then
+                    state[attr] = nil
+                end
+            end
+        end
+    end
+end
+
 function BuffOverlay:UpdateCustomBuffs()
     for spellId, v in pairs(self.db.global.customBuffs) do
         -- Fix for old database entries
@@ -415,19 +468,19 @@ function BuffOverlay:UpdateCustomBuffs()
 
         if not self.db.profile.buffs[spellId] then
             self.db.profile.buffs[spellId] = {
-                enabled = {},
+                state = {},
             }
         end
 
         local buff = self.db.profile.buffs[spellId]
 
-        if type(buff.enabled) ~= "table" then
-            buff.enabled = {}
+        if not buff.state then
+            buff.state = {}
         end
 
         for barName in pairs(self.db.profile.bars) do
-            if buff.enabled[barName] == nil then
-                buff.enabled[barName] = true
+            if buff.state[barName] == nil then
+                buff.state[barName] = CopyTable(auraState)
             end
         end
 
@@ -472,6 +525,10 @@ end
 
 local function ValidateBuffData()
     for k, v in pairs(BuffOverlay.db.profile.buffs) do
+        if v.enabled then -- Fix for old database entries
+            v.enabled = nil
+        end
+
         if (not BuffOverlay.defaultSpells[k]) and (not BuffOverlay.db.global.customBuffs[k]) then
             BuffOverlay.db.profile.buffs[k] = nil
         else
@@ -480,13 +537,6 @@ local function ValidateBuffData()
                     v.custom = nil
                 elseif not BuffOverlay.db.global.customBuffs[k] then
                     v.custom = nil
-                end
-            end
-
-            -- Check for orphaned bar data
-            for barName in pairs(v.enabled) do
-                if not BuffOverlay.db.profile.bars[barName] then
-                    v.enabled[barName] = nil
                 end
             end
 
@@ -558,8 +608,13 @@ function BuffOverlay:CreateBuffTable()
     if next(self.db.profile.buffs) == nil then
         for k, v in pairs(self.defaultSpells) do
             self.db.profile.buffs[k] = {
-                enabled = {},
+                state = {},
             }
+
+            for barName in pairs(self.db.profile.bars) do
+                self.db.profile.buffs[k].state[barName] = CopyTable(auraState)
+            end
+
             for key, val in pairs(v) do
                 if type(val) == "table" then
                     self.db.profile.buffs[k][key] = CopyTable(val)
@@ -581,11 +636,11 @@ function BuffOverlay:UpdateBuffs()
         for k, v in pairs(self.defaultSpells) do
             if not self.db.profile.buffs[k] then
                 self.db.profile.buffs[k] = {
-                    enabled = {},
+                    state = {},
                 }
 
                 for barName in pairs(self.db.profile.bars) do
-                    self.db.profile.buffs[k].enabled[barName] = true
+                    self.db.profile.buffs[k].state[barName] = CopyTable(auraState)
                 end
 
                 for key, val in pairs(v) do
@@ -596,8 +651,8 @@ function BuffOverlay:UpdateBuffs()
                     end
                 end
             else
-                if type(self.db.profile.buffs[k].enabled) ~= "table" then
-                    self.db.profile.buffs[k].enabled = {}
+                if not self.db.profile.buffs[k].state then
+                    self.db.profile.buffs[k].state = {}
                 end
 
                 for key, val in pairs(v) do
@@ -609,8 +664,8 @@ function BuffOverlay:UpdateBuffs()
                 end
 
                 for barName in pairs(self.db.profile.bars) do
-                    if self.db.profile.buffs[k].enabled[barName] == nil then
-                        self.db.profile.buffs[k].enabled[barName] = true
+                    if self.db.profile.buffs[k].state[barName] == nil then
+                        self.db.profile.buffs[k].state[barName] = CopyTable(auraState)
                     end
                 end
             end
@@ -720,6 +775,7 @@ function BuffOverlay:OnInitialize()
     end)
 
     self:UpdateBuffs()
+    UpdateAuraState()
 
     SLASH_BuffOverlay1 = "/bo"
     SLASH_BuffOverlay2 = "/buffoverlay"
@@ -1019,6 +1075,24 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
     overlay:Show()
 end
 
+local function UpdateGlowSize(overlay, size)
+    local glow = overlay.glow
+    size = size / 2
+    glow:SetPoint("TOPLEFT", -size, size)
+    glow:SetPoint("BOTTOMRIGHT", size, -size)
+end
+
+local function SetupGlow(overlay)
+    if not overlay.glow then
+        -- Use this frame to ensure the glow is always on top
+        local glow = CreateFrame("Frame", nil, overlay)
+        glow:SetAllPoints()
+        glow:SetFrameLevel(overlay:GetFrameLevel() + 6)
+        overlay.glow = glow
+    end
+    overlay.glow:Hide()
+end
+
 local borderPieces = {
     "Top",
     "Bottom",
@@ -1066,6 +1140,8 @@ local function UpdateBorder(overlay)
     border:UpdateSizes()
 
     border:SetShown(bar.iconBorder)
+
+    UpdateGlowSize(overlay, bar.iconBorder and bar.iconBorderSize or 0)
 end
 
 function BuffOverlay:SetupContainer(frame)
@@ -1128,6 +1204,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
                         overlay.barName = barName
+                        SetupGlow(overlay)
                     end
 
                     overlay.bar = bar
@@ -1226,7 +1303,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     -- TODO: Optimize this with new UNIT_AURA event payload
     for _, filter in ipairs(filters) do
         for i = 1, 40 do
-            local spellName, icon, count, dispelType, duration, expirationTime, _, _, _, spellId = UnitAura(unit, i, filter)
+            local spellName, icon, count, dispelType, duration, expirationTime, _, _, _, spellId, _, _, castByPlayer = UnitAura(unit, i, filter)
             if spellId then
                 local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
 
@@ -1238,9 +1315,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     for barName, bar in pairs(bars) do
                         if ShouldShow(bar)
                         and not (barNameToApply and barName ~= barNameToApply)
-                        and (aura.enabled[barName] or self.test)
+                        and (aura.state[barName].enabled or self.test)
+                        and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayer))
                         then
-                            rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter })
+                            rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, spellId })
                         end
                     end
                 end
@@ -1263,7 +1341,24 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
             while overlayNum <= bar.iconCount do
                 local data = self.priority[barName][overlayNum]
                 if data then
-                    SetOverlayAura(self.overlays[overlayName .. overlayNum], data[1], data[3], data[4], data[5], data[6], data[7], data[8])
+                    local olay = self.overlays[overlayName .. overlayNum]
+                    local glow = self.db.profile.buffs[data[9]].state[barName].glow
+
+                    if glow.enabled then
+                        local color = glow.color
+                        if glow.type == "blizz" then
+                            LCG.ButtonGlow_Start(olay.glow, color)
+                        elseif glow.type == "pixel" then
+                            LCG.PixelGlow_Start(olay.glow, color, glow.n, glow.freq, glow.length, glow.thickness, glow.xOff, glow.yOff, glow.border, glow.key)
+                        end
+                        olay.glow:Show()
+                    elseif olay.glow:IsShown() then
+                        LCG.ButtonGlow_Stop(olay.glow)
+                        LCG.PixelGlow_Stop(olay.glow)
+                        olay.glow:Hide()
+                    end
+
+                    SetOverlayAura(olay, data[1], data[3], data[4], data[5], data[6], data[7], data[8])
                     overlayNum = overlayNum + 1
                 else
                     break

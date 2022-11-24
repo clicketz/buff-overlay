@@ -2,6 +2,7 @@ local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local LibDialog = LibStub("LibDialog-1.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceRegistry = LibStub("AceConfigRegistry-3.0")
+local AceConfig = LibStub("AceConfig-3.0")
 local version = GetAddOnMetadata("BuffOverlay", "Version")
 
 local GetSpellInfo = GetSpellInfo
@@ -288,7 +289,7 @@ local function GetSpells(class, barName)
                     spellName = customSpellNames[k]
                 end
 
-                local formattedName = (spellName and icon) and format("%s %s", BuffOverlay:GetIconString(icon, 20), spellName)
+                local formattedName = (spellName and icon) and format("%s %s", BuffOverlay:GetIconString(icon, 18), spellName)
                     or icon and format("%s %s", BuffOverlay:GetIconString(icon, 20), k) or spellIdStr
 
                 if spellName then
@@ -300,46 +301,133 @@ local function GetSpells(class, barName)
                 end
 
                 spells[spellIdStr] = {
-                    name = formattedName,
-                    type = "toggle",
+                    name = "",
+                    type = "group",
+                    inline = true,
                     order = v.prio,
-                    desc = function()
-                        local description = spellDescriptions[k] and spellDescriptions[k] ~= ""
-                            and spellDescriptions[k] .. "\n" or ""
+                    args = {
+                        toggle = {
+                            name = spellName or k,
+                            image = icon,
+                            imageCoords = { 0.08, 0.92, 0.08, 0.92 },
+                            type = "toggle",
+                            order = 0,
+                            width = 1.175,
+                            desc = function()
+                                local description = spellDescriptions[k] and spellDescriptions[k] ~= ""
+                                    and spellDescriptions[k] .. "\n" or ""
 
-                        description = description
-                            .. format("\n%s %d", BuffOverlay:Colorize("Priority"), v.prio)
-                            .. (spellName and format("\n%s %d", BuffOverlay:Colorize("Spell ID"), k) or "")
+                                description = description
+                                    .. format("\n%s %d", BuffOverlay:Colorize("Priority"), v.prio)
+                                    .. (spellName and format("\n%s %d", BuffOverlay:Colorize("Spell ID"), k) or "")
 
-                        if BuffOverlay.db.profile.buffs[k].children then
-                            description = description .. BuffOverlay:Colorize("\nChild Spell ID(s)\n")
-                            for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
-                                description = description .. child .. "\n"
-                            end
-                        end
+                                if BuffOverlay.db.profile.buffs[k].children then
+                                    description = description .. BuffOverlay:Colorize("\nChild Spell ID(s)\n")
+                                    for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
+                                        description = description .. child .. "\n"
+                                    end
+                                end
 
-                        return description
-                    end,
-                    width = "full",
-                    get = function()
-                        return BuffOverlay.db.profile.buffs[k].enabled[barName]
-                    end,
-                    set = function(_, value)
-                        BuffOverlay.db.profile.buffs[k].enabled[barName] = value
-                        if BuffOverlay.db.profile.buffs[k].children then
-                            for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
-                                BuffOverlay.db.profile.buffs[child].enabled[barName] = value
-                            end
-                        end
-                        if AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
-                            if IsDifferentDialogBar(barName) then
-                                BuffOverlay:CreatePriorityDialog(barName)
-                            end
-                            AddToPriorityDialog(spellIdStr, not value)
-                            AceRegistry:NotifyChange("BuffOverlayDialog")
-                        end
-                        BuffOverlay:RefreshOverlays()
-                    end,
+                                return description
+                            end,
+                            get = function(info)
+                                info.option.width = BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled and 1.075 or 1.175
+                                return BuffOverlay.db.profile.buffs[k].state[barName].enabled
+                            end,
+                            set = function(_, value)
+                                BuffOverlay.db.profile.buffs[k].state[barName].enabled = value
+                                if BuffOverlay.db.profile.buffs[k].children then
+                                    for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
+                                        BuffOverlay.db.profile.buffs[child].state[barName].enabled = value
+                                    end
+                                end
+                                if AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
+                                    if IsDifferentDialogBar(barName) then
+                                        BuffOverlay:CreatePriorityDialog(barName)
+                                    end
+                                    AddToPriorityDialog(spellIdStr, not value)
+                                    AceRegistry:NotifyChange("BuffOverlayDialog")
+                                end
+                                BuffOverlay:RefreshOverlays()
+                            end,
+                        },
+                        edit = {
+                            name = "",
+                            image = "Interface\\Buttons\\UI-OptionsButton",
+                            imageWidth = 12,
+                            imageHeight = 12,
+                            type = "execute",
+                            order = 1,
+                            width = 0.1,
+                            func = function()
+                                local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]
+
+                                if dialog and dialog.children then
+                                    for cKey, child in pairs(dialog.children) do
+                                        if child.tabs then
+                                            for tKey, tab in pairs(child.tabs) do
+                                                if tab.value == "customSpells" then
+                                                    C_Timer.After(0, function()
+                                                        dialog.children[cKey].tabs[tKey]:Click()
+                                                    end)
+                                                    return
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+                            end,
+                        },
+                        glowColor = {
+                            name = "",
+                            type = "color",
+                            order = 2,
+                            width = 0.1,
+                            hasAlpha = true,
+                            hidden = function(info)
+                                return not BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled
+                            end,
+                            get = function()
+                                return unpack(BuffOverlay.db.profile.buffs[k].state[barName].glow.color)
+                            end,
+                            set = function(_, r, g, b, a)
+                                local color = BuffOverlay.db.profile.buffs[k].state[barName].glow.color
+                                color[1] = r
+                                color[2] = g
+                                color[3] = b
+                                color[4] = a
+                                BuffOverlay:RefreshOverlays()
+                            end,
+                        },
+                        glow = {
+                            name = "Glow",
+                            desc = "Enable a glow border effect around the icon.",
+                            type = "toggle",
+                            order = 2,
+                            width = 0.3,
+                            get = function()
+                                return BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled
+                            end,
+                            set = function(_, value)
+                                BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled = value
+                                BuffOverlay:RefreshOverlays()
+                            end,
+                        },
+                        own = {
+                            name = "Own",
+                            desc = "Only show the aura if you cast it.",
+                            type = "toggle",
+                            order = 3,
+                            width = 0.3,
+                            get = function()
+                                return BuffOverlay.db.profile.buffs[k].state[barName].ownOnly
+                            end,
+                            set = function(_, value)
+                                BuffOverlay.db.profile.buffs[k].state[barName].ownOnly = value
+                                BuffOverlay:RefreshOverlays()
+                            end,
+                        },
+                    },
                 }
             end
         end
@@ -370,9 +458,9 @@ function BuffOverlay:CreatePriorityDialog(barName)
 
     for spellIdStr, info in pairs(GetSpells("MISC", barName)) do
         local spellId = tonumber(spellIdStr) or spellIdStr
-        if self.db.profile.buffs[spellId].enabled[barName] then
+        if self.db.profile.buffs[spellId].state[barName].enabled then
             spells[spellIdStr] = {
-                name = self:Colorize(info.name, "MISC") .. " [" .. info.order .. "]",
+                name = self:Colorize(info.args.toggle.name, "MISC") .. " [" .. info.order .. "]",
                 type = "description",
                 order = info.order + 1,
             }
@@ -383,9 +471,9 @@ function BuffOverlay:CreatePriorityDialog(barName)
         local className = CLASS_SORT_ORDER[i]
         for spellIdStr, info in pairs(GetSpells(className, barName)) do
             local spellId = tonumber(spellIdStr) or spellIdStr
-            if self.db.profile.buffs[spellId].enabled[barName] then
+            if self.db.profile.buffs[spellId].state[barName].enabled then
                 spells[spellIdStr] = {
-                    name = self:Colorize(info.name, className) .. " [" .. info.order .. "]",
+                    name = self:Colorize(info.args.toggle.name, className) .. " [" .. info.order .. "]",
                     type = "description",
                     order = info.order + 1,
                 }
@@ -879,7 +967,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         hidden = HasLessThanTwoBars,
                         set = function(info, val)
                             for _, v in pairs(self.db.profile.buffs) do
-                                v.enabled[barName] = v.enabled[val]
+                                v.state[barName] = CopyTable(v.state[val])
                             end
 
                             local dialog = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
@@ -895,7 +983,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
 
                                 for k, v in pairs(self.db.profile.buffs) do
                                     if not v.parent then
-                                        AddToPriorityDialog(tostring(k), not v.enabled[barName])
+                                        AddToPriorityDialog(tostring(k), not v.state[barName].enabled)
                                     end
                                 end
 
@@ -947,7 +1035,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                             end
 
                             for k in pairs(self.db.profile.buffs) do
-                                self.db.profile.buffs[k].enabled[barName] = false
+                                self.db.profile.buffs[k].state[barName].enabled = false
 
                                 if dialogIsOpen then
                                     BuffOverlay.priorityListDialog.args[tostring(k)] = nil
@@ -1418,8 +1506,8 @@ function BuffOverlay:Options()
     self:UpdateBarOptionsTable()
 
     -- Main options dialog.
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlay", self.options)
-    LibStub("AceConfig-3.0"):RegisterOptionsTable("BuffOverlayDialog", self.priorityListDialog)
+    AceConfig:RegisterOptionsTable("BuffOverlay", self.options)
+    AceConfig:RegisterOptionsTable("BuffOverlayDialog", self.priorityListDialog)
     AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 720)
     AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 720)
 
