@@ -1360,8 +1360,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         local color = glow.color
                         if glow.type == "blizz" then
                             LCG.ButtonGlow_Start(olay.glow, color)
+                            LCG.PixelGlow_Stop(olay.glow)
                         elseif glow.type == "pixel" then
                             LCG.PixelGlow_Start(olay.glow, color, glow.n, glow.freq, glow.length, glow.thickness, glow.xOff, glow.yOff, glow.border, glow.key)
+                            LCG.ButtonGlow_Stop(olay.glow)
                         end
                         olay.glow:Show()
                     elseif olay.glow:IsShown() then
