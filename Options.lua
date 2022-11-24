@@ -666,6 +666,8 @@ function BuffOverlay:AddBarToOptions(bar, barName)
 
                         AceRegistry:NotifyChange("BuffOverlayDialog")
                     end
+
+                    self:UpdateSpellOptionsTable()
                 end,
             },
             delete = {
