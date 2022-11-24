@@ -440,7 +440,7 @@ local function GetSpells(class, barName)
                                 glowType = {
                                     name = "Glow Type",
                                     type = "select",
-                                    order = 4,
+                                    order = 1,
                                     width = 0.75,
                                     values = {
                                         ["blizz"] = "Action Button",
@@ -457,22 +457,20 @@ local function GetSpells(class, barName)
                                 space = {
                                     name = " ",
                                     type = "description",
-                                    order = 5,
+                                    order = 2,
                                     width = 0.05,
-                                    hidden = function()
-                                        local key = k .. barName
-                                        return disabledCustom[k] or (BuffOverlay[key] == nil and true or not BuffOverlay[key])
-                                    end,
+                                    -- hidden = function()
+                                    --     return disabledCustom[k]
+                                    -- end,
                                 },
                                 addToCustom = {
                                     name = "Edit Global Options",
                                     type = "execute",
                                     desc = format("Add %s to the custom spell list, opening up global options to edit for this spell.", formattedName),
-                                    order = 6,
+                                    order = 3,
                                     width = 0.95,
                                     hidden = function()
-                                        local key = k .. barName
-                                        return disabledCustom[k] or (BuffOverlay[key] == nil and true or not BuffOverlay[key])
+                                        return disabledCustom[k]
                                     end,
                                     func = function()
                                         BuffOverlay:AddToCustom(k)
@@ -506,6 +504,37 @@ local function GetSpells(class, barName)
                                                 end
                                             end
                                         end
+                                    end,
+                                },
+                                space2 = {
+                                    name = " ",
+                                    type = "description",
+                                    order = 4,
+                                    width = 0.80,
+                                    hidden = function()
+                                        return disabledCustom[k]
+                                    end,
+                                },
+                                applyToAll = {
+                                    name = "Apply to All",
+                                    type = "execute",
+                                    desc = format("Apply %s's custom settings to all auras in %s. This does not include priority or class.", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
+                                    order = 5,
+                                    width = 0.95,
+                                    func = function()
+                                        local current = BuffOverlay.db.profile.buffs[k].state[barName]
+                                        for _, spell in pairs(BuffOverlay.db.profile.buffs) do
+                                            for key, val in pairs(spell.state[barName]) do
+                                                if key ~= "enabled" then
+                                                    if type(val) == "table" then
+                                                        spell.state[barName][key] = CopyTable(current[key])
+                                                    else
+                                                        spell.state[barName][key] = current[key]
+                                                    end
+                                                end
+                                            end
+                                        end
+                                        BuffOverlay:RefreshOverlays(true, barName, true)
                                     end,
                                 },
                             },
