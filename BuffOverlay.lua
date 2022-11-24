@@ -1313,11 +1313,13 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     -- TODO: Optimize this with new UNIT_AURA event payload
     for _, filter in ipairs(filters) do
         for i = 1, 40 do
-            local spellName, icon, count, dispelType, duration, expirationTime, _, _, _, spellId, _, _, castByPlayer = UnitAura(unit, i, filter)
+            local spellName, icon, count, dispelType, duration, expirationTime, source, _, _, spellId = UnitAura(unit, i, filter)
             if spellId then
                 local aura = self.db.profile.buffs[spellId] or self.db.profile.buffs[spellName]
 
                 if aura then
+                    local castByPlayerOrPlayerPet = source == "player" or source == "pet" or source == "vehicle"
+
                     if aura.parent then
                         icon = select(3, GetSpellInfo(aura.parent)) or icon
                     end
@@ -1326,7 +1328,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         if ShouldShow(bar)
                         and not (barNameToApply and barName ~= barNameToApply)
                         and (aura.state[barName].enabled or self.test)
-                        and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayer))
+                        and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
                         then
                             rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, spellId })
                         end
