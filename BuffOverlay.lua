@@ -1330,7 +1330,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         and (aura.state[barName].enabled or self.test)
                         and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
                         then
-                            rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, spellId })
+                            rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, aura })
                         end
                     end
                 end
@@ -1354,7 +1354,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 local data = self.priority[barName][overlayNum]
                 if data then
                     local olay = self.overlays[overlayName .. overlayNum]
-                    local glow = self.db.profile.buffs[data[9]].state[barName].glow
+                    local glow = data[9].state[barName].glow
 
                     if glow.enabled then
                         local color = glow.color
