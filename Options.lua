@@ -518,7 +518,7 @@ local function GetSpells(class, barName)
                                 applyToAll = {
                                     name = "Apply to All",
                                     type = "execute",
-                                    desc = format("Apply %s's custom settings to all auras in %s. This does not include priority or class.", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
+                                    desc = format("Apply %s's custom settings (glow, own, glow color, etc) to all auras in %s. This does not include priority or class.", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
                                     order = 5,
                                     width = 0.95,
                                     func = function()
