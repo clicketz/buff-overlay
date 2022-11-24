@@ -429,7 +429,7 @@ local function GetSpells(class, barName)
                             order = 4,
                             hidden = function()
                                 local key = k .. barName
-                                return disabledCustom[k] or (BuffOverlay[key] == nil and true or not BuffOverlay[key])
+                                return BuffOverlay[key] == nil and true or not BuffOverlay[key]
                             end,
                             args = {
                                 header = {
