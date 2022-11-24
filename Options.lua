@@ -464,9 +464,9 @@ local function GetSpells(class, barName)
                                     -- end,
                                 },
                                 addToCustom = {
-                                    name = "Edit Global Options",
+                                    name = "Edit Global Settings",
                                     type = "execute",
-                                    desc = format("Add %s to the custom spell list, opening up global options to edit for this spell.", formattedName),
+                                    desc = format("Add %s to the custom spell list, opening up global settings to edit for this spell.", formattedName),
                                     order = 3,
                                     width = 0.95,
                                     hidden = function()
@@ -518,7 +518,7 @@ local function GetSpells(class, barName)
                                 applyToAll = {
                                     name = "Apply to All",
                                     type = "execute",
-                                    desc = format("Apply %s's custom settings (glow, own, glow color, etc) to all auras in %s. This does not include priority or class.", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
+                                    desc = format("Apply %s's custom settings (glow, own, glow color, etc) to all auras in %s.\n\nThis does not include any global settings (prio, class, etc).", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
                                     order = 5,
                                     width = 0.95,
                                     func = function()
