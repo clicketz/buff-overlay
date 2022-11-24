@@ -801,7 +801,7 @@ function BuffOverlay:OnInitialize()
     end
 end
 
-function BuffOverlay:RefreshOverlays(full, barName)
+function BuffOverlay:RefreshOverlays(full, barName, glows)
     -- fix for resetting profile with buffs active
     if next(self.db.profile.buffs) == nil then
         self:CreateBuffTable()
@@ -813,10 +813,20 @@ function BuffOverlay:RefreshOverlays(full, barName)
                 if k:match("BuffOverlay" .. barName) then
                     self.overlays[k]:Hide()
                     self.overlays[k].needsUpdate = true
+                    if glows then
+                        LCG.ButtonGlow_Stop(self.overlays[k].glow)
+                        LCG.PixelGlow_Stop(self.overlays[k].glow)
+                        self.overlays[k].glow:Hide()
+                    end
                 end
             else
                 self.overlays[k]:Hide()
                 self.overlays[k].needsUpdate = true
+                if glows then
+                    LCG.ButtonGlow_Stop(self.overlays[k].glow)
+                    LCG.PixelGlow_Stop(self.overlays[k].glow)
+                    self.overlays[k].glow:Hide()
+                end
             end
         end
     end
