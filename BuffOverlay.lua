@@ -966,7 +966,7 @@ function BuffOverlay:Test(barName, singleAura)
             end
         end
 
-        self:Print("Test mode activated.")
+        -- self:Print("Test mode activated.")
         testTextFrame:ClearAllPoints()
 
         local anchor = false
@@ -1025,7 +1025,7 @@ function BuffOverlay:Test(barName, singleAura)
             self:Print("Exiting test mode. Frame visibility will update out of combat.")
         else
             HideTestFrames()
-            self:Print("Exiting test mode.")
+            -- self:Print("Exiting test mode.")
         end
         testTextFrame:Hide()
         self:RefreshOverlays()
