@@ -37,13 +37,15 @@ local customSpellNames = {
     [228050] = "Guardian of the Forgotten Queen",
 }
 
-local customIcons = {
+BuffOverlay.customIcons = {
     ["Eating/Drinking"] = 134062,
     ["?"] = 134400,
     ["Cogwheel"] = 136243,
 }
 
-local disabledCustom = {
+local customIcons = BuffOverlay.customIcons
+
+local optionsDisabled = {
     ["Eating/Drinking"] = true,
 }
 
@@ -459,18 +461,27 @@ local function GetSpells(class, barName)
                                     type = "description",
                                     order = 2,
                                     width = 0.05,
-                                    -- hidden = function()
-                                    --     return disabledCustom[k]
-                                    -- end,
+                                    hidden = function()
+                                        return optionsDisabled[k]
+                                    end,
                                 },
-                                addToCustom = {
+                                space2 = {
+                                    name = " ",
+                                    type = "description",
+                                    order = 2,
+                                    width = 1,
+                                    hidden = function()
+                                        return not optionsDisabled[k]
+                                    end,
+                                },
+                                editGlobalSettings = {
                                     name = "Edit Global Settings",
                                     type = "execute",
                                     desc = format("Add %s to the custom spell list, opening up global settings to edit for this spell.", formattedName),
                                     order = 3,
                                     width = 0.95,
                                     hidden = function()
-                                        return disabledCustom[k]
+                                        return optionsDisabled[k]
                                     end,
                                     func = function()
                                         BuffOverlay:AddToCustom(k)
@@ -506,20 +517,32 @@ local function GetSpells(class, barName)
                                         end
                                     end,
                                 },
-                                space2 = {
+                                testAura = {
+                                    name = "Test Aura",
+                                    type = "execute",
+                                    desc = format("Show a test overlay for %s.", formattedName),
+                                    order = 4,
+                                    width = 0.75,
+                                    func = function()
+                                        if BuffOverlay.test then
+                                            if BuffOverlay:GetSingleTestAura() ~= k then
+                                                BuffOverlay:Test()
+                                            end
+                                        end
+                                        BuffOverlay:Test(barName, k)
+                                    end,
+                                },
+                                space3 = {
                                     name = " ",
                                     type = "description",
-                                    order = 4,
-                                    width = 0.80,
-                                    hidden = function()
-                                        return disabledCustom[k]
-                                    end,
+                                    order = 5,
+                                    width = 0.05,
                                 },
                                 applyToAll = {
                                     name = "Apply to All",
                                     type = "execute",
-                                    desc = format("Apply %s's custom settings (glow, own, glow color, etc) to all auras in %s.\n\nThis does not include any global settings (prio, class, etc).", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
-                                    order = 5,
+                                    desc = format("Apply %s's custom settings (glow, glow color, own only, etc) to all auras in %s.\n\nThis does not include any global settings (prio, class, etc).", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
+                                    order = 6,
                                     width = 0.95,
                                     func = function()
                                         local current = BuffOverlay.db.profile.buffs[k].state[barName]
@@ -684,10 +707,16 @@ function BuffOverlay:AddBarToOptions(bar, barName)
             },
             test = {
                 name = "Test Bar",
+                desc = "Show test overlays for this bar.",
                 type = "execute",
                 order = 2,
                 width = 0.75,
                 func = function()
+                    if self.test then
+                        if self:GetSingleTestAura() ~= nil then
+                            self:Test()
+                        end
+                    end
                     self:Test(barName)
                 end,
             },
