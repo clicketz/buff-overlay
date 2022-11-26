@@ -275,14 +275,14 @@ local function UnitAuraTest(_, index, filter)
         local icon = BuffOverlay.customIcons[testSingleAura] or select(3, GetSpellInfo(testSingleAura)) or BuffOverlay.customIcons["?"]
         local key = testSingleAura
 
-        return key, icon, 0, nil, 60, GetTime() + 60, nil, nil, nil, testSingleAura
+        return key, icon, 0, nil, 60, GetTime() + 60, "player", nil, nil, testSingleAura
     else
         local buff = testBuffs[index]
         local dispelType = dispelTypes[math_rand(1, 5)]
 
         if not buff then return end
 
-        return "TestBuff", buff[2], 0, dispelType, 60, GetTime() + 60, nil, nil, nil, buff[1]
+        return "TestBuff", buff[2], 0, dispelType, 60, GetTime() + 60, "player", nil, nil, buff[1]
     end
 end
 
