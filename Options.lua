@@ -523,7 +523,7 @@ local function GetSpells(class, barName)
                                 testAura = {
                                     name = "Test Aura",
                                     type = "execute",
-                                    desc = format("Show a test overlay for %s.", formattedName),
+                                    desc = format("Show a test overlay for %s", formattedName),
                                     order = 4,
                                     width = 0.75,
                                     func = function()
