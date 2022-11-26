@@ -28,6 +28,7 @@ local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
 local spellDescriptions = {}
+local optionsDisabled = {}
 
 local customSpellDescriptions = {
     [362486] = 353114, -- Keeper of the Grove
@@ -44,10 +45,6 @@ BuffOverlay.customIcons = {
 }
 
 local customIcons = BuffOverlay.customIcons
-
-local optionsDisabled = {
-    ["Eating/Drinking"] = true,
-}
 
 local classIcons = {
     ["DEATHKNIGHT"] = 135771,
@@ -295,6 +292,10 @@ local function GetSpells(class, barName)
                     icon = customIcons[k]
                 end
 
+                if not icon then
+                    icon = customIcons["?"]
+                end
+
                 if customSpellNames[k] then
                     spellName = customSpellNames[k]
                 end
@@ -308,6 +309,8 @@ local function GetSpells(class, barName)
                     spell:ContinueOnSpellLoad(function()
                         spellDescriptions[k] = spell:GetSpellDescription()
                     end)
+                else
+                    optionsDisabled[k] = true
                 end
 
                 spells[spellIdStr] = {
