@@ -1060,13 +1060,34 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         width = "full",
                         desc = "Toggle showing this bar in a scenario.",
                     },
-                    header = {
+                    frameTypes = {
                         order = 8,
+                        name = "Frame Types",
+                        type = "multiselect",
+                        width = 0.9,
+                        desc = "Show overlays on this frame type.\n\nBlizzard frames do not currently support separate types.",
+                        values = function()
+                            local t = {}
+                            for k in pairs(bar.frameTypes) do
+                                t[k] = k
+                            end
+                            return t
+                        end,
+                        get = function(info, key)
+                            return bar.frameTypes[key]
+                        end,
+                        set = function(info, key, val)
+                            bar.frameTypes[key] = val
+                            self:RefreshOverlays(true, barName)
+                        end,
+                    },
+                    header = {
+                        order = 9,
                         name = "Group Size",
                         type = "header",
                     },
                     minGroupSize = {
-                        order = 9,
+                        order = 10,
                         name = "Group Size Minimum",
                         type = "range",
                         width = 1.5,
@@ -1083,7 +1104,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         end,
                     },
                     maxGroupSize = {
-                        order = 10,
+                        order = 11,
                         name = "Group Size Maximum",
                         type = "range",
                         width = 1.5,
@@ -1625,7 +1646,7 @@ function BuffOverlay:Options()
                         order = 2,
                         name = "Test All",
                         type = "execute",
-                        desc = "Toggle testing for auras on all bars.",
+                        desc = "Toggle test overlays for all bars.",
                         func = function()
                             self:Test()
                         end,

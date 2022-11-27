@@ -75,6 +75,14 @@ local defaultBarSettings = {
     showInScenario = true,
     maxGroupSize = 40,
     minGroupSize = 0,
+    frameTypes = {
+        ["raid"] = true,
+        ["party"] = true,
+        ["tank"] = true,
+        ["pet"] = true,
+        ["blizz"] = true,
+        ["assist"] = true,
+    }
 }
 
 local defaultSettings = {
@@ -701,12 +709,30 @@ local function ValidateBarAttributes()
                 else
                     bar[attr] = val
                 end
+            elseif type(val) == "table" then
+                for key, value in pairs(val) do
+                    if bar[attr][key] == nil then
+                        if type(value) == "table" then
+                            bar[attr][key] = CopyTable(value)
+                        else
+                            bar[attr][key] = value
+                        end
+                    end
+                end
             end
         end
 
         for attribute in pairs(bar) do
-            if attribute ~= "name" and defaultBarSettings[attribute] == nil then
-                bar[attribute] = nil
+            if attribute ~= "name" then
+                if defaultBarSettings[attribute] == nil then
+                    bar[attribute] = nil
+                elseif type(defaultBarSettings[attribute]) == "table" then
+                    for key in pairs(bar[attribute]) do
+                        if defaultBarSettings[attribute][key] == nil then
+                            bar[attribute][key] = nil
+                        end
+                    end
+                end
             end
         end
     end
@@ -1179,12 +1205,13 @@ local function sortAuras(a, b)
     return a[2] < b[2]
 end
 
-local function ShouldShow(bar)
+local function ShouldShow(bar, frameType)
     if BuffOverlay.test then
         return true
     end
 
     if bar.neverShow
+    or not bar.frameTypes[frameType]
     or BuffOverlay.numGroupMembers > bar.maxGroupSize
     or BuffOverlay.numGroupMembers < bar.minGroupSize
     or BuffOverlay.instanceType == "none" and not bar.showInWorld
@@ -1209,6 +1236,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     end
 
     local frameName = frame:GetName()
+    local frameType = self.frames[frame] and self.frames[frame].type
     local frameWidth, frameHeight = frame:GetSize()
     local overlaySize = round(math_min(frameHeight, frameWidth) * 0.33, 1)
     local UnitAura = self.test and UnitAuraTest or UnitAura
@@ -1216,7 +1244,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     local bars = next(testBarNames) ~= nil and testBarNames or self.db.profile.bars
 
     for barName, bar in pairs(bars) do
-        if ShouldShow(bar) and not (barNameToApply and barName ~= barNameToApply) then
+        if ShouldShow(bar, frameType) and not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
 
@@ -1341,7 +1369,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     end
 
                     for barName, bar in pairs(bars) do
-                        if ShouldShow(bar)
+                        if ShouldShow(bar, frameType)
                         and not (barNameToApply and barName ~= barNameToApply)
                         and (aura.state[barName].enabled or self.test)
                         and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
@@ -1358,7 +1386,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     end
 
     for barName, bar in pairs(bars) do
-        if ShouldShow(bar) and not (barNameToApply and barName ~= barNameToApply) then
+        if ShouldShow(bar, frameType) and not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local overlayNum = 1
 
@@ -1419,6 +1447,7 @@ hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
         BuffOverlay.frames[frame] = {
             unit = "displayedUnit",
             blizz = true,
+            type = "blizz",
         }
     end
 

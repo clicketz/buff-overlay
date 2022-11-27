@@ -87,7 +87,8 @@ local addonFrameInfo = {
         },
         {
             frame = "^CellSoloFramePlayer$",
-            type = "solo",
+            -- type = "solo",
+            type = "party",
             unit = "unitid",
         },
         {
@@ -258,7 +259,7 @@ local function AddOnsExist()
     for addon, info in pairs(addonFrameInfo) do
         if IsAddOnLoaded(addon) then
             for _, frameInfo in pairs(info) do
-                enabledPatterns[frameInfo.frame] = { unit = frameInfo.unit }
+                enabledPatterns[frameInfo.frame] = { unit = frameInfo.unit, type = frameInfo.type }
             end
 
             if not addonsExist then
@@ -291,13 +292,13 @@ local function cleanFrameCache()
 
             for _, f in pairs(frames) do
                 if f:GetName():match(data.frame) then
-                    BuffOverlay.frames[f] = { unit = data.unit }
+                    BuffOverlay.frames[f] = { unit = data.unit, type = data.type }
                 end
             end
         else
             for addOnFramePattern, data in pairs(enabledPatterns) do
                 if name:match(addOnFramePattern) then
-                    BuffOverlay.frames[frame] = { unit = data.unit }
+                    BuffOverlay.frames[frame] = { unit = data.unit, type = data.type }
                     break
                 end
             end
