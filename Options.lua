@@ -292,6 +292,10 @@ local function GetSpells(class, barName)
                     icon = customIcons[k]
                 end
 
+                if not spellName then
+                    optionsDisabled[k] = true
+                end
+
                 if not icon then
                     icon = customIcons["?"]
                 end
@@ -309,8 +313,6 @@ local function GetSpells(class, barName)
                     spell:ContinueOnSpellLoad(function()
                         spellDescriptions[k] = spell:GetSpellDescription()
                     end)
-                else
-                    optionsDisabled[k] = true
                 end
 
                 spells[spellIdStr] = {
