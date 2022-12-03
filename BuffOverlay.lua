@@ -738,9 +738,43 @@ local function ValidateBarAttributes()
     end
 end
 
+local function ValidateSpellIds()
+    for spellId in pairs(BuffOverlay.defaultSpells) do
+        if type(spellId) == "number" then
+            if not C_Spell.DoesSpellExist(spellId) then
+                BuffOverlay.defaultSpells[spellId] = nil
+                BuffOverlay.db.profile.buffs[spellId] = nil
+                BuffOverlay.db.global.customBuffs[spellId] = nil
+                BuffOverlay:Print(format("Spell ID %s is invalid. If you haven't made any manual code changes, please report this to the author.", BuffOverlay:Colorize(spellId)))
+            end
+        end
+    end
+
+    for spellId in pairs(BuffOverlay.db.profile.buffs) do
+        if type(spellId) == "number" then
+            if not C_Spell.DoesSpellExist(spellId) then
+                BuffOverlay.db.profile.buffs[spellId] = nil
+                BuffOverlay.db.global.customBuffs[spellId] = nil
+                BuffOverlay:Print(format("Spell ID %s is invalid and has been removed.", BuffOverlay:Colorize(spellId)))
+            end
+        end
+    end
+
+    for spellId in pairs(BuffOverlay.db.global.customBuffs) do
+        if type(spellId) == "number" then
+            if not C_Spell.DoesSpellExist(spellId) then
+                BuffOverlay.db.global.customBuffs[spellId] = nil
+                BuffOverlay:Print(format("Spell ID %s is invalid and has been removed.", BuffOverlay:Colorize(spellId)))
+            end
+        end
+    end
+end
+
 function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
     LDBIcon:Register("BuffOverlay", broker, self.db.profile.minimap)
+
+    ValidateSpellIds()
 
     if not self.registered then
         self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")

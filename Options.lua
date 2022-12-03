@@ -322,7 +322,7 @@ local function GetSpells(class, barName)
                     order = v.prio,
                     args = {
                         toggle = {
-                            name = spellName or k,
+                            name = spellName or (type(k) == "string" and k) or format("Invalid Spell: %s", k),
                             image = icon,
                             imageCoords = { 0.08, 0.92, 0.08, 0.92 },
                             type = "toggle",
@@ -430,7 +430,6 @@ local function GetSpells(class, barName)
                         },
                         additionalSettings = {
                             name = " ",
-                            desc = "Show a test overlay for this spell.",
                             type = "group",
                             inline = true,
                             order = 4,
