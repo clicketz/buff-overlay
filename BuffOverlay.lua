@@ -490,6 +490,8 @@ function BuffOverlay:UpdateCustomBuffs()
 
         if v.icon then
             self.customIcons[spellId] = v.icon
+        elseif self.customIcons[spellId] then
+            self.customIcons[spellId] = nil
         end
 
         if not self.db.profile.buffs[spellId] then

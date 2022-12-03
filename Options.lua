@@ -1470,8 +1470,19 @@ local customSpellInfo = {
             local val = tonumber(state)
             local spellId = tonumber(spellIdStr)
 
-            BuffOverlay.db.global.customBuffs[spellId][option] = val
-            BuffOverlay.options.args.customSpells.args[spellIdStr].name = format("%s %s", BuffOverlay:GetIconString(state, 15), GetSpellInfo(spellId))
+            local name, _, icon = GetSpellInfo(spellId)
+
+            if not (state:match("^%d+$") and val < 1000000) then
+                if state == "" then
+                    BuffOverlay.db.global.customBuffs[spellId][option] = nil
+                    BuffOverlay.options.args.customSpells.args[spellIdStr].name = format("%s %s", BuffOverlay:GetIconString(icon, 15), name)
+                else
+                    BuffOverlay:Print(format("Invalid input for custom icon: %s", BuffOverlay:Colorize(state)))
+                end
+            else
+                BuffOverlay.db.global.customBuffs[spellId][option] = val
+                BuffOverlay.options.args.customSpells.args[spellIdStr].name = format("%s %s", BuffOverlay:GetIconString(val, 15), name)
+            end
 
             BuffOverlay:UpdateCustomBuffs()
         end,
