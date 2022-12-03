@@ -25,7 +25,7 @@ BuffOverlay.defaultSpells = {
     [5215] = { class = "DRUID", prio = 70 }, --Prowl
 
     -- Hunter
-    --[34471] = {class = "HUNTER"}, --The Beast Within (Hunter)
+    --[34471] = {class = "HUNTER"}, --The Beast Within
     [19263] = { class = "HUNTER", prio = 10 }, --Deterrence
     [1742] = { class = "HUNTER", prio = 50 }, --Cower (Pet)
     [26064] = { class = "HUNTER", prio = 50 }, --Shell Shield (Pet)
@@ -48,26 +48,24 @@ BuffOverlay.defaultSpells = {
         [28609] = { parent = 6143 },
 
     -- Paladin
-    [642] = { class = "PALADIN", prio = 10 }, --Divine Shield (Paladin)
-        [498] = { parent = 642 },
-        [1020] = { parent = 642 },
-        [5573] = { parent = 642 },
-    [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection (Paladin)
+    [642] = { class = "PALADIN", prio = 10 }, --Divine Shield
+    [498] = { class = "PALADIN", prio = 10 }, -- Divine Protection
+    [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
         [5599] = { parent = 1022 },
         [10278] = { parent = 1022 },
-    [19753] = { class = "PALADIN", prio = 10 }, --Divine Intervention (Paladin)
+    [19753] = { class = "PALADIN", prio = 10 }, --Divine Intervention
     [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
     [31852] = { class = "PALADIN", prio = 50 }, --Ardent Defender
     [64205] = { class = "PALADIN", prio = 50 }, --Divine Sacrifice
 
     -- Priest
-    [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit (Priest)
+    [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
     [20711] = { class = "PRIEST", prio = 50 }, --Spirit of Redemption
     [47585] = { class = "PRIEST", prio = 50 }, --Dispersion
     [33206] = { class = "PRIEST", prio = 50 }, --Pain Suppression
 
     -- Rogue
-    [31224] = { class = "ROGUE", prio = 10 }, --Cloak of Shadows (Rogue)
+    [31224] = { class = "ROGUE", prio = 10 }, --Cloak of Shadows
     [45182] = { class = "ROGUE", prio = 50 }, --Cheating Death
     [5277] = { class = "ROGUE", prio = 50 }, --Evasion
         [26669] = { parent = 5277 },
@@ -90,7 +88,7 @@ BuffOverlay.defaultSpells = {
         [19443] = { parent = 7812 },
 
     -- Warrior
-    [46924] = { class = "WARRIOR", prio = 10 }, --Bladestorm (Warrior)
+    [46924] = { class = "WARRIOR", prio = 10 }, --Bladestorm
     [2565] = { class = "WARRIOR", prio = 50 }, --Shield Block
     [3411] = { class = "WARRIOR", prio = 50 }, --Intervene
     [12975] = { class = "WARRIOR", prio = 50 }, --Last Stand
@@ -100,9 +98,9 @@ BuffOverlay.defaultSpells = {
 
     -- Misc
     ["Eating/Drinking"] = { class = "MISC", prio = 90 }, -- Food umbrella
-    ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
-    ["Food"] = { parent = "Eating/Drinking" }, --Food
-    ["Drink"] = { parent = "Eating/Drinking" }, --Drink
-    ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
+        ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
+        ["Food"] = { parent = "Eating/Drinking" }, --Food
+        ["Drink"] = { parent = "Eating/Drinking" }, --Drink
+        ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
     [30456] = { class = "MISC", prio = 10 }, --Nigh-Invulnerability
 }
