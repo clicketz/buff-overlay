@@ -108,6 +108,8 @@ local deleteSpellDelegate = {
                     BuffOverlay.db.profile.buffs[spellId] = nil
                 end
 
+                customIcons[spellId] = nil
+
                 if BuffOverlay.db.profile.buffs[spellId] and BuffOverlay.db.profile.buffs[spellId].children then
                     BuffOverlay.db.profile.buffs[spellId]:UpdateChildren()
                 end
@@ -1334,6 +1336,9 @@ local customSpellInfo = {
         func = function(info)
             local spellId = tonumber(info[#info - 1])
             local spellName, _, icon = GetSpellInfo(spellId)
+            if customIcons[spellId] then
+                icon = customIcons[spellId]
+            end
             local text = format("Are you sure you want to delete this spell?\n\n%s %s\n\n", BuffOverlay:GetIconString(icon, 20), spellName)
             if BuffOverlay.defaultSpells[spellId] then
                 text = text .. format("(%s: This is a default spell. Deleting it from this tab will simply reset all its values to default and disable it, but it will not be removed from the spells tab.)", BuffOverlay:Colorize("Note", "accent"))
