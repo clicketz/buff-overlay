@@ -531,6 +531,7 @@ function BuffOverlay:UpdateCustomBuffs()
                     parent.UpdateChildren = UpdateChildren
                 end
                 parent.children[spellId] = true
+                parent:UpdateChildren()
             end
 
             if buff.UpdateChildren then

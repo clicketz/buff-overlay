@@ -385,7 +385,7 @@ local function GetSpells(class, barName)
                             order = 2,
                             width = 0.1,
                             hasAlpha = true,
-                            hidden = function(info)
+                            hidden = function()
                                 return not BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled
                             end,
                             get = function()
@@ -397,6 +397,9 @@ local function GetSpells(class, barName)
                                 color[2] = g
                                 color[3] = b
                                 color[4] = a
+                                if BuffOverlay.db.profile.buffs[k].UpdateChildren then
+                                    BuffOverlay.db.profile.buffs[k]:UpdateChildren()
+                                end
                                 BuffOverlay:RefreshOverlays()
                             end,
                         },
@@ -411,6 +414,9 @@ local function GetSpells(class, barName)
                             end,
                             set = function(_, value)
                                 BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled = value
+                                if BuffOverlay.db.profile.buffs[k].UpdateChildren then
+                                    BuffOverlay.db.profile.buffs[k]:UpdateChildren()
+                                end
                                 BuffOverlay:RefreshOverlays()
                             end,
                         },
@@ -425,6 +431,9 @@ local function GetSpells(class, barName)
                             end,
                             set = function(_, value)
                                 BuffOverlay.db.profile.buffs[k].state[barName].ownOnly = value
+                                if BuffOverlay.db.profile.buffs[k].UpdateChildren then
+                                    BuffOverlay.db.profile.buffs[k]:UpdateChildren()
+                                end
                                 BuffOverlay:RefreshOverlays()
                             end,
                         },
@@ -457,6 +466,9 @@ local function GetSpells(class, barName)
                                     end,
                                     set = function(_, value)
                                         BuffOverlay.db.profile.buffs[k].state[barName].glow.type = value
+                                        if BuffOverlay.db.profile.buffs[k].UpdateChildren then
+                                            BuffOverlay.db.profile.buffs[k]:UpdateChildren()
+                                        end
                                         BuffOverlay:RefreshOverlays(true, barName, true)
                                     end,
                                 },
@@ -1445,23 +1457,6 @@ local customSpellInfo = {
         type = "input",
         width = 1,
         desc = "The icon ID to use for this spell. This will overwrite the default icon.",
-        validate = function(_, value)
-            local num = tonumber(value)
-            if num and num < 1000000 and value:match("^%d+$") then
-                if BuffOverlay.errorStatusText then
-                    -- Clear error text on successful validation
-                    local rootFrame = AceConfigDialog.OpenFrames["BuffOverlay"]
-                    if rootFrame and rootFrame.SetStatusText then
-                        rootFrame:SetStatusText("")
-                    end
-                    BuffOverlay.errorStatusText = nil
-                end
-                return true
-            else
-                BuffOverlay.errorStatusText = true
-                return "Icon ID must be a positive integer from 0 to 999999"
-            end
-        end,
         get = function(info)
             local option = info[#info]
             local spellId = info[#info - 1]
