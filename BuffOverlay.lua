@@ -450,21 +450,25 @@ local function UpdateAuraState()
 
     for _, aura in pairs(auras) do
         for _, state in pairs(aura.state) do
-            for attr in pairs(auraState) do
+            for attr, info in pairs(auraState) do
                 if state[attr] == nil then
-                    state[attr] = type(auraState[attr]) == "table" and CopyTable(auraState[attr]) or auraState[attr]
+                    state[attr] = type(info) == "table" and CopyTable(info) or info
                 elseif type(state[attr]) == "table" then
-                    for k, v in pairs(auraState[attr]) do
-                        if state[attr][k] == nil then
-                            state[attr][k] = type(v) == "table" and CopyTable(v) or v
+                    if type(info) == "table" then
+                        for k, v in pairs(info) do
+                            if state[attr][k] == nil then
+                                state[attr][k] = v
+                            end
                         end
+                    else
+                        state[attr] = info
                     end
                 end
             end
 
-            for attr, data in pairs(state) do
-                if type(data) == "table" then
-                    for k in pairs(data) do
+            for attr, info in pairs(state) do
+                if type(info) == "table" then
+                    for k in pairs(info) do
                         if auraState[attr][k] == nil then
                             state[attr][k] = nil
                         end
