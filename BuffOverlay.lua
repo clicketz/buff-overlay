@@ -488,6 +488,10 @@ function BuffOverlay:UpdateCustomBuffs()
             v.enabled = nil
         end
 
+        if v.icon then
+            self.customIcons[spellId] = v.icon
+        end
+
         if not self.db.profile.buffs[spellId] then
             self.db.profile.buffs[spellId] = {
                 state = {},
@@ -1403,7 +1407,13 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     local castByPlayerOrPlayerPet = source == "player" or source == "pet" or source == "vehicle"
 
                     if aura.parent then
-                        icon = select(3, GetSpellInfo(aura.parent)) or icon
+                        if self.customIcons[aura.parent] then
+                            icon = self.customIcons[aura.parent]
+                        else
+                            icon = select(3, GetSpellInfo(aura.parent)) or icon
+                        end
+                    elseif self.customIcons[spellId] then
+                        icon = self.customIcons[spellId]
                     end
 
                     for barName, bar in pairs(bars) do

@@ -1439,8 +1439,56 @@ local customSpellInfo = {
         type = "description",
         width = 2,
     },
-    addChild = {
+    icon = {
         order = 8,
+        name = "Custom Icon",
+        type = "input",
+        width = 1,
+        desc = "The icon ID to use for this spell. This will overwrite the default icon.",
+        validate = function(_, value)
+            local num = tonumber(value)
+            if num and num < 1000000 and value:match("^%d+$") then
+                if BuffOverlay.errorStatusText then
+                    -- Clear error text on successful validation
+                    local rootFrame = AceConfigDialog.OpenFrames["BuffOverlay"]
+                    if rootFrame and rootFrame.SetStatusText then
+                        rootFrame:SetStatusText("")
+                    end
+                    BuffOverlay.errorStatusText = nil
+                end
+                return true
+            else
+                BuffOverlay.errorStatusText = true
+                return "Icon ID must be a positive integer from 0 to 999999"
+            end
+        end,
+        get = function(info)
+            local option = info[#info]
+            local spellId = info[#info - 1]
+            spellId = tonumber(spellId)
+            local state = BuffOverlay.db.global.customBuffs[spellId][option]
+            return state ~= nil and tostring(state) or ""
+        end,
+        set = function(info, state)
+            local option = info[#info]
+            local spellIdStr = info[#info - 1]
+            local val = tonumber(state)
+            local spellId = tonumber(spellIdStr)
+
+            BuffOverlay.db.global.customBuffs[spellId][option] = val
+            BuffOverlay.options.args.customSpells.args[spellIdStr].name = format("%s %s", BuffOverlay:GetIconString(state, 15), GetSpellInfo(spellId))
+
+            BuffOverlay:UpdateCustomBuffs()
+        end,
+    },
+    space3 = {
+        order = 9,
+        name = " ",
+        type = "description",
+        width = 2,
+    },
+    addChild = {
+        order = 10,
         type = "input",
         name = "Add Child Spell ID",
         desc = "Add a child spell ID to this spell. Child IDs will be checked like normal IDs but will use all the same settings (including icon) as its parent. Also, any changes to the parent will apply to all of its children. This is useful for spells that have multiple ids which are convenient to track as a single spell (e.g. different ranks of the same spell).",
@@ -1470,14 +1518,14 @@ local customSpellInfo = {
             BuffOverlay:UpdateCustomBuffs()
         end,
     },
-    space3 = {
-        order = 9,
+    space4 = {
+        order = 11,
         name = " ",
         type = "description",
         width = 2,
     },
     removeChild = {
-        order = 10,
+        order = 12,
         type = "select",
         name = "Remove Custom Child Spell ID",
         width = 1,
@@ -1547,6 +1595,10 @@ local customSpells = {
 
             local name, _, icon = GetSpellInfo(spellId)
 
+            if customIcons[spellId] then
+                icon = customIcons[spellId]
+            end
+
             if name then
                 if BuffOverlay:InsertCustomAura(spellId) then
                     BuffOverlay.options.args.customSpells.args[state] = {
@@ -1576,6 +1628,10 @@ function BuffOverlay:AddToCustom(spellId)
     local spellIdStr = tostring(spellId)
     local name, _, icon = GetSpellInfo(spellId)
 
+    if customIcons[spellId] then
+        icon = customIcons[spellId]
+    end
+
     if name then
         if BuffOverlay:InsertCustomAura(spellId) then
             BuffOverlay.options.args.customSpells.args[spellIdStr] = {
@@ -1600,8 +1656,9 @@ end
 function BuffOverlay:Options()
     for spellId, v in pairs(self.db.global.customBuffs) do
         if not v.parent then
+            local name, _, icon = GetSpellInfo(spellId)
             customSpells[tostring(spellId)] = {
-                name = format("%s %s", self:GetIconString(select(3, GetSpellInfo(spellId)), 15), GetSpellInfo(spellId)),
+                name = format("%s %s", self:GetIconString(v.icon or icon, 15), name),
                 desc = function()
                     return spellDescriptions[spellId] or ""
                 end,
