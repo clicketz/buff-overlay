@@ -49,7 +49,7 @@ BuffOverlay.defaultSpells = {
 
     -- Paladin
     [642] = { class = "PALADIN", prio = 10 }, --Divine Shield
-    [498] = { class = "PALADIN", prio = 10 }, -- Divine Protection
+    [498] = { class = "PALADIN", prio = 50 }, -- Divine Protection
     [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
         [5599] = { parent = 1022 },
         [10278] = { parent = 1022 },
