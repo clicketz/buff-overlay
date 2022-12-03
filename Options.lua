@@ -1477,7 +1477,7 @@ local customSpellInfo = {
 
             local name, _, icon = GetSpellInfo(spellId)
 
-            if not (state:match("^%d+$") and val < 1000000) then
+            if not (state:match("^%d+$") and val < 1000000000) then
                 if state == "" then
                     BuffOverlay.db.global.customBuffs[spellId][option] = nil
                     BuffOverlay.options.args.customSpells.args[spellIdStr].name = format("%s %s", BuffOverlay:GetIconString(icon, 15), name)
