@@ -1524,7 +1524,9 @@ local customSpellInfo = {
         width = 1,
         validate = function(_, value)
             local num = tonumber(value)
-            if num and num < 10000000 and value:match("^%d+$") then
+
+            if (not value or value == "")
+            or (num and num < 10000000 and value:match("^%d+$")) then
                 if BuffOverlay.errorStatusText then
                     -- Clear error text on successful validation
                     local rootFrame = AceConfigDialog.OpenFrames["BuffOverlay"]
@@ -1540,6 +1542,8 @@ local customSpellInfo = {
             end
         end,
         set = function(info, value)
+            if not value or value == "" then return end
+
             local parentId = tonumber(info[#info - 1])
             local childId = tonumber(value)
 
