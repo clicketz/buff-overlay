@@ -1457,11 +1457,28 @@ local customSpellInfo = {
         type = "description",
         width = 2,
     },
+    currentIcon = {
+        order = 7.5,
+        name = "",
+        type = "description",
+        width = 0.33,
+        image = function(info)
+            local spellId = info[#info - 1]
+            spellId = tonumber(spellId)
+            local icon = BuffOverlay.db.global.customBuffs[spellId].icon
+
+            return icon
+                or select(3, GetSpellInfo(spellId))
+                or customIcons[info[#info - 1]]
+                or customIcons["?"]
+        end,
+        imageCoords = { 0.08, 0.92, 0.08, 0.92 },
+    },
     icon = {
         order = 8,
         name = "Custom Icon",
         type = "input",
-        width = 1,
+        width = 0.66,
         desc = "The icon ID to use for this spell. This will overwrite the default icon.",
         get = function(info)
             local option = info[#info]
