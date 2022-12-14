@@ -1623,9 +1623,15 @@ local customSpells = {
         end,
         set = function(_, state)
             local spellId = tonumber(state)
+            local spellIdStr = state
+            local child = false
+            local childId
 
             if BuffOverlay.db.profile.buffs[spellId] and BuffOverlay.db.profile.buffs[spellId].parent then
+                child = true
+                childId = spellId
                 spellId = BuffOverlay.db.profile.buffs[spellId].parent
+                spellIdStr = tostring(spellId)
             end
 
             local name, _, icon = GetSpellInfo(spellId)
@@ -1636,7 +1642,7 @@ local customSpells = {
 
             if name then
                 if BuffOverlay:InsertCustomAura(spellId) then
-                    BuffOverlay.options.args.customSpells.args[state] = {
+                    BuffOverlay.options.args.customSpells.args[spellIdStr] = {
                         name = format("%s %s", BuffOverlay:GetIconString(icon, 15), name),
                         desc = function()
                             return spellDescriptions[spellId] or ""
@@ -1646,14 +1652,18 @@ local customSpells = {
                     }
                     BuffOverlay:UpdateCustomBuffs()
                     if AceConfigDialog.OpenFrames["BuffOverlayDialog"] then
-                        AddToPriorityDialog(state)
+                        AddToPriorityDialog(spellIdStr)
                         AceRegistry:NotifyChange("BuffOverlayDialog")
                     end
                 else
                     BuffOverlay:Print(format("%s %s is already being tracked.", BuffOverlay:GetIconString(icon, 20), name))
                 end
             else
-                BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(state)))
+                if child then
+                    BuffOverlay:Print(format("%s is already being tracked as a child of %s and cannot be edited.", BuffOverlay:Colorize(childId), BuffOverlay:Colorize(spellId)))
+                else
+                    BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(spellId)))
+                end
             end
         end,
     }
