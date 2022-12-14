@@ -72,7 +72,8 @@ local deleteSpellDelegate = {
 
                 if BuffOverlay.db.profile.buffs[spellId].children then
                     for childId in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
-                        if BuffOverlay.db.global.customBuffs[childId] then
+                        if BuffOverlay.db.global.customBuffs[childId]
+                        and not (BuffOverlay.defaultSpells[childId] and BuffOverlay.defaultSpells[childId].parent == spellId) then
                             BuffOverlay.db.profile.buffs[childId] = nil
                             BuffOverlay.db.profile.buffs[spellId].children[childId] = nil
                         end
@@ -1544,7 +1545,8 @@ local customSpellInfo = {
             local spellId = tonumber(info[#info - 1])
             local values = {}
             for id in pairs(BuffOverlay.db.global.customBuffs) do
-                if BuffOverlay.db.global.customBuffs[id].parent == spellId then
+                if BuffOverlay.db.global.customBuffs[id].parent == spellId
+                and not (BuffOverlay.defaultSpells[id] and BuffOverlay.defaultSpells[id].parent == spellId) then
                     values[id] = id
                 end
             end
@@ -1553,7 +1555,8 @@ local customSpellInfo = {
         hidden = function(info)
             local spellId = tonumber(info[#info - 1])
             for id in pairs(BuffOverlay.db.global.customBuffs) do
-                if BuffOverlay.db.global.customBuffs[id].parent == spellId then
+                if BuffOverlay.db.global.customBuffs[id].parent == spellId
+                and not (BuffOverlay.defaultSpells[id] and BuffOverlay.defaultSpells[id].parent == spellId) then
                     return false
                 end
             end
