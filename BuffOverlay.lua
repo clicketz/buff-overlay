@@ -663,6 +663,12 @@ function BuffOverlay:UpdateBuffs()
     if not self:CreateBuffTable() then
         -- Update buffs if any user changes are made to lua file
         for k, v in pairs(self.defaultSpells) do
+            if v.parent then
+                if self.db.global.customBuffs[k] then
+                    self.db.global.customBuffs[k] = nil
+                end
+            end
+
             if not self.db.profile.buffs[k] then
                 self.db.profile.buffs[k] = {
                     state = {},
