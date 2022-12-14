@@ -666,6 +666,7 @@ function BuffOverlay:UpdateBuffs()
             if v.parent then
                 if self.db.global.customBuffs[k] then
                     self.db.global.customBuffs[k] = nil
+                    self.options.args.customSpells.args[tostring(k)] = nil
                 end
             end
 
