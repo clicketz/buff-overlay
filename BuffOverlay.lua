@@ -1332,7 +1332,12 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     if bar.showTooltip and not overlay:GetScript("OnEnter") then
                         overlay:SetScript("OnEnter", function(s)
                             GameTooltip:SetOwner(s, "ANCHOR_BOTTOMRIGHT")
-                            GameTooltip:SetSpellByID(s.spellId)
+
+                            if self.test then
+                                GameTooltip:SetSpellByID(s.spellId)
+                            else
+                                GameTooltip:SetUnitAura(s.unit, s:GetID(), s.filter)
+                            end
                         end)
 
                         overlay:SetScript("OnLeave", function()
