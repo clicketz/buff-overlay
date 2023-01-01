@@ -1137,7 +1137,7 @@ function BuffOverlay:Test(barName, singleAura)
     self:RefreshOverlays()
 end
 
-local function SetOverlayAura(overlay, index, icon, count, duration, expirationTime, dispelType, filter)
+local function SetOverlayAura(overlay, index, icon, count, duration, expirationTime, dispelType, filter, spellId)
     local bar = overlay.bar
 
     overlay.icon:SetTexture(icon)
@@ -1155,6 +1155,7 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
 
     overlay:SetID(index)
     overlay.filter = filter
+    overlay.spellId = spellId
 
     local enabled = expirationTime and expirationTime ~= 0
     if enabled then
@@ -1330,12 +1331,8 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     if bar.showTooltip and not overlay:GetScript("OnEnter") then
                         overlay:SetScript("OnEnter", function(s)
-                            if self.test then return end
-
-                            if s:GetID() > 0 then
-                                GameTooltip:SetOwner(s, "ANCHOR_BOTTOMRIGHT")
-                                GameTooltip:SetUnitAura(s.unit, s:GetID(), s.filter)
-                            end
+                            GameTooltip:SetOwner(s, "ANCHOR_BOTTOMRIGHT")
+                            GameTooltip:SetSpellByID(s.spellId)
                         end)
 
                         overlay:SetScript("OnLeave", function()
@@ -1432,7 +1429,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         and (aura.state[barName].enabled or self.test)
                         and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
                         then
-                            rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, aura })
+                            rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, aura, spellId })
                         end
                     end
                 end
@@ -1474,7 +1471,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         olay.glow:Hide()
                     end
 
-                    SetOverlayAura(olay, data[1], data[3], data[4], data[5], data[6], data[7], data[8])
+                    SetOverlayAura(olay, data[1], data[3], data[4], data[5], data[6], data[7], data[8], data[10])
                     overlayNum = overlayNum + 1
                 else
                     break
