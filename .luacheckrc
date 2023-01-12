@@ -100,4 +100,5 @@ globals = {
     -- Third Party AddOns
     "ElvUF_Parent", -- ElvUI
     "LibStub",
+    "Scorpio",
 }
