@@ -234,6 +234,16 @@ local addonFrameInfo = {
             type = "raid",
             unit = "unit",
         },
+        {
+            frame = "^AshToAshPet%d+Unit%d+",
+            type = "pet",
+            unit = "unit",
+        },
+        {
+            frame = "^AshToAshUnitWatch%d+Unit%d+",
+            type = "raid",
+            unit = "unit",
+        },
     },
     ["LunaUnitFrames"] = {
         {
@@ -275,6 +285,38 @@ local function AddOnsExist()
             end
         end
     end
+
+    -- Fix for AshToAsh
+    if IsAddOnLoaded("AshToAsh") and IsAddOnLoaded("Scorpio") then
+        -- Declare a ui style property to receive the unit from the unit frame
+        Scorpio.UI.Property {
+            name = "BuffOverlayUnit",
+            require = Scorpio.Secure.UnitFrame,
+            nilable = true,
+            set = function(self, unit)
+                if unit and unit ~= "clear" then
+                    local frame = Scorpio.UI.GetRawUI(self)
+
+                    if not BuffOverlay.frames[frame] then
+                        tempFrameCache[frame] = true
+                    end
+
+                    frame.unit = unit
+                end
+            end,
+        }
+
+        -- Add the property to the base unit frame class's default skin
+        -- So all unit frame generated from Scorpio will use that
+        Scorpio.UI.Style.UpdateSkin("Default", {
+            [Scorpio.Secure.UnitFrame] = {
+                -- Scorpio.Wow.Unit() is an observable data source
+                -- provide the unit from the unit frame
+                BuffOverlayUnit = Scorpio.Wow.Unit()
+            }
+        }, true)
+    end
+
     addOnsExist = addonsExist
     BuffOverlay.addons = addonsExist
     return addonsExist
@@ -284,23 +326,10 @@ local function cleanFrameCache()
     for frame in pairs(tempFrameCache) do
         local name = frame:GetName()
 
-        -- AshToAsh Fix
-        if name:match("AshToAshUnit%dShadowGroupHeaderUnitButton") then
-            local root = frame:GetParent():GetParent()
-            local frames = { root:GetChildren() }
-            local data = addonFrameInfo["AshToAsh"][1]
-
-            for _, f in pairs(frames) do
-                if f:GetName():match(data.frame) then
-                    BuffOverlay.frames[f] = { unit = data.unit, type = data.type }
-                end
-            end
-        else
-            for addOnFramePattern, data in pairs(enabledPatterns) do
-                if name:match(addOnFramePattern) then
-                    BuffOverlay.frames[frame] = { unit = data.unit, type = data.type }
-                    break
-                end
+        for addOnFramePattern, data in pairs(enabledPatterns) do
+            if name:match(addOnFramePattern) then
+                BuffOverlay.frames[frame] = { unit = data.unit, type = data.type }
+                break
             end
         end
 
