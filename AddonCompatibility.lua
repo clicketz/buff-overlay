@@ -280,7 +280,7 @@ local function AddOnsExist()
             -- to the way ElvUI creates them. This is unique to party pets, thankfully.
             if addon == "ElvUI" then
                 for i = 1, 5 do
-                    framesToFind["ElvUF_PartyGroup1UnitButton" .. i .. "Pet"] = "unit"
+                    framesToFind["ElvUF_PartyGroup1UnitButton" .. i .. "Pet"] = { unit = "unit", type = "pet" }
                 end
             end
         end
@@ -344,7 +344,7 @@ local function updateUnits()
         for f, data in pairs(framesToFind) do
             local frame = _G[f]
             if frame and not BuffOverlay.frames[frame] then
-                BuffOverlay.frames[frame] = { data.unit }
+                BuffOverlay.frames[frame] = { unit = data.unit, type = data.type }
                 framesToFind[f] = nil
             end
         end
