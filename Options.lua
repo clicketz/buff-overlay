@@ -277,6 +277,7 @@ end
 
 local function GetSpells(class, barName)
     local spells = {}
+    local optionsWidth = 0.975
 
     if next(BuffOverlay.db.profile.buffs) ~= nil then
         for k, v in pairs(BuffOverlay.db.profile.buffs) do
@@ -330,7 +331,7 @@ local function GetSpells(class, barName)
                             imageCoords = { 0.08, 0.92, 0.08, 0.92 },
                             type = "toggle",
                             order = 0,
-                            width = 1.175,
+                            width = optionsWidth,
                             desc = function()
                                 local description = spellDescriptions[k] and spellDescriptions[k] ~= ""
                                     and spellDescriptions[k] .. "\n" or ""
@@ -349,7 +350,7 @@ local function GetSpells(class, barName)
                                 return description
                             end,
                             get = function(info)
-                                info.option.width = BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled and 1.075 or 1.175
+                                info.option.width = BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled and (optionsWidth - 0.1) or optionsWidth
                                 return BuffOverlay.db.profile.buffs[k].state[barName].enabled
                             end,
                             set = function(_, value)
@@ -411,7 +412,7 @@ local function GetSpells(class, barName)
                             desc = "Enable a glow border effect around the icon.",
                             type = "toggle",
                             order = 2,
-                            width = 0.3,
+                            width = 0.4,
                             get = function()
                                 return BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled
                             end,
@@ -428,7 +429,7 @@ local function GetSpells(class, barName)
                             desc = "Only show the aura if you cast it.",
                             type = "toggle",
                             order = 3,
-                            width = 0.3,
+                            width = 0.4,
                             get = function()
                                 return BuffOverlay.db.profile.buffs[k].state[barName].ownOnly
                             end,
