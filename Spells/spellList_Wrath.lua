@@ -74,6 +74,7 @@ BuffOverlay.defaultSpells = {
 
     -- Shaman
     [30823] = { class = "SHAMAN", prio = 50 }, --Shamanistic Rage
+    [8178] = { class = "SHAMAN", prio = 50 }, --Grounding Totem
 
     -- Warlock
     [6229] = { class = "WARLOCK", prio = 50 }, --Shadow Ward
