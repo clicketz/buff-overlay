@@ -1264,15 +1264,15 @@ local function ShouldShow(bar, frameType)
     end
 
     if bar.neverShow
-    or not bar.frameTypes[frameType]
-    or BuffOverlay.numGroupMembers > bar.maxGroupSize
-    or BuffOverlay.numGroupMembers < bar.minGroupSize
-    or BuffOverlay.instanceType == "none" and not bar.showInWorld
-    or BuffOverlay.instanceType == "pvp" and not bar.showInBattleground
-    or BuffOverlay.instanceType == "arena" and not bar.showInArena
-    or BuffOverlay.instanceType == "party" and not bar.showInDungeon
-    or BuffOverlay.instanceType == "raid" and not bar.showInRaid
-    or BuffOverlay.instanceType == "scenario" and not bar.showInScenario
+        or not bar.frameTypes[frameType]
+        or BuffOverlay.numGroupMembers > bar.maxGroupSize
+        or BuffOverlay.numGroupMembers < bar.minGroupSize
+        or BuffOverlay.instanceType == "none" and not bar.showInWorld
+        or BuffOverlay.instanceType == "pvp" and not bar.showInBattleground
+        or BuffOverlay.instanceType == "arena" and not bar.showInArena
+        or BuffOverlay.instanceType == "party" and not bar.showInDungeon
+        or BuffOverlay.instanceType == "raid" and not bar.showInRaid
+        or BuffOverlay.instanceType == "scenario" and not bar.showInScenario
     then
         return false
     end
@@ -1305,11 +1305,12 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 local overlay = self.overlays[overlayName .. i]
 
                 if not overlay
-                or overlay.needsUpdate
-                or overlay.size ~= overlaySize then
-
+                    or overlay.needsUpdate
+                    or overlay.size ~= overlaySize
+                then
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
+                        overlay.top = CreateFrame("Frame", overlayName .. i .. "Top", overlay)
                         overlay.barName = barName
                         SetupGlow(overlay)
                     end
@@ -1348,9 +1349,6 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay:SetScript("OnLeave", nil)
                     end
 
-                    overlay.count:SetScale(0.8)
-                    overlay.count:ClearPointsOffset()
-
                     overlay:SetScale(bar.iconScale)
                     overlay:SetAlpha(bar.iconAlpha)
                     overlay:SetSize(overlaySize, overlaySize)
@@ -1364,6 +1362,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     -- Fix for addons that recursively change its children's frame levels
                     if overlay.SetFrameLevel ~= nop then
                         overlay:SetFrameLevel(math_max(frame:GetFrameLevel() + 20, 999))
+                        overlay.top:SetFrameLevel(overlay:GetFrameLevel() + 10)
                         overlay.SetFrameLevel = nop
                     end
 
@@ -1371,6 +1370,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay.cooldown:SetFrameLevel(overlay:GetFrameLevel() + 1)
                         overlay.cooldown.SetFrameLevel = nop
                     end
+
+                    overlay.count:SetScale(0.9)
+                    overlay.count:ClearPointsOffset()
+                    overlay.count:SetParent(overlay.top)
 
                     overlay:ClearAllPoints()
 
@@ -1430,9 +1433,9 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     for barName, bar in pairs(bars) do
                         if ShouldShow(bar, frameType)
-                        and not (barNameToApply and barName ~= barNameToApply)
-                        and (aura.state[barName].enabled or self.test)
-                        and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
+                            and not (barNameToApply and barName ~= barNameToApply)
+                            and (aura.state[barName].enabled or self.test)
+                            and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
                         then
                             rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, aura, spellId })
                         end
