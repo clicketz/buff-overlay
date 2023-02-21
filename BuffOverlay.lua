@@ -53,6 +53,7 @@ local defaultBarSettings = {
     showCooldownSpiral = true,
     showCooldownNumbers = false,
     cooldownNumberScale = 1,
+    stackNumberScale = 0.9,
     iconXOff = 0,
     iconYOff = 0,
     iconBorder = true,
@@ -283,14 +284,14 @@ local function UnitAuraTest(_, index, filter)
         local icon = BuffOverlay.customIcons[testSingleAura] or select(3, GetSpellInfo(testSingleAura)) or BuffOverlay.customIcons["?"]
         local key = testSingleAura
 
-        return key, icon, 0, nil, 60, GetTime() + 60, "player", nil, nil, testSingleAura
+        return key, icon, 3, nil, 60, GetTime() + 60, "player", nil, nil, testSingleAura
     else
         local buff = testBuffs[index]
         local dispelType = dispelTypes[math_rand(1, 5)]
 
         if not buff then return end
 
-        return "TestBuff", buff[2], 0, dispelType, 60, GetTime() + 60, "player", nil, nil, buff[1]
+        return "TestBuff", buff[2], 3, dispelType, 60, GetTime() + 60, "player", nil, nil, buff[1]
     end
 end
 
@@ -1310,7 +1311,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 then
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
-                        overlay.top = CreateFrame("Frame", overlayName .. i .. "Top", overlay)
+                        overlay.stack = CreateFrame("Frame", overlayName .. i .. "Top", overlay)
                         overlay.barName = barName
                         SetupGlow(overlay)
                     end
@@ -1362,7 +1363,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     -- Fix for addons that recursively change its children's frame levels
                     if overlay.SetFrameLevel ~= nop then
                         overlay:SetFrameLevel(math_max(frame:GetFrameLevel() + 20, 999))
-                        overlay.top:SetFrameLevel(overlay:GetFrameLevel() + 10)
+                        overlay.stack:SetFrameLevel(overlay:GetFrameLevel() + 10)
                         overlay.SetFrameLevel = nop
                     end
 
@@ -1371,9 +1372,9 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay.cooldown.SetFrameLevel = nop
                     end
 
-                    overlay.count:SetScale(0.9)
+                    overlay.count:SetScale(bar.stackNumberScale)
                     overlay.count:ClearPointsOffset()
-                    overlay.count:SetParent(overlay.top)
+                    overlay.count:SetParent(overlay.stack)
 
                     overlay:ClearAllPoints()
 
