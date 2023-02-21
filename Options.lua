@@ -816,16 +816,17 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         softMax = 3,
                         step = 0.01,
                     },
-                    stackNumberScale = {
+                    stackCountScale = {
                         order = 3.5,
-                        name = "Stack Text Scale",
+                        name = "Stack Count Scale",
                         type = "range",
                         width = 1,
-                        desc = "Scale the icon's stack text size.",
+                        desc = "Scale the icon's stack count text size.",
                         min = 0.01,
                         max = 10,
                         softMax = 3,
                         step = 0.01,
+                        disabled = function() return not bar.showStackCount end,
                     },
                     cooldownNumberScale = {
                         order = 4,
@@ -886,6 +887,13 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         softMax = 5,
                         step = 1,
                         disabled = function() return not bar.iconBorder end,
+                    },
+                    showStackCount = {
+                        order = 8.1,
+                        name = "Show Stack Count",
+                        type = "toggle",
+                        width = "full",
+                        desc = "Toggle showing of the stack count text on the icon.",
                     },
                     debuffIconBorderColorByDispelType = {
                         order = 8.5,

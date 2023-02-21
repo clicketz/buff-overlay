@@ -52,8 +52,9 @@ local defaultBarSettings = {
     growDirection = "HORIZONTAL",
     showCooldownSpiral = true,
     showCooldownNumbers = false,
+    showStackCount = true,
     cooldownNumberScale = 1,
-    stackNumberScale = 0.9,
+    stackCountScale = 0.9,
     iconXOff = 0,
     iconYOff = 0,
     iconBorder = true,
@@ -1372,9 +1373,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay.cooldown.SetFrameLevel = nop
                     end
 
-                    overlay.count:SetScale(bar.stackNumberScale)
+                    overlay.count:SetScale(bar.stackCountScale)
                     overlay.count:ClearPointsOffset()
                     overlay.count:SetParent(overlay.stack)
+                    overlay.stack:SetShown(bar.showStackCount)
 
                     overlay:ClearAllPoints()
 
