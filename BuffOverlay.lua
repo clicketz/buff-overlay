@@ -6,6 +6,10 @@ local LCG = LibStub("LibCustomGlow-1.0")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 local version = GetAddOnMetadata("BuffOverlay", "Version")
 
+-- Localization Table
+local L = BuffOverlay.L
+
+-- Upvalues
 local _G = _G
 local C_Spell = C_Spell
 local C_Timer = C_Timer
@@ -148,9 +152,9 @@ local broker = LDB:NewDataObject("BuffOverlay", {
     OnTooltipShow = function(tooltip)
         tooltip:AddDoubleLine(BuffOverlay:Colorize("BuffOverlay", "main"), BuffOverlay:Colorize(version, "accent"))
         tooltip:AddLine(" ")
-        tooltip:AddLine(format("%s to toggle options window.", BuffOverlay:Colorize("Left-click")), 1, 1, 1, false)
-        tooltip:AddLine(format("%s to toggle test icons.", BuffOverlay:Colorize("Right-click")), 1, 1, 1, false)
-        tooltip:AddLine(format("%s to toggle the minimap icon.", BuffOverlay:Colorize("Shift+Right-click")), 1, 1, 1, false)
+        tooltip:AddLine(format(L["%s to toggle options window."], BuffOverlay:Colorize(L["Left-click"])), 1, 1, 1, false)
+        tooltip:AddLine(format(L["%s to toggle test icons."], BuffOverlay:Colorize(L["Right-click"])), 1, 1, 1, false)
+        tooltip:AddLine(format(L["%s to toggle the minimap icon."], BuffOverlay:Colorize(L["Shift+Right-click"])), 1, 1, 1, false)
     end,
     OnClick = function(self, button)
         if button == "LeftButton" then
@@ -159,7 +163,7 @@ local broker = LDB:NewDataObject("BuffOverlay", {
             if IsShiftKeyDown() then
                 BuffOverlay:ToggleMinimapIcon()
                 if BuffOverlay.db.profile.minimap.hide then
-                    BuffOverlay:Print(format("Minimap icon is now hidden. Type %s %s to show it again.", BuffOverlay:Colorize("/bo", "accent"), BuffOverlay:Colorize("minimap", "accent")))
+                    BuffOverlay:Print(format(L["Minimap icon is now hidden. Type %s %s to show it again."], BuffOverlay:Colorize("/bo", "accent"), BuffOverlay:Colorize("minimap", "accent")))
                 end
                 AceRegistry:NotifyChange("BuffOverlay")
             else
@@ -324,7 +328,7 @@ end
 
 function BuffOverlay:InsertCustomChild(childId, parentId)
     if not C_Spell.DoesSpellExist(childId) then
-        self:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(childId)))
+        self:Print(format(L["Invalid Spell ID %s"], BuffOverlay:Colorize(childId)))
         return false
     end
 
@@ -342,10 +346,10 @@ function BuffOverlay:InsertCustomChild(childId, parentId)
 
     if pId then
         local name, _, icon = GetSpellInfo(pId)
-        self:Print(format("%s is already being tracked under %s %s.", self:Colorize(childId), self:GetIconString(icon, 20), name))
+        self:Print(format(L["%s is already being tracked under %s %s."], self:Colorize(childId), self:GetIconString(icon, 20), name))
     else
         local name, _, icon = GetSpellInfo(childId)
-        self:Print(format("%s %s is already being tracked.", self:GetIconString(icon, 20), name))
+        self:Print(format(L["%s %s is already being tracked."], self:GetIconString(icon, 20), name))
     end
 
     return false
@@ -765,7 +769,7 @@ local function ValidateSpellIds()
                 BuffOverlay.defaultSpells[spellId] = nil
                 BuffOverlay.db.profile.buffs[spellId] = nil
                 BuffOverlay.db.global.customBuffs[spellId] = nil
-                BuffOverlay:Print(format("Spell ID %s is invalid. If you haven't made any manual code changes, please report this to the author.", BuffOverlay:Colorize(spellId)))
+                BuffOverlay:Print(format(L["Spell ID %s is invalid. If you haven't made any manual code changes, please report this to the author."], BuffOverlay:Colorize(spellId)))
             end
         end
     end
@@ -775,7 +779,7 @@ local function ValidateSpellIds()
             if not C_Spell.DoesSpellExist(spellId) then
                 BuffOverlay.db.profile.buffs[spellId] = nil
                 BuffOverlay.db.global.customBuffs[spellId] = nil
-                BuffOverlay:Print(format("Spell ID %s is invalid and has been removed.", BuffOverlay:Colorize(spellId)))
+                BuffOverlay:Print(format(L["Spell ID %s is invalid and has been removed."], BuffOverlay:Colorize(spellId)))
             end
         end
     end
@@ -784,7 +788,7 @@ local function ValidateSpellIds()
         if type(spellId) == "number" then
             if not C_Spell.DoesSpellExist(spellId) then
                 BuffOverlay.db.global.customBuffs[spellId] = nil
-                BuffOverlay:Print(format("Spell ID %s is invalid and has been removed.", BuffOverlay:Colorize(spellId)))
+                BuffOverlay:Print(format(L["Spell ID %s is invalid and has been removed."], BuffOverlay:Colorize(spellId)))
             end
         end
     end
@@ -806,7 +810,7 @@ function BuffOverlay:OnInitialize()
     end
 
     if self.db.profile.welcomeMessage then
-        self:Print(format("Type %s or %s to open the options panel or %s for more commands.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent"), self:Colorize("/bo help", "accent")))
+        self:Print(format(L["Type %s or %s to open the options panel or %s for more commands."], self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent"), self:Colorize("/bo help", "accent")))
     end
 
     self.numGroupMembers = GetNumGroupMembers()
@@ -820,7 +824,7 @@ function BuffOverlay:OnInitialize()
     for _, content in pairs(self.db.profiles) do
         for attr in pairs(defaultBarSettings) do
             if content[attr] ~= nil then
-                self:Print(format("There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing %s in chat.", self:Colorize("/bo", "accent")))
+                self:Print(format(L["There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing %s in chat."], self:Colorize("/bo", "accent")))
                 wipe(self.db.profile)
                 self.db:ResetProfile()
                 break
@@ -872,11 +876,11 @@ function BuffOverlay:OnInitialize()
     function SlashCmdList.BuffOverlay(msg)
         if msg == "help" or msg == "?" then
             self:Print("Command List")
-            print(format("%s or %s: Toggles the options panel.", self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
-            print(format("%s %s: Shows test icons on all visible raid/party frames.", self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
-            print(format("%s %s: Toggles the minimap icon.", self:Colorize("/bo", "accent"), self:Colorize("minimap", "value")))
-            print(format("%s %s: Shows a copyable version string for bug reports.", self:Colorize("/bo", "accent"), self:Colorize("version", "value")))
-            print(format("%s %s: Resets current profile to default settings. This does not remove any custom auras.", self:Colorize("/bo", "accent"), self:Colorize("reset", "value")))
+            print(format(L["%s or %s: Toggles the options panel."], self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
+            print(format(L["%s %s: Shows test icons on all visible raid/party frames."], self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
+            print(format(L["%s %s: Toggles the minimap icon."], self:Colorize("/bo", "accent"), self:Colorize("minimap", "value")))
+            print(format(L["%s %s: Shows a copyable version string for bug reports."], self:Colorize("/bo", "accent"), self:Colorize("version", "value")))
+            print(format(L["%s %s: Resets current profile to default settings. This does not remove any custom auras."], self:Colorize("/bo", "accent"), self:Colorize("reset", "value")))
         elseif msg == "test" then
             self:Test()
         elseif msg == "reset" or msg == "default" then
@@ -1009,10 +1013,10 @@ function BuffOverlay:Test(barName, singleAura)
             end
             self:RefreshOverlays()
             combatDropUpdate:RegisterEvent("PLAYER_REGEN_ENABLED")
-            self:Print("Exiting test mode. Frame visibility will update out of combat.")
+            self:Print(L["Exiting test mode. Frame visibility will update out of combat."])
             return
         else
-            self:Print("You are in combat.")
+            self:Print(L["You are in combat."])
         end
 
         return
@@ -1026,7 +1030,7 @@ function BuffOverlay:Test(barName, singleAura)
             testTextFrame.bg:SetColorTexture(1, 0, 0, 0.6)
             testTextFrame.text = testTextFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
             testTextFrame.text:SetPoint("CENTER", 0, 0)
-            testTextFrame.text:SetText("BuffOverlay Test")
+            testTextFrame.text:SetFormattedText("BuffOverlay %s", L["Test"])
             testTextFrame:SetSize(testTextFrame.text:GetWidth() + 20, testTextFrame.text:GetHeight() + 2)
             testTextFrame:EnableMouse(false)
         end
@@ -1068,7 +1072,7 @@ function BuffOverlay:Test(barName, singleAura)
                 anchor = GetTestAnchor()
 
                 if not anchor then
-                    self:Print(format("%s Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings.", self:Colorize("Note", "accent")))
+                    self:Print(format(L["%s Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings."], self:Colorize(L["Note"], "accent")))
                     testTextFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
                 else
                     testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
@@ -1102,7 +1106,7 @@ function BuffOverlay:Test(barName, singleAura)
         self.test = false
         if InCombatLockdown() then
             combatDropUpdate:RegisterEvent("PLAYER_REGEN_ENABLED")
-            self:Print("Exiting test mode. Frame visibility will update out of combat.")
+            self:Print(L["Exiting test mode. Frame visibility will update out of combat."])
         else
             HideTestFrames()
             -- self:Print("Exiting test mode.")

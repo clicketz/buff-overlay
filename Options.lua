@@ -5,6 +5,9 @@ local AceRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
 local version = GetAddOnMetadata("BuffOverlay", "Version")
 
+-- Localization Table
+local L = BuffOverlay.L
+
 local GetSpellInfo = GetSpellInfo
 local GetCVarBool = GetCVarBool
 local SetCVar = SetCVar
@@ -35,11 +38,11 @@ local customSpellDescriptions = {
 }
 
 local customSpellNames = {
-    [228050] = "Guardian of the Forgotten Queen",
+    [228050] = GetSpellInfo(228049),
 }
 
 BuffOverlay.customIcons = {
-    ["Eating/Drinking"] = 134062,
+    [L["Eating/Drinking"]] = 134062,
     ["?"] = 134400,
     ["Cogwheel"] = 136243,
 }
@@ -172,10 +175,10 @@ local deleteBarDelegate = {
 }
 
 -- Change the path for the new options menu in 10.0
-local path = isRetail and "Options > Gameplay > Action Bars > Show Numbers for Cooldowns" or "Interface > ActionBars > Show Numbers for Cooldowns"
+local path = isRetail and L["Options > Gameplay > Action Bars > Show Numbers for Cooldowns"] or L["Interface > ActionBars > Show Numbers for Cooldowns"]
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
-    text = format("In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n%s\n\nWould you like BuffOverlay to enable this setting for you?\n\n", BuffOverlay:Colorize("Show Blizzard Cooldown Text", "main"), BuffOverlay:Colorize(path)),
+    text = format(L["In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n%s\n\nWould you like BuffOverlay to enable this setting for you?\n\n"], BuffOverlay:Colorize(L["Show Blizzard Cooldown Text"], "main"), BuffOverlay:Colorize(path)),
     buttons = {
         {
             text = YES,
@@ -203,7 +206,7 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
 })
 
 LibDialog:Register("ShowVersion", {
-    text = format("%s\nCopy this version number and send it to the author if you need help with a bug.", BuffOverlay:Colorize("Version", "main")),
+    text = format(L["%s\nCopy this version number and send it to the author if you need help with a bug."], BuffOverlay:Colorize(L["Version"], "main")),
     buttons = {
         {
             text = OKAY,
@@ -284,7 +287,7 @@ local function GetSpells(class, barName)
             -- Check if spell is valid for new db structure. If not, likely from old profile. Reset needed.
             if type(v) ~= "table" or not v.prio or not v.class then
                 wipe(BuffOverlay.db.profile.buffs)
-                BuffOverlay:Print("Corrupted buff database found. This is likely due to updating from an older version of Buff Overlay. Resetting buff database to default. Your other settings (including custom buffs) will be preserved.")
+                BuffOverlay:Print(L["Corrupted buff database found. This is likely due to updating from an older version of Buff Overlay. Resetting buff database to default. Your other settings (including custom buffs) will be preserved."])
                 return
             end
 
@@ -326,7 +329,7 @@ local function GetSpells(class, barName)
                     order = v.prio,
                     args = {
                         toggle = {
-                            name = spellName or (type(k) == "string" and k) or format("Invalid Spell: %s", k),
+                            name = spellName or (type(k) == "string" and k) or format(L["Invalid Spell: %s"], k),
                             image = icon,
                             imageCoords = { 0.08, 0.92, 0.08, 0.92 },
                             type = "toggle",
@@ -337,11 +340,11 @@ local function GetSpells(class, barName)
                                     and spellDescriptions[k] .. "\n" or ""
 
                                 description = description
-                                    .. format("\n%s %d", BuffOverlay:Colorize("Priority"), v.prio)
-                                    .. (spellName and format("\n%s %d", BuffOverlay:Colorize("Spell ID"), k) or "")
+                                    .. format("\n%s %d", BuffOverlay:Colorize(L["Priority"]), v.prio)
+                                    .. (spellName and format("\n%s %d", BuffOverlay:Colorize(L["Spell ID"]), k) or "")
 
                                 if BuffOverlay.db.profile.buffs[k].children then
-                                    description = description .. BuffOverlay:Colorize("\nChild Spell ID(s)\n")
+                                    description = description .. BuffOverlay:Colorize(L["\nChild Spell ID(s)\n"])
                                     for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
                                         description = description .. child .. "\n"
                                     end
@@ -408,8 +411,8 @@ local function GetSpells(class, barName)
                             end,
                         },
                         glow = {
-                            name = "Glow",
-                            desc = "Enable a glow border effect around the icon.",
+                            name = L["Glow"],
+                            desc = L["Enable a glow border effect around the icon."],
                             type = "toggle",
                             order = 2,
                             width = 0.4,
@@ -425,8 +428,8 @@ local function GetSpells(class, barName)
                             end,
                         },
                         own = {
-                            name = "Own",
-                            desc = "Only show the aura if you cast it.",
+                            name = L["Own"],
+                            desc = L["Only show the aura if you cast it."],
                             type = "toggle",
                             order = 3,
                             width = 0.4,
@@ -457,13 +460,13 @@ local function GetSpells(class, barName)
                                     order = 0,
                                 },
                                 glowType = {
-                                    name = "Glow Type",
+                                    name = L["Glow Type"],
                                     type = "select",
                                     order = 1,
                                     width = 0.75,
                                     values = {
-                                        ["blizz"] = "Action Button",
-                                        ["pixel"] = "Pixel",
+                                        ["blizz"] = L["Action Button"],
+                                        ["pixel"] = L["Pixel"],
                                     },
                                     get = function()
                                         return BuffOverlay.db.profile.buffs[k].state[barName].glow.type
@@ -495,9 +498,9 @@ local function GetSpells(class, barName)
                                     end,
                                 },
                                 editGlobalSettings = {
-                                    name = "Edit Global Settings",
+                                    name = L["Edit Global Settings"],
                                     type = "execute",
-                                    desc = format("Add %s to the custom spell list, opening up global settings to edit for this spell.", formattedName),
+                                    desc = format(L["Add %s to the custom spell list, opening up global settings to edit for this spell."], formattedName),
                                     order = 3,
                                     width = 0.95,
                                     hidden = function()
@@ -538,9 +541,9 @@ local function GetSpells(class, barName)
                                     end,
                                 },
                                 testAura = {
-                                    name = "Test Aura",
+                                    name = L["Test Aura"],
                                     type = "execute",
-                                    desc = format("Show a test overlay for %s", formattedName),
+                                    desc = format(L["Show a test overlay for %s"], formattedName),
                                     order = 4,
                                     width = 0.75,
                                     func = function()
@@ -559,9 +562,9 @@ local function GetSpells(class, barName)
                                     width = 0.05,
                                 },
                                 applyToAll = {
-                                    name = "Apply to All",
+                                    name = L["Apply to All"],
                                     type = "execute",
-                                    desc = format("Apply %s's custom settings (glow, glow color, glow type, own only, etc) to all auras in %s.\n\nThis does not include any global settings (prio, class, etc).", formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
+                                    desc = format(L["Apply %s's custom settings (glow, glow color, glow type, own only, etc) to all auras in %s.\n\nThis does not include any global settings (prio, class, etc)."], formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
                                     order = 6,
                                     width = 0.95,
                                     func = function()
@@ -600,7 +603,7 @@ function BuffOverlay:CreatePriorityDialog(barName)
             hidden = true,
         },
         desc = {
-            name = "This informational panel is the full list of spells currently enabled for " .. self:Colorize((bar.name or barName), "main") .. " in order of priority. Any aura changes made while this panel is open will be reflected here in real time.",
+            name = format(L["This informational panel is the full list of spells currently enabled for %s in order of priority. Any aura changes made while this panel is open will be reflected here in real time."], self:Colorize((bar.name or barName), "main")),
             type = "description",
             order = 0,
         },
@@ -644,14 +647,14 @@ function BuffOverlay:CreatePriorityDialog(barName)
         end
     end
 
-    self.priorityListDialog.name = self:Colorize((bar.name or barName), "main") .. " Enabled Auras Priority List"
+    self.priorityListDialog.name = self:Colorize((bar.name or barName), "main") .. " " .. L["Enabled Auras Priority List"]
     self.priorityListDialog.args = spells
 end
 
 local function GetClasses(barName)
     local classes = {}
     classes["MISC"] = {
-        name = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC")),
+        name = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize(L["Miscellaneous"], "MISC")),
         order = 99,
         type = "group",
         args = GetSpells("MISC", barName),
@@ -694,7 +697,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
         childGroups = "tab",
         args = {
             name = {
-                name = "Set Bar Name",
+                name = L["Set Bar Name"],
                 type = "input",
                 order = 0,
                 width = 1,
@@ -702,10 +705,8 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     bar[info[#info]] = val
                     self.options.args.bars.args[barName].name = val
                     if AceConfigDialog.OpenFrames["BuffOverlayDialog"] and not IsDifferentDialogBar(barName) then
-                        self.priorityListDialog.name = self:Colorize(val, "main") .. " Enabled Auras Priority List"
-                        self.priorityListDialog.args.desc.name = "This informational panel is the full list of spells currently enabled for "
-                            .. self:Colorize((val or barName), "main")
-                            .. " in order of priority. Any aura changes made while this panel is open will be reflected here in real time."
+                        self.priorityListDialog.name = self:Colorize(val, "main") .. " " .. L["Enabled Auras Priority List"]
+                        self.priorityListDialog.args.desc.name = format(L["This informational panel is the full list of spells currently enabled for %s in order of priority. Any aura changes made while this panel is open will be reflected here in real time."], self:Colorize((val or barName), "main"))
 
                         AceRegistry:NotifyChange("BuffOverlayDialog")
                     end
@@ -714,20 +715,20 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 end,
             },
             delete = {
-                name = "Delete Bar",
+                name = L["Delete Bar"],
                 type = "execute",
                 order = 1,
                 width = 0.75,
                 func = function()
-                    local text = format("Are you sure you want to delete this bar?\n\n%s\n\n", BuffOverlay:Colorize(bar.name or barName, "main"))
+                    local text = format(L["Are you sure you want to delete this bar?\n\n%s\n\n"], BuffOverlay:Colorize(bar.name or barName, "main"))
                     deleteBarDelegate.text = text
 
                     LibDialog:Spawn(deleteBarDelegate, barName)
                 end,
             },
             test = {
-                name = "Test Bar",
-                desc = "Show test overlays for this bar.",
+                name = L["Test Bar"],
+                desc = L["Show test overlays for this bar."],
                 type = "execute",
                 order = 2,
                 width = 0.75,
@@ -741,7 +742,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 end,
             },
             settings = {
-                name = "Settings",
+                name = L["Settings"],
                 type = "group",
                 order = 3,
                 get = function(info) return bar[info[#info]] end,
@@ -751,8 +752,8 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 end,
                 args = {
                     copySettings = {
-                        name = "Copy Settings From",
-                        desc = "This copies settings from 'Settings', 'Anchoring', and 'Visibility' tabs.",
+                        name = L["Copy Settings From"],
+                        desc = L["This copies settings from 'Settings', 'Anchoring', and 'Visibility' tabs."],
                         type = "select",
                         order = 0,
                         width = 1,
@@ -773,7 +774,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                                 end
                             end
 
-                            self:Print("Copied settings, anchoring, and visibility tabs from " .. self:Colorize((self.db.profile.bars[val].name or val), "accent") .. " to " .. self:Colorize((bar.name or barName), "accent"))
+                            self:Print(format(L["Copied settings, anchoring, and visibility tabs from %s to %s"], self:Colorize((self.db.profile.bars[val].name or val), "accent"), self:Colorize((bar.name or barName), "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },
@@ -786,10 +787,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     iconCount = {
                         order = 1,
-                        name = "Icon Count",
+                        name = L["Icon Count"],
                         type = "range",
                         width = 1,
-                        desc = "Number of icons you want to display (per frame).",
+                        desc = L["Number of icons you want to display (per frame)."],
                         min = 1,
                         max = 40,
                         softMax = 10,
@@ -797,20 +798,20 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     iconAlpha = {
                         order = 2,
-                        name = "Icon Alpha",
+                        name = L["Icon Alpha"],
                         type = "range",
                         width = 1,
-                        desc = "Icon transparency.",
+                        desc = L["Icon transparency."],
                         min = 0,
                         max = 1,
                         step = 0.01,
                     },
                     iconScale = {
                         order = 3,
-                        name = "Icon Scale",
+                        name = L["Icon Scale"],
                         type = "range",
                         width = 1,
-                        desc = "Scale the size of the icon. Base icon size is proportionate to its parent frame.",
+                        desc = L["Scale the size of the icon. Base icon size is proportionate to its parent frame."],
                         min = 0.01,
                         max = 99,
                         softMax = 3,
@@ -818,10 +819,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     stackCountScale = {
                         order = 3.5,
-                        name = "Stack Count Scale",
+                        name = L["Stack Count Scale"],
                         type = "range",
                         width = 1,
-                        desc = "Scale the icon's stack count text size.",
+                        desc = L["Scale the icon's stack count text size."],
                         min = 0.01,
                         max = 10,
                         softMax = 3,
@@ -830,10 +831,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     cooldownNumberScale = {
                         order = 4,
-                        name = "Cooldown Text Scale",
+                        name = L["Cooldown Text Scale"],
                         type = "range",
                         width = 1,
-                        desc = "Scale the icon's cooldown text size.",
+                        desc = L["Scale the icon's cooldown text size."],
                         min = 0.01,
                         max = 10,
                         softMax = 3,
@@ -842,10 +843,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     iconSpacing = {
                         order = 5,
-                        name = "Icon Spacing",
+                        name = L["Icon Spacing"],
                         type = "range",
                         width = 1,
-                        desc = "Spacing between icons. Spacing is scaled based on icon size for uniformity across different icon sizes.",
+                        desc = L["Spacing between icons. Spacing is scaled based on icon size for uniformity across different icon sizes."],
                         min = 0,
                         max = 200,
                         softMax = 20,
@@ -853,17 +854,17 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     iconBorder = {
                         order = 6,
-                        name = "Icon Border",
+                        name = L["Icon Border"],
                         type = "toggle",
                         width = 0.75,
-                        desc = "Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present.",
+                        desc = L["Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present."],
                     },
                     iconBorderColor = {
                         order = 7,
-                        name = "Icon Border Color",
+                        name = L["Icon Border Color"],
                         type = "color",
                         width = 0.75,
-                        desc = "Change the icon border color.",
+                        desc = L["Change the icon border color."],
                         hasAlpha = true,
                         disabled = function() return not bar.iconBorder end,
                         get = function(info)
@@ -878,10 +879,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     iconBorderSize = {
                         order = 8,
-                        name = "Icon Border Size",
+                        name = L["Icon Border Size"],
                         type = "range",
                         width = 1.5,
-                        desc = "Change the icon border size (in pixels).",
+                        desc = L["Change the icon border size (in pixels)."],
                         min = 1,
                         max = 10,
                         softMax = 5,
@@ -890,47 +891,47 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     showStackCount = {
                         order = 8.1,
-                        name = "Show Stack Count",
+                        name = L["Show Stack Count"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing of the stack count text on the icon.",
+                        desc = L["Toggle showing of the stack count text on the icon."],
                     },
                     debuffIconBorderColorByDispelType = {
                         order = 8.5,
-                        name = "Color Debuff Icon Border by Dispel Type",
+                        name = L["Color Debuff Icon Border by Dispel Type"],
                         type = "toggle",
                         width = "full",
-                        desc = "Change the icon border color based on the dispel type of the debuff. This overrides the icon border color.",
+                        desc = L["Change the icon border color based on the dispel type of the debuff. This overrides the icon border color."],
                         disabled = function() return not bar.iconBorder end,
                     },
                     buffIconBorderColorByDispelType = {
                         order = 8.6,
-                        name = "Color Buff Icon Border by Dispel Type",
+                        name = L["Color Buff Icon Border by Dispel Type"],
                         type = "toggle",
                         width = "full",
-                        desc = "Change the icon border color based on the dispel type of the buff. This overrides the icon border color.",
+                        desc = L["Change the icon border color based on the dispel type of the buff. This overrides the icon border color."],
                         disabled = function() return not bar.iconBorder end,
                     },
                     showCooldownSpiral = {
                         order = 9,
-                        name = "Cooldown Spiral",
+                        name = L["Cooldown Spiral"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing of the cooldown spiral.",
+                        desc = L["Toggle showing of the cooldown spiral."],
                     },
                     showTooltip = {
                         order = 10,
-                        name = "Show Tooltip On Hover",
+                        name = L["Show Tooltip On Hover"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing of the tooltip when hovering over an icon.",
+                        desc = L["Toggle showing of the tooltip when hovering over an icon."],
                     },
                     showCooldownNumbers = {
                         order = 11,
-                        name = "Show Blizzard Cooldown Text",
+                        name = L["Show Blizzard Cooldown Text"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing of the cooldown text.",
+                        desc = L["Toggle showing of the cooldown text."],
                         get = function(info)
                             if not GetCVarBool("countdownForCooldowns") and bar[info[#info]] then
                                 bar[info[#info]] = false
@@ -950,7 +951,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 },
             },
             anchoring = {
-                name = "Anchoring",
+                name = L["Anchoring"],
                 order = 4,
                 type = "group",
                 get = function(info) return bar[info[#info]] end,
@@ -961,74 +962,74 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 args = {
                     iconAnchor = {
                         order = 1,
-                        name = "Icon Anchor",
+                        name = L["Icon Anchor"],
                         type = "select",
                         style = "dropdown",
                         width = 1,
-                        desc = "Where the anchor is on the icon.",
+                        desc = L["Where the anchor is on the icon."],
                         values = {
-                            ["TOPLEFT"] = "TOPLEFT",
-                            ["TOPRIGHT"] = "TOPRIGHT",
-                            ["BOTTOMLEFT"] = "BOTTOMLEFT",
-                            ["BOTTOMRIGHT"] = "BOTTOMRIGHT",
-                            ["TOP"] = "TOP",
-                            ["BOTTOM"] = "BOTTOM",
-                            ["RIGHT"] = "RIGHT",
-                            ["LEFT"] = "LEFT",
-                            ["CENTER"] = "CENTER",
+                            ["TOPLEFT"] = L["TOPLEFT"],
+                            ["TOPRIGHT"] = L["TOPRIGHT"],
+                            ["BOTTOMLEFT"] = L["BOTTOMLEFT"],
+                            ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"],
+                            ["TOP"] = L["TOP"],
+                            ["BOTTOM"] = L["BOTTOM"],
+                            ["RIGHT"] = L["RIGHT"],
+                            ["LEFT"] = L["LEFT"],
+                            ["CENTER"] = L["CENTER"],
                         },
                     },
                     iconRelativePoint = {
                         order = 2,
-                        name = "Frame Attachment Point",
+                        name = L["Frame Attachment Point"],
                         type = "select",
                         style = "dropdown",
                         width = 1,
-                        desc = "Icon position relative to its parent frame.",
+                        desc = L["Icon position relative to its parent frame."],
                         values = {
-                            ["TOPLEFT"] = "TOPLEFT",
-                            ["TOPRIGHT"] = "TOPRIGHT",
-                            ["BOTTOMLEFT"] = "BOTTOMLEFT",
-                            ["BOTTOMRIGHT"] = "BOTTOMRIGHT",
-                            ["TOP"] = "TOP",
-                            ["BOTTOM"] = "BOTTOM",
-                            ["RIGHT"] = "RIGHT",
-                            ["LEFT"] = "LEFT",
-                            ["CENTER"] = "CENTER",
+                            ["TOPLEFT"] = L["TOPLEFT"],
+                            ["TOPRIGHT"] = L["TOPRIGHT"],
+                            ["BOTTOMLEFT"] = L["BOTTOMLEFT"],
+                            ["BOTTOMRIGHT"] = L["BOTTOMRIGHT"],
+                            ["TOP"] = L["TOP"],
+                            ["BOTTOM"] = L["BOTTOM"],
+                            ["RIGHT"] = L["RIGHT"],
+                            ["LEFT"] = L["LEFT"],
+                            ["CENTER"] = L["CENTER"],
                         },
                     },
                     growDirection = {
                         order = 3,
-                        name = "Grow Direction",
+                        name = L["Grow Direction"],
                         type = "select",
                         style = "dropdown",
                         width = 1,
-                        desc = "Where the icons will grow from the first icon.",
+                        desc = L["Where the icons will grow from the first icon."],
                         values = {
-                            ["DOWN"] = "DOWN",
-                            ["UP"] = "UP",
-                            ["LEFT"] = "LEFT",
-                            ["RIGHT"] = "RIGHT",
-                            ["HORIZONTAL"] = "HORIZONTAL",
-                            ["VERTICAL"] = "VERTICAL",
+                            ["DOWN"] = L["DOWN"],
+                            ["UP"] = L["UP"],
+                            ["LEFT"] = L["LEFT"],
+                            ["RIGHT"] = L["RIGHT"],
+                            ["HORIZONTAL"] = L["HORIZONTAL"],
+                            ["VERTICAL"] = L["VERTICAL"],
                         },
                     },
                     iconXOff = {
                         order = 4,
-                        name = "X-Offset",
+                        name = L["X-Offset"],
                         type = "range",
                         width = 1.5,
-                        desc = "Change the icon group's X-Offset.",
+                        desc = L["Change the icon group's X-Offset."],
                         min = -100,
                         max = 100,
                         step = 0.1,
                     },
                     iconYOff = {
                         order = 5,
-                        name = "Y-Offset",
+                        name = L["Y-Offset"],
                         type = "range",
                         width = 1.5,
-                        desc = "Change the icon group's Y-Offset.",
+                        desc = L["Change the icon group's Y-Offset."],
                         min = -100,
                         max = 100,
                         step = 0.1,
@@ -1037,7 +1038,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
             },
             visibility = {
                 order = 5,
-                name = "Visibility",
+                name = L["Visibility"],
                 type = "group",
                 get = function(info) return bar[info[#info]] end,
                 set = function(info, val)
@@ -1047,59 +1048,59 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 args = {
                     neverShow = {
                         order = 1,
-                        name = "Never Show",
+                        name = L["Never Show"],
                         type = "toggle",
                         width = "full",
-                        desc = "Never show this bar.",
+                        desc = L["Never show this bar."],
                     },
                     showInWorld = {
                         order = 2,
-                        name = "Show When Non-Instanced",
+                        name = L["Show When Non-Instanced"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing this bar in the world/outside of instances.",
+                        desc = L["Toggle showing this bar in the world/outside of instances."],
                     },
                     showInArena = {
                         order = 3,
-                        name = "Show In Arena",
+                        name = L["Show In Arena"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing this bar in an arena.",
+                        desc = L["Toggle showing this bar in an arena."],
                     },
                     showInBattleground = {
                         order = 4,
-                        name = "Show In Battleground",
+                        name = L["Show In Battleground"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing this bar in a battleground.",
+                        desc = L["Toggle showing this bar in a battleground."],
                     },
                     showInRaid = {
                         order = 5,
-                        name = "Show In Raid",
+                        name = L["Show In Raid"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing this bar in a raid instance.",
+                        desc = L["Toggle showing this bar in a raid instance."],
                     },
                     showInDungeon = {
                         order = 6,
-                        name = "Show In Dungeon",
+                        name = L["Show In Dungeon"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing this bar in a dungeon instance.",
+                        desc = L["Toggle showing this bar in a dungeon instance."],
                     },
                     showInScenario = {
                         order = 7,
-                        name = "Show In Scenario",
+                        name = L["Show In Scenario"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing this bar in a scenario.",
+                        desc = L["Toggle showing this bar in a scenario."],
                     },
                     frameTypes = {
                         order = 8,
-                        name = "Frame Types",
+                        name = L["Frame Types"],
                         type = "multiselect",
                         width = 0.9,
-                        desc = "Show overlays on this frame type.\n\nBlizzard frames do not currently support separate types.",
+                        desc = L["Show overlays on this frame type.\n\nBlizzard frames do not currently support separate types."],
                         values = function()
                             local t = {}
                             for k in pairs(bar.frameTypes) do
@@ -1117,15 +1118,15 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     header = {
                         order = 9,
-                        name = "Group Size",
+                        name = L["Group Size"],
                         type = "header",
                     },
                     minGroupSize = {
                         order = 10,
-                        name = "Group Size Minimum",
+                        name = L["Group Size Minimum"],
                         type = "range",
                         width = 1.5,
-                        desc = "Show this bar when the group size is equal to or greater than this value.\n\n0=Solo with no group.\n1=Solo in a group.",
+                        desc = L["Show this bar when the group size is equal to or greater than this value.\n\n0=Solo with no group.\n1=Solo in a group."],
                         min = 0,
                         max = 40,
                         step = 1,
@@ -1139,10 +1140,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     maxGroupSize = {
                         order = 11,
-                        name = "Group Size Maximum",
+                        name = L["Group Size Maximum"],
                         type = "range",
                         width = 1.5,
-                        desc = "Show this bar when the group size is equal to or less than this value.\n\n0=Solo with no group.\n1=Solo in a group.",
+                        desc = L["Show this bar when the group size is equal to or less than this value.\n\n0=Solo with no group.\n1=Solo in a group."],
                         min = 0,
                         max = 40,
                         step = 1,
@@ -1158,11 +1159,11 @@ function BuffOverlay:AddBarToOptions(bar, barName)
             },
             spells = {
                 order = 6,
-                name = "Spells",
+                name = L["Spells"],
                 type = "group",
                 args = {
                     copySpells = {
-                        name = "Copy Spells From",
+                        name = L["Copy Spells From"],
                         type = "select",
                         order = 0,
                         width = 1,
@@ -1201,16 +1202,16 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                                 AceRegistry:NotifyChange("BuffOverlayDialog")
                             end
 
-                            self:Print("Copied spells from " .. self:Colorize((self.db.profile.bars[val].name or val), "accent") .. " to " .. self:Colorize((bar.name or barName), "accent"))
+                            self:Print(format(L["Copied spells from %s to %s."], self:Colorize((self.db.profile.bars[val].name or val), "accent"), self:Colorize((bar.name or barName), "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },
                     enableAll = {
                         order = 1,
-                        name = "Enable All",
+                        name = L["Enable All"],
                         type = "execute",
                         width = 0.70,
-                        desc = "Enable all spells.",
+                        desc = L["Enable all spells."],
                         func = function()
                             local dialogIsOpen = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
 
@@ -1234,10 +1235,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     disableAll = {
                         order = 2,
-                        name = "Disable All",
+                        name = L["Disable All"],
                         type = "execute",
                         width = 0.70,
-                        desc = "Disable all spells.",
+                        desc = L["Disable all spells."],
                         func = function()
                             local dialogIsOpen = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
 
@@ -1262,10 +1263,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     fullPriorityList = {
                         order = 3,
-                        name = "Aura List",
+                        name = L["Aura List"],
                         type = "execute",
                         width = 0.70,
-                        desc = "Shows a list of all enabled auras for this bar in order of priority.",
+                        desc = L["Shows a list of all enabled auras for this bar in order of priority."],
                         func = function()
                             local dialog = AceConfigDialog.OpenFrames["BuffOverlayDialog"]
                             if dialog and not IsDifferentDialogBar(barName) then
@@ -1339,9 +1340,9 @@ local customSpellInfo = {
         width = "full",
         name = function(info)
             local spellId = tonumber(info[#info - 1])
-            local str = BuffOverlay:Colorize("Spell ID ") .. spellId
+            local str = BuffOverlay:Colorize(L["Spell ID"]) .. " " .. spellId
             if BuffOverlay.db.profile.buffs[spellId].children then
-                str = str .. BuffOverlay:Colorize("\n\nChild Spell ID(s)\n")
+                str = str .. BuffOverlay:Colorize(L["\n\nChild Spell ID(s)\n"])
                 for child in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
                     str = str .. child .. "\n"
                 end
@@ -1352,7 +1353,7 @@ local customSpellInfo = {
     delete = {
         order = 2,
         type = "execute",
-        name = "Delete",
+        name = L["Delete"],
         width = 1,
         func = function(info)
             local spellId = tonumber(info[#info - 1])
@@ -1360,9 +1361,9 @@ local customSpellInfo = {
             if customIcons[spellId] then
                 icon = customIcons[spellId]
             end
-            local text = format("Are you sure you want to delete this spell?\n\n%s %s\n\n", BuffOverlay:GetIconString(icon, 20), spellName)
+            local text = format(L["Are you sure you want to delete this spell?\n\n%s %s\n\n"], BuffOverlay:GetIconString(icon, 20), spellName)
             if BuffOverlay.defaultSpells[spellId] then
-                text = text .. format("(%s: This is a default spell. Deleting it from this tab will simply reset all its values to default and disable it, but it will not be removed from the spells tab.)", BuffOverlay:Colorize("Note", "accent"))
+                text = text .. format(L["(%s: This is a default spell. Deleting it from this tab will simply reset all of its values to their defaults, but it will not be removed from the spells tab.)"], BuffOverlay:Colorize(L["Note"], "accent"))
             end
             deleteSpellDelegate.text = text
 
@@ -1377,12 +1378,12 @@ local customSpellInfo = {
     class = {
         order = 4,
         type = "select",
-        name = "Class",
+        name = L["Class"],
         values = function()
             local classes = {}
             -- Use "_MISC" to put Miscellaneous at the end of the list since Ace sorts the dropdown by key. (Hacky, but it works)
             -- _MISC gets converted in the setters/getters, so it won't affect other structures.
-            classes["_MISC"] = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize("Miscellaneous", "MISC"))
+            classes["_MISC"] = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize(L["Miscellaneous"], "MISC"))
             for i = 1, MAX_CLASSES do
                 local className = CLASS_SORT_ORDER[i]
                 classes[className] = format("%s %s", BuffOverlay:GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
@@ -1426,8 +1427,8 @@ local customSpellInfo = {
     prio = {
         order = 6,
         type = "input",
-        name = "Priority (Lower is Higher Prio)",
-        desc = "The priority of this spell. Lower numbers are higher priority. If two spells have the same priority, it will show alphabetically.",
+        name = L["Priority (Lower is Higher Prio)"],
+        desc = L["The priority of this spell. Lower numbers are higher priority. If two spells have the same priority, it will show alphabetically."],
         validate = function(_, value)
             local num = tonumber(value)
             if num and num < 1000000 and value:match("^%d+$") then
@@ -1442,7 +1443,7 @@ local customSpellInfo = {
                 return true
             else
                 BuffOverlay.errorStatusText = true
-                return "Priority must be a positive integer from 0 to 999999"
+                return L["Priority must be a positive integer from 0 to 999999"]
             end
         end,
         set = function(info, state)
@@ -1496,10 +1497,10 @@ local customSpellInfo = {
     },
     icon = {
         order = 8,
-        name = "Custom Icon",
+        name = L["Custom Icon"],
         type = "input",
         width = 0.66,
-        desc = "The icon ID to use for this spell. This will overwrite the default icon.",
+        desc = L["The icon ID to use for this spell. This will overwrite the default icon."],
         get = function(info)
             local option = info[#info]
             local spellId = info[#info - 1]
@@ -1520,7 +1521,7 @@ local customSpellInfo = {
                     BuffOverlay.db.global.customBuffs[spellId][option] = nil
                     BuffOverlay.options.args.customSpells.args[spellIdStr].name = format("%s %s", BuffOverlay:GetIconString(icon, 15), name)
                 else
-                    BuffOverlay:Print(format("Invalid input for custom icon: %s", BuffOverlay:Colorize(state)))
+                    BuffOverlay:Print(format(L["Invalid input for custom icon: %s"], BuffOverlay:Colorize(state)))
                 end
             else
                 BuffOverlay.db.global.customBuffs[spellId][option] = val
@@ -1539,8 +1540,8 @@ local customSpellInfo = {
     addChild = {
         order = 10,
         type = "input",
-        name = "Add Child Spell ID",
-        desc = "Add a child spell ID to this spell. Child IDs will be checked like normal IDs but will use all the same settings (including icon) as its parent. Also, any changes to the parent will apply to all of its children. This is useful for spells that have multiple ids which are convenient to track as a single spell (e.g. different ranks of the same spell).",
+        name = L["Add Child Spell ID"],
+        desc = L["Add a child spell ID to this spell. Child IDs will be checked like normal IDs but will use all the same settings (including icon) as its parent. Also, any changes to the parent will apply to all of its children. This is useful for spells that have multiple ids which are convenient to track as a single spell (e.g. different ranks of the same spell)."],
         width = 1,
         validate = function(_, value)
             local num = tonumber(value)
@@ -1558,7 +1559,7 @@ local customSpellInfo = {
                 return true
             else
                 BuffOverlay.errorStatusText = true
-                return "Spell ID must be a positive integer from 0 to 9999999"
+                return L["Spell ID must be a positive integer from 0 to 9999999"]
             end
         end,
         set = function(info, value)
@@ -1580,7 +1581,7 @@ local customSpellInfo = {
     removeChild = {
         order = 12,
         type = "select",
-        name = "Remove Custom Child Spell ID",
+        name = L["Remove Custom Child Spell ID"],
         width = 1,
         values = function(info)
             local spellId = tonumber(info[#info - 1])
@@ -1617,12 +1618,12 @@ local customSpells = {
     spellId_info = {
         order = 1,
         type = "description",
-        name = "In addition to adding new spells here, you can also add any Spell ID from the spells tab to edit its default values.\n(Note: anything you add here will persist through addon updates and profile resets.)",
+        name = L["In addition to adding new spells here, you can also add any Spell ID from the spells tab to edit its default values.\n(Note: anything you add here will persist through addon updates and profile resets.)"],
     },
     spellId = {
         order = 2,
-        name = "Spell ID",
-        desc = "Enter the spell ID of the spell you want to keep track of.",
+        name = L["Spell ID"],
+        desc = L["Enter the spell ID of the spell you want to keep track of."],
         type = "input",
         validate = function(_, value)
             local num = tonumber(value)
@@ -1638,7 +1639,7 @@ local customSpells = {
                 return true
             else
                 BuffOverlay.errorStatusText = true
-                return "Spell ID must be a positive integer from 0 to 9999999"
+                return L["Spell ID must be a positive integer from 0 to 9999999"]
             end
         end,
         set = function(_, state)
@@ -1676,13 +1677,13 @@ local customSpells = {
                         AceRegistry:NotifyChange("BuffOverlayDialog")
                     end
                 else
-                    BuffOverlay:Print(format("%s %s is already being tracked.", BuffOverlay:GetIconString(icon, 20), name))
+                    BuffOverlay:Print(format(L["%s %s is already being tracked."], BuffOverlay:GetIconString(icon, 20), name))
                 end
             else
                 if child then
-                    BuffOverlay:Print(format("%s is already being tracked as a child of %s and cannot be edited.", BuffOverlay:Colorize(childId), BuffOverlay:Colorize(spellId)))
+                    BuffOverlay:Print(format(L["%s is already being tracked as a child of %s and cannot be edited."], BuffOverlay:Colorize(childId), BuffOverlay:Colorize(spellId)))
                 else
-                    BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(spellId)))
+                    BuffOverlay:Print(format(L["Invalid Spell ID %s"], BuffOverlay:Colorize(spellId)))
                 end
             end
         end,
@@ -1714,7 +1715,7 @@ function BuffOverlay:AddToCustom(spellId)
             end
         end
     else
-        BuffOverlay:Print(format("Invalid Spell ID %s", BuffOverlay:Colorize(spellIdStr)))
+        BuffOverlay:Print(format(L["Invalid Spell ID %s"], BuffOverlay:Colorize(spellIdStr)))
     end
 end
 
@@ -1741,7 +1742,7 @@ function BuffOverlay:Options()
             logo = {
                 order = 1,
                 type = "description",
-                name = self:Colorize("Author") .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n" .. self:Colorize("Version") .. ": " .. version .. "\n\n",
+                name = self:Colorize(L["Author"]) .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n" .. self:Colorize(L["Version"]) .. ": " .. version .. "\n\n",
                 fontSize = "medium",
                 -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
                 image = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo_transparent",
@@ -1749,15 +1750,16 @@ function BuffOverlay:Options()
                 imageHeight = 64,
             },
             bars = {
-                name = "Bars",
+                name = L["Bars"],
                 type = "group",
                 childGroups = "tab",
                 order = 2,
                 args = {
                     addBar = {
                         order = 1,
-                        name = "Add Bar",
+                        name = L["Add Bar"],
                         type = "execute",
+                        desc = L["Add an additional aura bar with default settings."],
                         width = 0.75,
                         func = function()
                             self:AddBar()
@@ -1765,9 +1767,9 @@ function BuffOverlay:Options()
                     },
                     test = {
                         order = 2,
-                        name = "Test All",
+                        name = L["Test All"],
                         type = "execute",
-                        desc = "Toggle test overlays for all bars.",
+                        desc = L["Toggle test overlays for all bars."],
                         func = function()
                             self:Test()
                         end,
@@ -1777,7 +1779,7 @@ function BuffOverlay:Options()
             },
             customSpells = {
                 order = 3,
-                name = "Custom Spells",
+                name = L["Custom Spells"],
                 type = "group",
                 args = customSpells,
                 get = function(info)
@@ -1790,15 +1792,15 @@ function BuffOverlay:Options()
             },
             globalSettings = {
                 order = 4,
-                name = "Global Settings",
+                name = L["Global Settings"],
                 type = "group",
                 args = {
                     welcomeMessage = {
                         order = 1,
-                        name = "Welcome Message",
+                        name = L["Welcome Message"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle showing of the welcome message on login.",
+                        desc = L["Toggle showing of the welcome message on login."],
                         get = function(info) return self.db.profile[info[#info]] end,
                         set = function(info, val)
                             self.db.profile[info[#info]] = val
@@ -1806,10 +1808,10 @@ function BuffOverlay:Options()
                     },
                     minimap = {
                         order = 2,
-                        name = "Minimap Icon",
+                        name = L["Minimap Icon"],
                         type = "toggle",
                         width = "full",
-                        desc = "Toggle the minimap icon.",
+                        desc = L["Toggle the minimap icon."],
                         get = function(info) return not self.db.profile[info[#info]].hide end,
                         set = function()
                             self:ToggleMinimapIcon()
@@ -1859,7 +1861,7 @@ function BuffOverlay:Options()
     slash:SetPoint("BOTTOM", 0, 150)
 
     local btn = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
-    btn:SetText("Open Options")
+    btn:SetText(L["Open Options"])
     btn.Text:SetTextColor(1, 1, 1)
     btn:SetWidth(150)
     btn:SetHeight(30)

@@ -1,4 +1,5 @@
-BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
+local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
+local L = BuffOverlay.L
 
 --[[------------------------------------------------
 
@@ -98,10 +99,10 @@ BuffOverlay.defaultSpells = {
     [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection
 
     -- Misc
-    ["Eating/Drinking"] = { class = "MISC", prio = 90 }, -- Food umbrella
-        ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
-        ["Food"] = { parent = "Eating/Drinking" }, --Food
-        ["Drink"] = { parent = "Eating/Drinking" }, --Drink
-        ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
+    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, -- Food umbrella
+        [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
+        [L["Food"]] = { parent = L["Eating/Drinking"] }, --Food
+        [L["Drink"]] = { parent = L["Eating/Drinking"] }, --Drink
+        [L["Refreshment"]] = { parent = L["Eating/Drinking"] }, --Refreshment
     [30456] = { class = "MISC", prio = 10 }, --Nigh-Invulnerability
 }

@@ -13,6 +13,9 @@
 Border.xml
 embeds.xml
 
+Init.lua
+locales.xml
+
 Spells\spellList_TBC.lua
 AddonCompatibility.lua
 BuffOverlay.lua

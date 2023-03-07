@@ -1,4 +1,5 @@
-BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
+local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
+local L = BuffOverlay.L
 
 --[[------------------------------------------------
 
@@ -137,12 +138,12 @@ BuffOverlay.defaultSpells = {
     [213871] = { class = "WARRIOR", prio = 50 }, --Bodyguard
 
     -- Misc
-    ["Eating/Drinking"] = { class = "MISC", prio = 90 }, -- Food umbrella
-        ["Food & Drink"] = { parent = "Eating/Drinking" }, --Food & Drink
-        ["Food"] = { parent = "Eating/Drinking" }, --Food
-        ["Drink"] = { parent = "Eating/Drinking" }, --Drink
-        ["Refreshment"] = { parent = "Eating/Drinking" }, --Refreshment
-        [185710] = { parent = "Eating/Drinking" }, --Sugar-Crusted Fish Feast
+    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, -- Food umbrella
+        [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
+        [L["Food"]] = { parent = L["Eating/Drinking"] }, --Food
+        [L["Drink"]] = { parent = L["Eating/Drinking"] }, --Drink
+        [L["Refreshment"]] = { parent = L["Eating/Drinking"] }, --Refreshment
+        [185710] = { parent = L["Eating/Drinking"] }, --Sugar-Crusted Fish Feast
     [320224] = { class = "MISC", prio = 70 }, -- Podtender
     [363522] = { class = "MISC", prio = 70 }, -- Gladiator's Eternal Aegis
     [345231] = { class = "MISC", prio = 70 }, -- Gladiator's Emblem

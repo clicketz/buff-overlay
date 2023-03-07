@@ -51,6 +51,7 @@ globals = {
     "GetAddOnMetadata",
     "GetCVar",
     "GetCVarBool",
+    "GetLocale",
     "GetNumGroupMembers",
     "GetSpellInfo",
     "GetSpellTexture",
@@ -99,6 +100,7 @@ globals = {
 
     -- Third Party AddOns
     "ElvUF_Parent", -- ElvUI
+    "GAME_LOCALE",
     "LibStub",
     "Scorpio",
 }
