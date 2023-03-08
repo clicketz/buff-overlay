@@ -875,7 +875,7 @@ function BuffOverlay:OnInitialize()
     SLASH_BuffOverlay2 = "/buffoverlay"
     function SlashCmdList.BuffOverlay(msg)
         if msg == "help" or msg == "?" then
-            self:Print("Command List")
+            self:Print(L["Command List"])
             print(format(L["%s or %s: Toggles the options panel."], self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
             print(format(L["%s %s: Shows test icons on all visible raid/party frames."], self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
             print(format(L["%s %s: Toggles the minimap icon."], self:Colorize("/bo", "accent"), self:Colorize("minimap", "value")))
