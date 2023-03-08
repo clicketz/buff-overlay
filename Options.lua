@@ -206,7 +206,7 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
 })
 
 LibDialog:Register("ShowVersion", {
-    text = format(L["%s%sCopy this version number and send it to the author if you need help with a bug."], BuffOverlay:Colorize(L["Version"], "main"), "\n"),
+    text = format(L["%s%sCopy this version number and send it to the author if you need help with a bug."], BuffOverlay:Colorize(GAME_VERSION_LABEL, "main"), "\n"),
     buttons = {
         {
             text = OKAY,
@@ -654,7 +654,7 @@ end
 local function GetClasses(barName)
     local classes = {}
     classes["MISC"] = {
-        name = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize(L["Miscellaneous"], "MISC")),
+        name = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize(MISCELLANEOUS, "MISC")),
         order = 99,
         type = "group",
         args = GetSpells("MISC", barName),
@@ -742,7 +742,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 end,
             },
             settings = {
-                name = L["Settings"],
+                name = SETTINGS,
                 type = "group",
                 order = 3,
                 get = function(info) return bar[info[#info]] end,
@@ -1006,12 +1006,12 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         width = 1,
                         desc = L["Where the icons will grow from the first icon."],
                         values = {
-                            ["DOWN"] = L["DOWN"],
-                            ["UP"] = L["UP"],
-                            ["LEFT"] = L["LEFT"],
-                            ["RIGHT"] = L["RIGHT"],
-                            ["HORIZONTAL"] = L["HORIZONTAL"],
-                            ["VERTICAL"] = L["VERTICAL"],
+                            ["DOWN"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_DOWN,
+                            ["UP"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_UP,
+                            ["LEFT"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_LEFT,
+                            ["RIGHT"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_RIGHT,
+                            ["HORIZONTAL"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_HORIZONTAL,
+                            ["VERTICAL"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_VERTICAL,
                         },
                     },
                     iconXOff = {
@@ -1123,7 +1123,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     minGroupSize = {
                         order = 10,
-                        name = L["Group Size Minimum"],
+                        name = format("%s %s", L["Group Size"], MINIMUM),
                         type = "range",
                         width = 1.5,
                         desc = L["Show this bar when the group size is equal to or greater than this value.\n\n0=Solo with no group.\n1=Solo in a group."],
@@ -1140,7 +1140,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     maxGroupSize = {
                         order = 11,
-                        name = L["Group Size Maximum"],
+                        name = format("%s %s", L["Group Size"], MAXIMUM),
                         type = "range",
                         width = 1.5,
                         desc = L["Show this bar when the group size is equal to or less than this value.\n\n0=Solo with no group.\n1=Solo in a group."],
@@ -1159,7 +1159,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
             },
             spells = {
                 order = 6,
-                name = L["Spells"],
+                name = SPELLS,
                 type = "group",
                 args = {
                     copySpells = {
@@ -1208,7 +1208,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     enableAll = {
                         order = 1,
-                        name = L["Enable All"],
+                        name = ENABLE_ALL_ADDONS,
                         type = "execute",
                         width = 0.70,
                         desc = L["Enable all spells."],
@@ -1235,7 +1235,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                     },
                     disableAll = {
                         order = 2,
-                        name = L["Disable All"],
+                        name = DISABLE_ALL_ADDONS,
                         type = "execute",
                         width = 0.70,
                         desc = L["Disable all spells."],
@@ -1353,7 +1353,7 @@ local customSpellInfo = {
     delete = {
         order = 2,
         type = "execute",
-        name = L["Delete"],
+        name = DELETE,
         width = 1,
         func = function(info)
             local spellId = tonumber(info[#info - 1])
@@ -1363,7 +1363,7 @@ local customSpellInfo = {
             end
             local text = format("%s\n\n%s %s\n\n", L["Are you sure you want to delete this spell?"], BuffOverlay:GetIconString(icon, 20), spellName)
             if BuffOverlay.defaultSpells[spellId] then
-                text = text .. format(L["(%s: This is a default spell. Deleting it from this tab will simply reset all of its values to their defaults, but it will not be removed from the spells tab.)"], BuffOverlay:Colorize(L["Note"], "accent"))
+                text = text .. format(L["(%s: This is a default spell. Deleting it from this tab will simply reset all of its values to their defaults, but it will not be removed from the spells tab.)"], BuffOverlay:Colorize(LABEL_NOTE, "accent"))
             end
             deleteSpellDelegate.text = text
 
@@ -1378,12 +1378,12 @@ local customSpellInfo = {
     class = {
         order = 4,
         type = "select",
-        name = L["Class"],
+        name = CLASS,
         values = function()
             local classes = {}
             -- Use "_MISC" to put Miscellaneous at the end of the list since Ace sorts the dropdown by key. (Hacky, but it works)
             -- _MISC gets converted in the setters/getters, so it won't affect other structures.
-            classes["_MISC"] = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize(L["Miscellaneous"], "MISC"))
+            classes["_MISC"] = format("%s %s", BuffOverlay:GetIconString(customIcons["Cogwheel"], 15), BuffOverlay:Colorize(MISCELLANEOUS, "MISC"))
             for i = 1, MAX_CLASSES do
                 local className = CLASS_SORT_ORDER[i]
                 classes[className] = format("%s %s", BuffOverlay:GetIconString(classIcons[className], 15), BuffOverlay:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
@@ -1742,7 +1742,7 @@ function BuffOverlay:Options()
             logo = {
                 order = 1,
                 type = "description",
-                name = self:Colorize(L["Author"]) .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n" .. self:Colorize(L["Version"]) .. ": " .. version .. "\n\n",
+                name = self:Colorize(L["Author"]) .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n" .. self:Colorize(GAME_VERSION_LABEL) .. ": " .. version .. "\n\n",
                 fontSize = "medium",
                 -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
                 image = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo_transparent",
@@ -1792,7 +1792,7 @@ function BuffOverlay:Options()
             },
             globalSettings = {
                 order = 4,
-                name = L["Global Settings"],
+                name = BASE_SETTINGS,
                 type = "group",
                 args = {
                     welcomeMessage = {

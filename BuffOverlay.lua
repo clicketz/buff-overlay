@@ -1016,7 +1016,7 @@ function BuffOverlay:Test(barName, singleAura)
             self:Print(L["Exiting test mode. Frame visibility will update out of combat."])
             return
         else
-            self:Print(L["You are in combat."])
+            self:Print(ERR_AFFECTING_COMBAT)
         end
 
         return
@@ -1072,7 +1072,7 @@ function BuffOverlay:Test(barName, singleAura)
                 anchor = GetTestAnchor()
 
                 if not anchor then
-                    self:Print(format(L["%s Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings."], self:Colorize(L["Note"], "accent")))
+                    self:Print(format(L["%s Frames need to be visible in order to see test icons. If you are using a non-Blizzard frame addon, you will need to make the frames visible either by joining a group or through that addon's settings."], self:Colorize(LABEL_NOTE, "accent")))
                     testTextFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
                 else
                     testTextFrame:SetPoint("BOTTOMLEFT", anchor, "TOPLEFT", 0, 2)
