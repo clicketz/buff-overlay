@@ -4,7 +4,6 @@
 
 This extremely lightweight addon was created for people to quickly and easily see active auras on other players by overlaying that aura on that player's unitframe so you can adjust your gameplay accordingly. Despite its name, BuffOverlay can track both buffs and debuffs.
 
-
 By default, all immunity and damage reduction abilities have been added.
 
 
@@ -45,19 +44,21 @@ AddOns supported as of `v11.9`:
 
 # **Full In-Game UI**
 
-Now supports the ability to control your overlays completely through the in-game menu with persistent custom buffs that will stay through updates.
+Supports the ability to control your overlays completely through the in-game menu with persistent custom buffs that will stay through updates.
 
 ![Settings](https://i.imgur.com/sRWBj42.png "Settings")
 
 ![Spell Tab](https://i.imgur.com/9QeQ3CE.png "Spell Tab")
 
 
-**Contribution:**
+# **Contribution:**
+
+Localization help is always appreciated. BuffOverlay utilizes CurseForge's localization system. If you would like to help translate the addon into your language, please visit BuffOverlay's [localization](https://www.curseforge.com/wow/addons/buff-overlay/localization) page on CurseForge.
 
 - [Report Bugs](https://github.com/clicketz/buff-overlay/issues/new/choose)
 - [Request Feature](https://github.com/clicketz/buff-overlay/issues/new/choose)
 
-**Download:**
+# **Download:**
 
 [WoWInterface](https://www.wowinterface.com/downloads/info24683-BuffOverlay.html)
 
