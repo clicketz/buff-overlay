@@ -178,7 +178,7 @@ local deleteBarDelegate = {
 local path = isRetail and L["Options > Gameplay > Action Bars > Show Numbers for Cooldowns"] or L["Interface > ActionBars > Show Numbers for Cooldowns"]
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
-    text = format(L["In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:\n\n%s\n\nWould you like BuffOverlay to enable this setting for you?\n\n"], BuffOverlay:Colorize(L["Show Blizzard Cooldown Text"], "main"), BuffOverlay:Colorize(path)),
+    text = format(L["In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:%s%s%sWould you like BuffOverlay to enable this setting for you?%s"], BuffOverlay:Colorize(L["Show Blizzard Cooldown Text"], "main"), "\n\n", BuffOverlay:Colorize(path), "\n\n", "\n\n"),
     buttons = {
         {
             text = YES,
@@ -206,7 +206,7 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
 })
 
 LibDialog:Register("ShowVersion", {
-    text = format(L["%s\nCopy this version number and send it to the author if you need help with a bug."], BuffOverlay:Colorize(L["Version"], "main")),
+    text = format(L["%s%sCopy this version number and send it to the author if you need help with a bug."], BuffOverlay:Colorize(L["Version"], "main"), "\n"),
     buttons = {
         {
             text = OKAY,
@@ -344,7 +344,7 @@ local function GetSpells(class, barName)
                                     .. (spellName and format("\n%s %d", BuffOverlay:Colorize(L["Spell ID"]), k) or "")
 
                                 if BuffOverlay.db.profile.buffs[k].children then
-                                    description = description .. BuffOverlay:Colorize(L["\nChild Spell ID(s)\n"])
+                                    description = description .. "\n" .. BuffOverlay:Colorize(L["Child Spell ID(s)"]) .. "\n"
                                     for child in pairs(BuffOverlay.db.profile.buffs[k].children) do
                                         description = description .. child .. "\n"
                                     end
@@ -564,7 +564,7 @@ local function GetSpells(class, barName)
                                 applyToAll = {
                                     name = L["Apply to All"],
                                     type = "execute",
-                                    desc = format(L["Apply %s's custom settings (glow, glow color, glow type, own only, etc) to all auras in %s.\n\nThis does not include any global settings (prio, class, etc)."], formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent")),
+                                    desc = format(L["Apply %s's custom settings (glow, glow color, glow type, own only, etc) to all auras in %s.%sThis does not include any global settings (prio, class, etc)."], formattedName, BuffOverlay:Colorize(BuffOverlay.db.profile.bars[barName].name or barName, "accent"), "\n\n"),
                                     order = 6,
                                     width = 0.95,
                                     func = function()
@@ -720,7 +720,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 order = 1,
                 width = 0.75,
                 func = function()
-                    local text = format(L["Are you sure you want to delete this bar?\n\n%s\n\n"], BuffOverlay:Colorize(bar.name or barName, "main"))
+                    local text = format(L["Are you sure you want to delete this bar?%s%s%s"], "\n\n", BuffOverlay:Colorize(bar.name or barName, "main"), "\n\n")
                     deleteBarDelegate.text = text
 
                     LibDialog:Spawn(deleteBarDelegate, barName)
@@ -1342,7 +1342,7 @@ local customSpellInfo = {
             local spellId = tonumber(info[#info - 1])
             local str = BuffOverlay:Colorize(L["Spell ID"]) .. " " .. spellId
             if BuffOverlay.db.profile.buffs[spellId].children then
-                str = str .. BuffOverlay:Colorize(L["\n\nChild Spell ID(s)\n"])
+                str = str .. "\n\n" .. BuffOverlay:Colorize(L["Child Spell ID(s)"]) .. "\n"
                 for child in pairs(BuffOverlay.db.profile.buffs[spellId].children) do
                     str = str .. child .. "\n"
                 end
@@ -1361,7 +1361,7 @@ local customSpellInfo = {
             if customIcons[spellId] then
                 icon = customIcons[spellId]
             end
-            local text = format(L["Are you sure you want to delete this spell?\n\n%s %s\n\n"], BuffOverlay:GetIconString(icon, 20), spellName)
+            local text = format("%s\n\n%s %s\n\n", L["Are you sure you want to delete this spell?"], BuffOverlay:GetIconString(icon, 20), spellName)
             if BuffOverlay.defaultSpells[spellId] then
                 text = text .. format(L["(%s: This is a default spell. Deleting it from this tab will simply reset all of its values to their defaults, but it will not be removed from the spells tab.)"], BuffOverlay:Colorize(L["Note"], "accent"))
             end
