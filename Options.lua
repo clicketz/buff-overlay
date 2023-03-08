@@ -1833,8 +1833,8 @@ function BuffOverlay:Options()
     -- Main options dialog.
     AceConfig:RegisterOptionsTable("BuffOverlay", self.options)
     AceConfig:RegisterOptionsTable("BuffOverlayDialog", self.priorityListDialog)
-    AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 720)
-    AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 720)
+    AceConfigDialog:SetDefaultSize("BuffOverlay", 635, 730)
+    AceConfigDialog:SetDefaultSize("BuffOverlayDialog", 300, 730)
 
     -------------------------------------------------------------------
     -- Create a simple blizzard options panel to direct users to "/bo"
