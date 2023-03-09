@@ -1006,12 +1006,12 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         width = 1,
                         desc = L["Where the icons will grow from the first icon."],
                         values = {
-                            ["DOWN"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_DOWN,
-                            ["UP"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_UP,
-                            ["LEFT"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_LEFT,
-                            ["RIGHT"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_RIGHT,
-                            ["HORIZONTAL"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_HORIZONTAL,
-                            ["VERTICAL"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_VERTICAL,
+                            ["DOWN"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_DOWN or L["DOWN"],
+                            ["UP"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_UP or L["UP"],
+                            ["LEFT"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_LEFT or L["LEFT"],
+                            ["RIGHT"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ICON_DIRECTION_RIGHT or L["RIGHT"],
+                            ["HORIZONTAL"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_HORIZONTAL or L["HORIZONTAL"],
+                            ["VERTICAL"] = HUD_EDIT_MODE_SETTING_AURA_FRAME_ORIENTATION_VERTICAL or L["VERTICAL"],
                         },
                     },
                     iconXOff = {
