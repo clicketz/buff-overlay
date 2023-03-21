@@ -1269,16 +1269,19 @@ local function ShouldShow(bar, frameType)
         return true
     end
 
+    local instanceType = BuffOverlay.instanceType
+    local numGroupMembers = BuffOverlay.numGroupMembers
+
     if bar.neverShow
         or not bar.frameTypes[frameType]
-        or BuffOverlay.numGroupMembers > bar.maxGroupSize
-        or BuffOverlay.numGroupMembers < bar.minGroupSize
-        or BuffOverlay.instanceType == "none" and not bar.showInWorld
-        or BuffOverlay.instanceType == "pvp" and not bar.showInBattleground
-        or BuffOverlay.instanceType == "arena" and not bar.showInArena
-        or BuffOverlay.instanceType == "party" and not bar.showInDungeon
-        or BuffOverlay.instanceType == "raid" and not bar.showInRaid
-        or BuffOverlay.instanceType == "scenario" and not bar.showInScenario
+        or numGroupMembers > bar.maxGroupSize
+        or numGroupMembers < bar.minGroupSize
+        or instanceType == "none" and not bar.showInWorld
+        or instanceType == "pvp" and not bar.showInBattleground
+        or instanceType == "arena" and not bar.showInArena
+        or instanceType == "party" and not bar.showInDungeon
+        or instanceType == "raid" and not bar.showInRaid
+        or instanceType == "scenario" and not bar.showInScenario
     then
         return false
     end
