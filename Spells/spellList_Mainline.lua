@@ -145,6 +145,8 @@ BuffOverlay.defaultSpells = {
         [L["Drink"]] = { parent = L["Eating/Drinking"] }, --Drink
         [L["Refreshment"]] = { parent = L["Eating/Drinking"] }, --Refreshment
         [185710] = { parent = L["Eating/Drinking"] }, --Sugar-Crusted Fish Feast
+        [L["NewFood"]] = L["NewFood"] ~= "Remove" and { parent = L["Eating/Drinking"] } or nil,
+        [L["NewDrink"]] = L["NewDrink"] ~= "Remove" and { parent = L["Eating/Drinking"] } or nil,
     [320224] = { class = "MISC", prio = 70 }, -- Podtender
     [363522] = { class = "MISC", prio = 70 }, -- Gladiator's Eternal Aegis
     [345231] = { class = "MISC", prio = 70 }, -- Gladiator's Emblem
