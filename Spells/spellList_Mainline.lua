@@ -93,6 +93,7 @@ BuffOverlay.defaultSpells = {
     -- Priest
     [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
     [27827] = { class = "PRIEST", prio = 10 }, --Spirit of Redemption
+        [215769] = { parent = 27827 }, --Spirit of the Redeemer
     [586] = { class = "PRIEST", prio = 50 }, --Fade
     [47585] = { class = "PRIEST", prio = 50 }, --Dispersion
     [33206] = { class = "PRIEST", prio = 50 }, --Pain Suppression
