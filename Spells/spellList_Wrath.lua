@@ -61,7 +61,7 @@ BuffOverlay.defaultSpells = {
 
     -- Priest
     [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
-    [20711] = { class = "PRIEST", prio = 50 }, --Spirit of Redemption
+    [27827] = { class = "PRIEST", prio = 50 }, --Spirit of Redemption
     [47585] = { class = "PRIEST", prio = 50 }, --Dispersion
     [33206] = { class = "PRIEST", prio = 50 }, --Pain Suppression
 
