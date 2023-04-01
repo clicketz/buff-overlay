@@ -47,6 +47,10 @@ BuffOverlay.customIcons = {
     ["Cogwheel"] = 136243,
 }
 
+BuffOverlay.ignoreParentIcons = {
+    [L["Eating/Drinking"]] = true,
+}
+
 local customIcons = BuffOverlay.customIcons
 
 local classIcons = {

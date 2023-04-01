@@ -1431,12 +1431,8 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 if aura then
                     local castByPlayerOrPlayerPet = source == "player" or source == "pet" or source == "vehicle"
 
-                    if aura.parent then
-                        if self.customIcons[aura.parent] then
-                            icon = self.customIcons[aura.parent]
-                        else
-                            icon = select(3, GetSpellInfo(aura.parent)) or icon
-                        end
+                    if aura.parent and not self.ignoreParentIcons[aura.parent] then
+                        icon = self.customIcons[aura.parent] or select(3, GetSpellInfo(aura.parent)) or icon
                     elseif self.customIcons[spellId] then
                         icon = self.customIcons[spellId]
                     end
