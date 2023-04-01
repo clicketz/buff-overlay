@@ -88,6 +88,7 @@ local defaultBarSettings = {
         ["pet"] = true,
         ["blizz"] = true,
         ["assist"] = true,
+        ["player"] = true,
     }
 }
 

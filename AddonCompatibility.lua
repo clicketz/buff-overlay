@@ -158,6 +158,11 @@ local addonFrameInfo = {
             type = "party",
             unit = "unit",
         },
+        {
+            frame = "^SUFUnitplayer$",
+            type = "player",
+            unit = "unit",
+        },
     },
     ["ZPerl"] = {
         {

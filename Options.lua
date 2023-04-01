@@ -1120,11 +1120,11 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                             self:RefreshOverlays(true, barName)
                         end,
                     },
-                    header = {
-                        order = 9,
-                        name = L["Group Size"],
-                        type = "header",
-                    },
+                    -- header = {
+                    --     order = 9,
+                    --     name = L["Group Size"],
+                    --     type = "header",
+                    -- },
                     minGroupSize = {
                         order = 10,
                         name = format("%s %s", L["Group Size"], MINIMUM),
