@@ -8,6 +8,24 @@ local tempFrameCache = {}
 
 BuffOverlay.frames = {}
 
+--[[ addonFrameInfo
+
+    key:    The name of the addon. This key checked with IsAddOnLoaded, so it must match the name of the
+            addon's .toc file exactly.
+
+    frame:  The pattern to match the frame name against. Be as specific as possible, preferrably with beginnings (^)
+            and endings ($) as we want to minimize the number of frames we need to process and avoid attaching
+            to incorrect frames.
+
+    type:   The filter type of frame. This is used to determine which bars to show/hide when the user changes
+            visibility settings.
+
+            Current valid types are "raid", "party", "pet", "tank", "assist", and "player". If adding more types,
+            be sure to update the defaultBarSettings table in BuffOverlay.lua.
+
+    unit:   The name of the key that the addon uses to identify the frame's corresponding displayed unit.
+]]
+
 local addonFrameInfo = {
     ["ElvUI"] = {
         {
