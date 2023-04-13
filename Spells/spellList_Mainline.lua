@@ -46,6 +46,7 @@ BuffOverlay.defaultSpells = {
     [383005] = { class = "EVOKER", prio = 50 }, --Chrono Loop
     [374348] = { class = "EVOKER", prio = 50 }, --Renewing Blaze
     [370960] = { class = "EVOKER", prio = 50 }, --Emerald Communion
+    [363534] = { class = "EVOKER", prio = 50 }, --Rewind
 
     -- Hunter
     [186265] = { class = "HUNTER", prio = 10 }, --Aspect of the Turtle
@@ -142,7 +143,7 @@ BuffOverlay.defaultSpells = {
     [58984] = { class = "MISC", prio = 70 }, --Shadowmeld
 
     -- Misc
-    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, -- Food umbrella
+    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, --Food umbrella
         [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
         [L["Food"]] = { parent = L["Eating/Drinking"] }, --Food
         [L["Drink"]] = { parent = L["Eating/Drinking"] }, --Drink
