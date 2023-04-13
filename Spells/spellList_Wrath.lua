@@ -98,8 +98,11 @@ BuffOverlay.defaultSpells = {
     [871] = { class = "WARRIOR", prio = 50 }, --Shield Wall
     [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection
 
+    -- Racials
+    [58984] = { class = "MISC", prio = 70 }, --Shadowmeld
+
     -- Misc
-    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, -- Food umbrella
+    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, --Food umbrella
         [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
         [L["Food"]] = { parent = L["Eating/Drinking"] }, --Food
         [L["Drink"]] = { parent = L["Eating/Drinking"] }, --Drink

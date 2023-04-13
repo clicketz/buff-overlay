@@ -138,6 +138,9 @@ BuffOverlay.defaultSpells = {
     [190456] = { class = "WARRIOR", prio = 50 }, --Ignore Pain
     [213871] = { class = "WARRIOR", prio = 50 }, --Bodyguard
 
+    -- Racials
+    [58984] = { class = "MISC", prio = 70 }, --Shadowmeld
+
     -- Misc
     [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, -- Food umbrella
         [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
