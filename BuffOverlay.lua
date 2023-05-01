@@ -1381,7 +1381,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay.cooldown.SetFrameLevel = nop
                     end
 
-                    overlay.count:SetScale(bar.stackCountScale)
+                    overlay.count:SetScale(bar.stackCountScale * overlay.size / 20)
                     overlay.count:ClearPointsOffset()
                     overlay.count:SetParent(overlay.stack)
                     overlay.stack:SetShown(bar.showStackCount)
