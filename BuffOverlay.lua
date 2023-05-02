@@ -177,6 +177,17 @@ local broker = LDB:NewDataObject("BuffOverlay", {
     end,
 })
 
+if isRetail then
+    AddonCompartmentFrame:RegisterAddon({
+        text = "BuffOverlay",
+        icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo_transparent",
+        notCheckable = true,
+        func = function()
+            BuffOverlay:ToggleOptions()
+        end,
+    })
+end
+
 function BuffOverlay:OpenOptions()
     AceConfigDialog:Open("BuffOverlay")
     local dialog = AceConfigDialog.OpenFrames["BuffOverlay"]

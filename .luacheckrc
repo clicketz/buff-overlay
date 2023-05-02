@@ -25,6 +25,7 @@ globals = {
     "UpdateSizes",
 
     -- FrameXML Frames
+    "AddonCompartmentFrame",
     "CompactPartyFrame",
     "CompactRaidFrameContainer",
     "CompactRaidFrameManager",
