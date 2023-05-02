@@ -1223,14 +1223,20 @@ local borderPieces = {
     "Right",
 }
 
-local function DisablePixelSnap(border)
+local function DisablePixelSnap(overlay)
+    local border = overlay.border
+    local icon = overlay.icon
+
     for _, pieceName in pairs(borderPieces) do
         local piece = border[pieceName]
         if piece then
+            piece:SetTexelSnappingBias(0.0)
             piece:SetSnapToPixelGrid(false)
-            piece:SetTexelSnappingBias(0)
         end
     end
+
+    icon:SetTexelSnappingBias(0.0)
+    icon:SetSnapToPixelGrid(false)
 end
 
 local function UpdateBorder(overlay)
@@ -1248,7 +1254,7 @@ local function UpdateBorder(overlay)
         overlay.border:SetFrameLevel(overlay:GetFrameLevel() + 5)
         overlay.border.SetFrameLevel = nop
 
-        DisablePixelSnap(overlay.border)
+        DisablePixelSnap(overlay)
     end
 
     local border = overlay.border
