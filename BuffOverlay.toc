@@ -1,4 +1,4 @@
-## Interface: 100007
+## Interface: 100100
 ## Title: BuffOverlay
 ## Notes: Overlays chosen buffs on top of the raidframe.
 ## Author: clicket
