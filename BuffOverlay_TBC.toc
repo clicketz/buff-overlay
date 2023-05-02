@@ -1,6 +1,6 @@
 ## Interface: 20504
 ## Title: BuffOverlay
-## Notes: Overlays chosen buffs on top of the raidframe.
+## Notes: Overlays chosen auras on top of raid/party frames.
 ## Author: clicket
 ## Version: @project-version@
 ## X-Website: https://github.com/clicketz/buff-overlay
