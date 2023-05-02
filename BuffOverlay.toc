@@ -7,6 +7,7 @@
 ## X-Curse-Project-ID: 296067
 ## X-WoWI-ID: 24683
 ## X-Wago-ID: RBKpvqNE
+## IconTexture: Interface\AddOns\BuffOverlay\Media\Textures\logo_transparent
 ## DefaultState: Enabled
 ## SavedVariables: BuffOverlayDB
 
