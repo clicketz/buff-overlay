@@ -21,6 +21,7 @@ BuffOverlay.defaultSpells = {
     [194679] = { class = "DEATHKNIGHT", prio = 50 }, --Rune Tap
     [145629] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Zone
     [81256] = { class = "DEATHKNIGHT", prio = 50 }, --Dancing Rune Weapon
+    [410305] = { class = "DEATHKNIGHT", prio = 50 }, --Bloodforged Armor
 
     -- Demon Hunter
     [196555] = { class = "DEMONHUNTER", prio = 10 }, --Netherwalk
