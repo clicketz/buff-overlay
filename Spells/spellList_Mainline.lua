@@ -114,7 +114,6 @@ BuffOverlay.defaultSpells = {
         [115834] = { parent = 114018 },
 
     -- Shaman
-    [210918] = { class = "SHAMAN", prio = 10 }, --Ethereal Form
     [108271] = { class = "SHAMAN", prio = 50 }, --Astral Shift
     [118337] = { class = "SHAMAN", prio = 50 }, --Harden Skin
     [201633] = { class = "SHAMAN", prio = 50 }, --Earthen Wall Totem
