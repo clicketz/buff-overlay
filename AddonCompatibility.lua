@@ -285,6 +285,13 @@ local addonFrameInfo = {
             unit = "unit",
         },
     },
+    ["PartyPetsFix"] = {
+        {
+            frame = "^PPF_PetButton$",
+            type = "pet",
+            unit = "unit",
+        },
+    },
 }
 
 local function AddOnsExist()
@@ -304,6 +311,23 @@ local function AddOnsExist()
             if addon == "ElvUI" then
                 for i = 1, 5 do
                     framesToFind["ElvUF_PartyGroup1UnitButton" .. i .. "Pet"] = { unit = "unit", type = "pet" }
+                end
+            end
+
+            -- PartyPets Fix does not create button frames with unique names, so we
+            -- have to add them manually.
+            if addon == "PartyPetsFix" then
+                for i = 1, 4 do
+                    local parent = _G["PPF_P" .. i]
+                    local children = { parent:GetChildren() }
+
+                    for _, child in pairs(children) do
+                        local name = child:GetName()
+                        if name and name:match("^CPPFets_PlayerPetButton$") then
+                            BuffOverlay.frames[child] = { unit = "unit", type = "pet" }
+                            break
+                        end
+                    end
                 end
             end
         end
