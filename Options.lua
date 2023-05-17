@@ -109,9 +109,9 @@ local deleteSpellDelegate = {
                         end
                     end
                     BuffOverlay.db.profile.buffs[spellId].custom = nil
-                    -- for barName in pairs(BuffOverlay.db.profile.bars) do
-                    --     BuffOverlay.db.profile.buffs[spellId].enabled[barName] = false
-                    -- end
+                -- for barName in pairs(BuffOverlay.db.profile.bars) do
+                --     BuffOverlay.db.profile.buffs[spellId].enabled[barName] = false
+                -- end
                 else
                     BuffOverlay.db.profile.buffs[spellId] = nil
                 end

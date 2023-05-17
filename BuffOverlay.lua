@@ -132,14 +132,14 @@ local auraState = {
     glow = {
         enabled = false,
         color = { 1, 1, 1, 1 },
-        n = 8, -- number of lines
-        freq = 0.25, -- frequency of the lines
-        length = nil, -- length of each line
-        thickness = 1, -- thickness of each line
-        xOff = 0, -- x offset
-        yOff = 0, -- y offset
+        n = 8,          -- number of lines
+        freq = 0.25,    -- frequency of the lines
+        length = nil,   -- length of each line
+        thickness = 1,  -- thickness of each line
+        xOff = 0,       -- x offset
+        yOff = 0,       -- y offset
         border = false, -- show a border
-        key = nil, -- key used to register the glow for multiple glows
+        key = nil,      -- key used to register the glow for multiple glows
         type = "blizz", -- blizz / pixel
     },
     ownOnly = false,
@@ -1291,15 +1291,15 @@ local function ShouldShow(bar, frameType)
     local numGroupMembers = BuffOverlay.numGroupMembers
 
     if bar.neverShow
-        or not bar.frameTypes[frameType]
-        or numGroupMembers > bar.maxGroupSize
-        or numGroupMembers < bar.minGroupSize
-        or instanceType == "none" and not bar.showInWorld
-        or instanceType == "pvp" and not bar.showInBattleground
-        or instanceType == "arena" and not bar.showInArena
-        or instanceType == "party" and not bar.showInDungeon
-        or instanceType == "raid" and not bar.showInRaid
-        or instanceType == "scenario" and not bar.showInScenario
+    or not bar.frameTypes[frameType]
+    or numGroupMembers > bar.maxGroupSize
+    or numGroupMembers < bar.minGroupSize
+    or instanceType == "none" and not bar.showInWorld
+    or instanceType == "pvp" and not bar.showInBattleground
+    or instanceType == "arena" and not bar.showInArena
+    or instanceType == "party" and not bar.showInDungeon
+    or instanceType == "raid" and not bar.showInRaid
+    or instanceType == "scenario" and not bar.showInScenario
     then
         return false
     end
@@ -1332,8 +1332,8 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 local overlay = self.overlays[overlayName .. i]
 
                 if not overlay
-                    or overlay.needsUpdate
-                    or overlay.size ~= overlaySize
+                or overlay.needsUpdate
+                or overlay.size ~= overlaySize
                 then
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
@@ -1457,9 +1457,9 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     for barName, bar in pairs(bars) do
                         if ShouldShow(bar, frameType)
-                            and not (barNameToApply and barName ~= barNameToApply)
-                            and (aura.state[barName].enabled or self.test)
-                            and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
+                        and not (barNameToApply and barName ~= barNameToApply)
+                        and (aura.state[barName].enabled or self.test)
+                        and (not aura.state[barName].ownOnly or (aura.state[barName].ownOnly and castByPlayerOrPlayerPet))
                         then
                             rawset(self.priority[barName], #self.priority[barName] + 1, { i, aura.prio, icon, count, duration, expirationTime, dispelType, filter, aura, spellId })
                         end

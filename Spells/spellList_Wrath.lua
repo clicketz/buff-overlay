@@ -9,8 +9,7 @@ local L = BuffOverlay.L
 
  Use the /buffoverlay or /bo command.
 
-------------------------------------------------]]--
-
+------------------------------------------------]]
 -- Lower prio = shown above other buffs
 BuffOverlay.defaultSpells = {
     -- Death Knight
@@ -23,21 +22,21 @@ BuffOverlay.defaultSpells = {
     [22812] = { class = "DRUID", prio = 50 }, --Barkskin
     [22842] = { class = "DRUID", prio = 50 }, --Frenzied Regeneration
     [61336] = { class = "DRUID", prio = 50 }, --Survival Instincts
-    [5215] = { class = "DRUID", prio = 70 }, --Prowl
+    [5215] = { class = "DRUID", prio = 70 },  --Prowl
 
     -- Hunter
     --[34471] = {class = "HUNTER"}, --The Beast Within
     [19263] = { class = "HUNTER", prio = 10 }, --Deterrence
-    [1742] = { class = "HUNTER", prio = 50 }, --Cower (Pet)
+    [1742] = { class = "HUNTER", prio = 50 },  --Cower (Pet)
     [26064] = { class = "HUNTER", prio = 50 }, --Shell Shield (Pet)
     [53476] = { class = "HUNTER", prio = 50 }, --Intervene (Pet)
     [53480] = { class = "HUNTER", prio = 50 }, --Roar of Sacrifice (Pet)
 
     -- Mage
     [45438] = { class = "MAGE", prio = 10 }, --Ice Block
-    [66] = { class = "MAGE", prio = 50 }, --Invisibility
+    [66] = { class = "MAGE", prio = 50 },    --Invisibility
         [32612] = { parent = 66 },
-    [543] = { class = "MAGE", prio = 50 }, --Fire Ward
+    [543] = { class = "MAGE", prio = 50 },   --Fire Ward
         [8457] = { parent = 543 },
         [8458] = { parent = 543 },
         [10223] = { parent = 543 },
@@ -49,8 +48,8 @@ BuffOverlay.defaultSpells = {
         [28609] = { parent = 6143 },
 
     -- Paladin
-    [642] = { class = "PALADIN", prio = 10 }, --Divine Shield
-    [498] = { class = "PALADIN", prio = 50 }, -- Divine Protection
+    [642] = { class = "PALADIN", prio = 10 },  --Divine Shield
+    [498] = { class = "PALADIN", prio = 50 },  -- Divine Protection
     [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
         [5599] = { parent = 1022 },
         [10278] = { parent = 1022 },
@@ -68,14 +67,14 @@ BuffOverlay.defaultSpells = {
     -- Rogue
     [31224] = { class = "ROGUE", prio = 10 }, --Cloak of Shadows
     [45182] = { class = "ROGUE", prio = 50 }, --Cheating Death
-    [5277] = { class = "ROGUE", prio = 50 }, --Evasion
+    [5277] = { class = "ROGUE", prio = 50 },  --Evasion
         [26669] = { parent = 5277 },
     [14278] = { class = "ROGUE", prio = 50 }, --Ghostly Strike
-    [1784] = { class = "ROGUE", prio = 70 }, --Stealth
+    [1784] = { class = "ROGUE", prio = 70 },  --Stealth
 
     -- Shaman
     [30823] = { class = "SHAMAN", prio = 50 }, --Shamanistic Rage
-    [8178] = { class = "SHAMAN", prio = 50 }, --Grounding Totem
+    [8178] = { class = "SHAMAN", prio = 50 },  --Grounding Totem
 
     -- Warlock
     [6229] = { class = "WARLOCK", prio = 50 }, --Shadow Ward
@@ -91,21 +90,21 @@ BuffOverlay.defaultSpells = {
 
     -- Warrior
     [46924] = { class = "WARRIOR", prio = 10 }, --Bladestorm
-    [2565] = { class = "WARRIOR", prio = 50 }, --Shield Block
-    [3411] = { class = "WARRIOR", prio = 50 }, --Intervene
+    [2565] = { class = "WARRIOR", prio = 50 },  --Shield Block
+    [3411] = { class = "WARRIOR", prio = 50 },  --Intervene
     [12975] = { class = "WARRIOR", prio = 50 }, --Last Stand
     [20230] = { class = "WARRIOR", prio = 50 }, --Retaliation
-    [871] = { class = "WARRIOR", prio = 50 }, --Shield Wall
+    [871] = { class = "WARRIOR", prio = 50 },   --Shield Wall
     [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection
 
     -- Racials
     [58984] = { class = "MISC", prio = 70 }, --Shadowmeld
 
     -- Misc
-    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, --Food umbrella
+    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 },      --Food umbrella
         [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
-        [L["Food"]] = { parent = L["Eating/Drinking"] }, --Food
-        [L["Drink"]] = { parent = L["Eating/Drinking"] }, --Drink
-        [L["Refreshment"]] = { parent = L["Eating/Drinking"] }, --Refreshment
-    [30456] = { class = "MISC", prio = 10 }, --Nigh-Invulnerability
+        [L["Food"]] = { parent = L["Eating/Drinking"] },         --Food
+        [L["Drink"]] = { parent = L["Eating/Drinking"] },        --Drink
+        [L["Refreshment"]] = { parent = L["Eating/Drinking"] },  --Refreshment
+    [30456] = { class = "MISC", prio = 10 },                     --Nigh-Invulnerability
 }
