@@ -9,18 +9,18 @@ local L = BuffOverlay.L
 
  Use the /buffoverlay or /bo command.
 
-------------------------------------------------]]--
+------------------------------------------------]]
 
 -- Lower prio = shown above other buffs
 BuffOverlay.defaultSpells = {
     -- Death Knight
-    [48707] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Shell
-    [48792] = { class = "DEATHKNIGHT", prio = 50 }, --Icebound Fortitude
-    [49039] = { class = "DEATHKNIGHT", prio = 50 }, --Lichborne
-    [55233] = { class = "DEATHKNIGHT", prio = 50 }, --Vampiric Blood
+    [48707] = { class = "DEATHKNIGHT", prio = 50 },  --Anti-Magic Shell
+    [48792] = { class = "DEATHKNIGHT", prio = 50 },  --Icebound Fortitude
+    [49039] = { class = "DEATHKNIGHT", prio = 50 },  --Lichborne
+    [55233] = { class = "DEATHKNIGHT", prio = 50 },  --Vampiric Blood
     [194679] = { class = "DEATHKNIGHT", prio = 50 }, --Rune Tap
     [145629] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Zone
-    [81256] = { class = "DEATHKNIGHT", prio = 50 }, --Dancing Rune Weapon
+    [81256] = { class = "DEATHKNIGHT", prio = 50 },  --Dancing Rune Weapon
     [410305] = { class = "DEATHKNIGHT", prio = 50 }, --Bloodforged Armor
 
     -- Demon Hunter
@@ -32,13 +32,13 @@ BuffOverlay.defaultSpells = {
     [263648] = { class = "DEMONHUNTER", prio = 50 }, --Soul Barrier
 
     -- Druid
-    [203554] = { class = "DRUID", prio = 5 }, --Focused Growth
+    [203554] = { class = "DRUID", prio = 5 },  --Focused Growth
         [347621] = { parent = 203554 },
     [362486] = { class = "DRUID", prio = 10 }, --Tranquility (Druid PVP)
     [102342] = { class = "DRUID", prio = 50 }, --Ironbark
-    [22812] = { class = "DRUID", prio = 50 }, --Barkskin
-    [61336] = { class = "DRUID", prio = 50 }, --Survival Instincts
-    [5215] = { class = "DRUID", prio = 70 }, --Prowl
+    [22812] = { class = "DRUID", prio = 50 },  --Barkskin
+    [61336] = { class = "DRUID", prio = 50 },  --Survival Instincts
+    [5215] = { class = "DRUID", prio = 70 },   --Prowl
 
     -- Evoker
     [363916] = { class = "EVOKER", prio = 50 }, --Obsidian Scales
@@ -51,14 +51,15 @@ BuffOverlay.defaultSpells = {
 
     -- Hunter
     [186265] = { class = "HUNTER", prio = 10 }, --Aspect of the Turtle
-    [53480] = { class = "HUNTER", prio = 50 }, --Roar of Sacrifice
+    [53480] = { class = "HUNTER", prio = 50 },  --Roar of Sacrifice
     [264735] = { class = "HUNTER", prio = 50 }, --Survival of the Fittest (Pet Ability)
-        [281195] = { parent = 264735 }, --Survival of the Fittest (Lone Wolf)
+        [281195] = { parent = 264735 },         --Survival of the Fittest (Lone Wolf)
+    [388035] = { class = "HUNTER", prio = 50 }, --Fortitude of the Bear
     [199483] = { class = "HUNTER", prio = 70 }, --Camouflage
 
     -- Mage
-    [45438] = { class = "MAGE", prio = 10 }, --Ice Block
-    [66] = { class = "MAGE", prio = 50 }, --Invisibility
+    [45438] = { class = "MAGE", prio = 10 },  --Ice Block
+    [66] = { class = "MAGE", prio = 50 },     --Invisibility
         [32612] = { parent = 66 },
     [198158] = { class = "MAGE", prio = 50 }, --Mass Invisibility
     [198111] = { class = "MAGE", prio = 50 }, --Temporal Shield
@@ -79,38 +80,38 @@ BuffOverlay.defaultSpells = {
 
     -- Paladin
     [204018] = { class = "PALADIN", prio = 10 }, --Blessing of Spellwarding
-    [642] = { class = "PALADIN", prio = 10 }, --Divine Shield
+    [642] = { class = "PALADIN", prio = 10 },    --Divine Shield
     [228050] = { class = "PALADIN", prio = 10 }, --Guardian of the Forgotten Queen
-    [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
-    [6940] = { class = "PALADIN", prio = 50 }, --Blessing of Sacrifice
-        [199448] = { parent = 6940 }, --Blessing of Ultimate Sacrifice
-    [498] = { class = "PALADIN", prio = 50 }, --Divine Protection
-    [31850] = { class = "PALADIN", prio = 50 }, --Ardent Defender
-    [86659] = { class = "PALADIN", prio = 50 }, --Guardian of Ancient Kings
+    [1022] = { class = "PALADIN", prio = 10 },   --Blessing of Protection
+    [6940] = { class = "PALADIN", prio = 50 },   --Blessing of Sacrifice
+        [199448] = { parent = 6940 },            --Blessing of Ultimate Sacrifice
+    [498] = { class = "PALADIN", prio = 50 },    --Divine Protection
+    [31850] = { class = "PALADIN", prio = 50 },  --Ardent Defender
+    [86659] = { class = "PALADIN", prio = 50 },  --Guardian of Ancient Kings
     [205191] = { class = "PALADIN", prio = 50 }, --Eye for an Eye
     [184662] = { class = "PALADIN", prio = 50 }, --Shield of Vengeance
-    [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
+    [31821] = { class = "PALADIN", prio = 50 },  --Aura Mastery
     [327193] = { class = "PALADIN", prio = 50 }, --Moment of Glory
 
     -- Priest
-    [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
-    [27827] = { class = "PRIEST", prio = 10 }, --Spirit of Redemption
-        [215769] = { parent = 27827 }, --Spirit of the Redeemer
-    [586] = { class = "PRIEST", prio = 50 }, --Fade
-    [47585] = { class = "PRIEST", prio = 50 }, --Dispersion
-    [33206] = { class = "PRIEST", prio = 50 }, --Pain Suppression
-    [81782] = { class = "PRIEST", prio = 50 }, --Power Word: Barrier
+    [47788] = { class = "PRIEST", prio = 10 },  --Guardian Spirit
+    [27827] = { class = "PRIEST", prio = 10 },  --Spirit of Redemption
+        [215769] = { parent = 27827 },          --Spirit of the Redeemer
+    [586] = { class = "PRIEST", prio = 50 },    --Fade
+    [47585] = { class = "PRIEST", prio = 50 },  --Dispersion
+    [33206] = { class = "PRIEST", prio = 50 },  --Pain Suppression
+    [81782] = { class = "PRIEST", prio = 50 },  --Power Word: Barrier
     [271466] = { class = "PRIEST", prio = 50 }, --Luminous Barrier
-    [19236] = { class = "PRIEST", prio = 50 }, --Desperate Prayer
+    [19236] = { class = "PRIEST", prio = 50 },  --Desperate Prayer
 
     -- Rogue
-    [31224] = { class = "ROGUE", prio = 10 }, --Cloak of Shadows
-    [45182] = { class = "ROGUE", prio = 50 }, --Cheating Death
-    [5277] = { class = "ROGUE", prio = 50 }, --Evasion
-    [1966] = { class = "ROGUE", prio = 50 }, --Feint
-    [1784] = { class = "ROGUE", prio = 70 }, --Stealth
-        [115191] = { parent = 1784 }, --Stealth (Shadowrunner)
-    [11327] = { class = "ROGUE", prio = 70 }, --Vanish
+    [31224] = { class = "ROGUE", prio = 10 },  --Cloak of Shadows
+    [45182] = { class = "ROGUE", prio = 50 },  --Cheating Death
+    [5277] = { class = "ROGUE", prio = 50 },   --Evasion
+    [1966] = { class = "ROGUE", prio = 50 },   --Feint
+    [1784] = { class = "ROGUE", prio = 70 },   --Stealth
+        [115191] = { parent = 1784 },          --Stealth (Shadowrunner)
+    [11327] = { class = "ROGUE", prio = 70 },  --Vanish
     [114018] = { class = "ROGUE", prio = 70 }, --Shroud of Concealment
         [115834] = { parent = 114018 },
 
@@ -122,7 +123,7 @@ BuffOverlay.defaultSpells = {
     [383018] = { class = "SHAMAN", prio = 50 }, --Stoneskin Totem
     [325174] = { class = "SHAMAN", prio = 50 }, --Spirit Link Totem
     [207498] = { class = "SHAMAN", prio = 50 }, --Ancestral Protection Totem
-    [8178] = { class = "SHAMAN", prio = 50 }, --Grounding Totem
+    [8178] = { class = "SHAMAN", prio = 50 },   --Grounding Totem
 
     -- Warlock
     [212295] = { class = "WARLOCK", prio = 50 }, --Nether Ward
@@ -130,13 +131,13 @@ BuffOverlay.defaultSpells = {
     [108416] = { class = "WARLOCK", prio = 50 }, --Dark Pact
 
     -- Warrior
-    [871] = { class = "WARRIOR", prio = 50 }, --Shield Wall
+    [871] = { class = "WARRIOR", prio = 50 },    --Shield Wall
     [118038] = { class = "WARRIOR", prio = 50 }, --Die by the Sword
     [147833] = { class = "WARRIOR", prio = 50 }, --Intervene
-    [23920] = { class = "WARRIOR", prio = 50 }, --Spell Reflection
+    [23920] = { class = "WARRIOR", prio = 50 },  --Spell Reflection
     [184364] = { class = "WARRIOR", prio = 50 }, --Enraged Regeneration
-    [97463] = { class = "WARRIOR", prio = 50 }, --Rallying Cry
-    [12975] = { class = "WARRIOR", prio = 50 }, --Last Stand
+    [97463] = { class = "WARRIOR", prio = 50 },  --Rallying Cry
+    [12975] = { class = "WARRIOR", prio = 50 },  --Last Stand
     [190456] = { class = "WARRIOR", prio = 50 }, --Ignore Pain
     [213871] = { class = "WARRIOR", prio = 50 }, --Bodyguard
 
@@ -144,12 +145,12 @@ BuffOverlay.defaultSpells = {
     [58984] = { class = "MISC", prio = 70 }, --Shadowmeld
 
     -- Misc
-    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 }, --Food umbrella
+    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 },      --Food umbrella
         [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
-        [L["Food"]] = { parent = L["Eating/Drinking"] }, --Food
-        [L["Drink"]] = { parent = L["Eating/Drinking"] }, --Drink
-        [L["Refreshment"]] = { parent = L["Eating/Drinking"] }, --Refreshment
-        [185710] = { parent = L["Eating/Drinking"] }, --Sugar-Crusted Fish Feast
+        [L["Food"]] = { parent = L["Eating/Drinking"] },         --Food
+        [L["Drink"]] = { parent = L["Eating/Drinking"] },        --Drink
+        [L["Refreshment"]] = { parent = L["Eating/Drinking"] },  --Refreshment
+        [185710] = { parent = L["Eating/Drinking"] },            --Sugar-Crusted Fish Feast
         [L["NewFood"]] = L["NewFood"] ~= "Remove" and { parent = L["Eating/Drinking"] } or nil,
         [L["NewDrink"]] = L["NewDrink"] ~= "Remove" and { parent = L["Eating/Drinking"] } or nil,
     [320224] = { class = "MISC", prio = 70 }, -- Podtender
