@@ -25,7 +25,6 @@ BuffOverlay.frames = {}
 
     unit:   The name of the key that the addon uses to identify the frame's corresponding displayed unit.
 ]]
-
 local addonFrameInfo = {
     ["ElvUI"] = {
         {
@@ -345,7 +344,7 @@ local function AddOnsExist()
                     local frame = Scorpio.UI.GetRawUI(self)
 
                     if not BuffOverlay.frames[frame] then
-                        tempFrameCache[frame] = true
+                        tempFrameCache[frame] = frame:GetName()
                     end
 
                     frame.unit = unit
@@ -370,9 +369,7 @@ local function AddOnsExist()
 end
 
 local function cleanFrameCache()
-    for frame in pairs(tempFrameCache) do
-        local name = frame:GetName()
-
+    for frame, name in pairs(tempFrameCache) do
         for addOnFramePattern, data in pairs(enabledPatterns) do
             if name:match(addOnFramePattern) then
                 BuffOverlay.frames[frame] = { unit = data.unit, type = data.type }
@@ -443,7 +440,7 @@ hooksecurefunc("CreateFrame", function(frameType, frameName)
         and frame.IsForbidden
         and not frame:IsForbidden() then
             if not frameName:match("BuffOverlayBar") then
-                tempFrameCache[frame] = true
+                tempFrameCache[frame] = frameName
             end
         end
     end
