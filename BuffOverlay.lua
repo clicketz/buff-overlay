@@ -1283,7 +1283,7 @@ local function sortAuras(a, b)
 end
 
 local function ShouldShow(bar, frameType)
-    if BuffOverlay.test then
+    if BuffOverlay.test and bar.frameTypes[frameType] then
         return true
     end
 
