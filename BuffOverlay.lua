@@ -1283,7 +1283,11 @@ local function sortAuras(a, b)
 end
 
 local function ShouldShow(bar, frameType)
-    if BuffOverlay.test and bar.frameTypes[frameType] then
+    if not bar.frameTypes[frameType] then
+        return false
+    end
+
+    if BuffOverlay.test then
         return true
     end
 
@@ -1291,7 +1295,6 @@ local function ShouldShow(bar, frameType)
     local numGroupMembers = BuffOverlay.numGroupMembers
 
     if bar.neverShow
-    or not bar.frameTypes[frameType]
     or numGroupMembers > bar.maxGroupSize
     or numGroupMembers < bar.minGroupSize
     or instanceType == "none" and not bar.showInWorld
