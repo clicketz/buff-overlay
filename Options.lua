@@ -387,7 +387,7 @@ local function GetSpells(class, barName)
                             width = 0.1,
                             func = function()
                                 local key = k .. barName
-                                BuffOverlay[key] = not BuffOverlay[key]
+                                BuffOverlay[key] = not BuffOverlay[key] or nil
                             end,
                         },
                         glowColor = {
