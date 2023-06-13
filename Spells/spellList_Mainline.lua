@@ -94,6 +94,9 @@ BuffOverlay.defaultSpells = {
     [327193] = { class = "PALADIN", prio = 50 }, --Moment of Glory
 
     -- Priest
+    [197268] = { class = "PRIEST", prio = 10 }, --Ray of Hope
+        [232707] = { parent = 197268 },         --Ray of Hope (Positive)
+        [232708] = { parent = 197268 },         --Ray of Hope (Negative)
     [47788] = { class = "PRIEST", prio = 10 },  --Guardian Spirit
     [27827] = { class = "PRIEST", prio = 10 },  --Spirit of Redemption
         [215769] = { parent = 27827 },          --Spirit of the Redeemer
