@@ -254,6 +254,10 @@ local function GetFirstUnusedNum()
     return #nums + 1
 end
 
+local function masqueCallback()
+    BuffOverlay:RefreshOverlays(true)
+end
+
 function BuffOverlay:AddBar()
     local num = GetFirstUnusedNum()
     local barName = "Bar" .. num
@@ -270,7 +274,10 @@ function BuffOverlay:AddBar()
         end
     end
 
-    bar.group = Masque and Masque:Group("BuffOverlay", bar.name, barName)
+    if Masque then
+        bar.group = Masque:Group("BuffOverlay", bar.name, barName)
+        bar.group:RegisterCallback(masqueCallback)
+    end
 
     self:RefreshOverlays(true)
 end
@@ -296,10 +303,6 @@ end
 local function round(num, numDecimalPlaces)
     local mult = 10 ^ (numDecimalPlaces or 0)
     return math_floor(num * mult + 0.5) / mult
-end
-
-local function masqueCallback()
-    BuffOverlay:RefreshOverlays(true)
 end
 
 local function InsertTestBuff(spellId)
