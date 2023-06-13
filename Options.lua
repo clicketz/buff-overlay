@@ -49,6 +49,7 @@ BuffOverlay.customIcons = {
 
 BuffOverlay.ignoreParentIcons = {
     [L["Eating/Drinking"]] = true,
+    [197268] = true, -- Ray of Hope
 }
 
 local customIcons = BuffOverlay.customIcons
