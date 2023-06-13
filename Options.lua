@@ -608,7 +608,7 @@ function BuffOverlay:CreatePriorityDialog(barName)
             hidden = true,
         },
         desc = {
-            name = format(L["This informational panel is the full list of spells currently enabled for %s in order of priority. Any aura changes made while this panel is open will be reflected here in real time."], self:Colorize((bar.name or barName), "main")),
+            name = format(L["This informational panel is the full list of spells currently enabled for %s in order of priority. Any aura changes made while this panel is open will be reflected here in real time."], self:Colorize((bar.name), "main")),
             type = "description",
             order = 0,
         },
@@ -652,7 +652,7 @@ function BuffOverlay:CreatePriorityDialog(barName)
         end
     end
 
-    self.priorityListDialog.name = self:Colorize((bar.name or barName), "main") .. " " .. L["Enabled Auras Priority List"]
+    self.priorityListDialog.name = self:Colorize((bar.name), "main") .. " " .. L["Enabled Auras Priority List"]
     self.priorityListDialog.args = spells
 end
 
@@ -697,7 +697,7 @@ end
 
 function BuffOverlay:AddBarToOptions(bar, barName)
     self.options.args.bars.args[barName] = {
-        name = bar.name or barName,
+        name = bar.name,
         type = "group",
         childGroups = "tab",
         args = {
@@ -716,6 +716,10 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         AceRegistry:NotifyChange("BuffOverlayDialog")
                     end
 
+                    if bar.group then
+                        bar.group:SetName(val)
+                    end
+
                     self:UpdateSpellOptionsTable()
                 end,
             },
@@ -725,7 +729,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                 order = 1,
                 width = 0.75,
                 func = function()
-                    local text = format(L["Are you sure you want to delete this bar?%s%s%s"], "\n\n", BuffOverlay:Colorize(bar.name or barName, "main"), "\n\n")
+                    local text = format(L["Are you sure you want to delete this bar?%s%s%s"], "\n\n", BuffOverlay:Colorize(bar.name, "main"), "\n\n")
                     deleteBarDelegate.text = text
 
                     LibDialog:Spawn(deleteBarDelegate, barName)
@@ -779,7 +783,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                                 end
                             end
 
-                            self:Print(format(L["Copied settings, anchoring, and visibility tabs from %s to %s"], self:Colorize((self.db.profile.bars[val].name or val), "accent"), self:Colorize((bar.name or barName), "accent")))
+                            self:Print(format(L["Copied settings, anchoring, and visibility tabs from %s to %s"], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize((bar.name), "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },
@@ -862,7 +866,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         name = L["Icon Border"],
                         type = "toggle",
                         width = 0.75,
-                        desc = L["Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present."],
+                        desc = L["Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present. This will be automatically disabled if Masque is enabled for this bar."],
                     },
                     iconBorderColor = {
                         order = 7,
@@ -1207,7 +1211,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                                 AceRegistry:NotifyChange("BuffOverlayDialog")
                             end
 
-                            self:Print(format(L["Copied spells from %s to %s."], self:Colorize((self.db.profile.bars[val].name or val), "accent"), self:Colorize((bar.name or barName), "accent")))
+                            self:Print(format(L["Copied spells from %s to %s."], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize((bar.name), "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },

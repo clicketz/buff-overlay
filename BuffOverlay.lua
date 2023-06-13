@@ -5,6 +5,7 @@ local LDB = LibStub("LibDataBroker-1.1")
 local LCG = LibStub("LibCustomGlow-1.0")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 local version = GetAddOnMetadata("BuffOverlay", "Version")
+local Masque
 
 -- Localization Table
 local L = BuffOverlay.L
@@ -258,7 +259,10 @@ function BuffOverlay:AddBar()
     local barName = "Bar" .. num
 
     self.db.profile.bars[barName] = CopyTable(defaultBarSettings)
-    self:AddBarToOptions(self.db.profile.bars[barName], barName)
+
+    local bar = self.db.profile.bars[barName]
+    bar.name = barName
+    self:AddBarToOptions(bar, barName)
 
     for _, v in pairs(self.db.profile.buffs) do
         if v.state[barName] == nil then
@@ -266,10 +270,16 @@ function BuffOverlay:AddBar()
         end
     end
 
+    bar.group = Masque and Masque:Group("BuffOverlay", bar.name, barName)
+
     self:RefreshOverlays(true)
 end
 
 function BuffOverlay:DeleteBar(barName)
+    if self.db.profile.bars[barName].group then
+        self.db.profile.bars[barName].group:Delete()
+    end
+
     self.db.profile.bars[barName] = nil
     self.options.args.bars.args[barName] = nil
     testBarNames[barName] = nil
@@ -286,6 +296,10 @@ end
 local function round(num, numDecimalPlaces)
     local mult = 10 ^ (numDecimalPlaces or 0)
     return math_floor(num * mult + 0.5) / mult
+end
+
+local function masqueCallback()
+    BuffOverlay:RefreshOverlays(true)
 end
 
 local function InsertTestBuff(spellId)
@@ -737,7 +751,11 @@ local function HideAllOverlays(frame)
 end
 
 local function ValidateBarAttributes()
-    for _, bar in pairs(BuffOverlay.db.profile.bars) do
+    for barName, bar in pairs(BuffOverlay.db.profile.bars) do
+        if not bar.name then
+            bar.name = barName
+        end
+
         for attr, val in pairs(defaultBarSettings) do
             if bar[attr] == nil then
                 if type(val) == "table" then
@@ -862,6 +880,7 @@ function BuffOverlay:OnInitialize()
     self.eventHandler:SetScript("OnEvent", function(_, event)
         if event == "PLAYER_LOGIN" then
             self:InitFrames()
+            Masque = LibStub("Masque", true)
         elseif event == "GROUP_ROSTER_UPDATE" then
             self.numGroupMembers = GetNumGroupMembers()
             if self.addons then
@@ -1242,6 +1261,10 @@ end
 local function UpdateBorder(overlay)
     local bar = overlay.bar
 
+    if overlay.__MSQ_Enabled and bar.iconBorder then
+        bar.iconBorder = false
+    end
+
     -- zoomed in/out
     if bar.iconBorder then
         overlay.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
@@ -1328,6 +1351,13 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
     for barName, bar in pairs(bars) do
         if ShouldShow(bar, frameType) and not (barNameToApply and barName ~= barNameToApply) then
+            if Masque and not bar.group then
+                bar.group = Masque:Group("BuffOverlay", bar.name, barName)
+                bar.group:RegisterCallback(masqueCallback)
+
+                BuffOverlay:RefreshOverlays(true, barName)
+            end
+
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
 
@@ -1345,6 +1375,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         SetupGlow(overlay)
                     end
 
+                    if bar.group and not overlay.__MSQ_Enabled then
+                        bar.group:AddButton(overlay)
+                    end
+
                     overlay.bar = bar
                     overlay.spacing = relativeSpacing
                     overlay.size = overlaySize
@@ -1358,7 +1392,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     overlay.cooldown:SetDrawSwipe(bar.showCooldownSpiral)
                     overlay.cooldown:SetHideCountdownNumbers(not bar.showCooldownNumbers)
-                    overlay.cooldown:SetScale(bar.cooldownNumberScale * overlay.size / 36)
+                    overlay.cooldown:SetScale(overlay.__MSQ_Enabled and 1 or (bar.cooldownNumberScale * overlaySize / 36))
 
                     if bar.showTooltip and not overlay:GetScript("OnEnter") then
                         overlay:SetScript("OnEnter", function(s)
@@ -1382,6 +1416,11 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     overlay:SetScale(bar.iconScale)
                     overlay:SetAlpha(bar.iconAlpha)
                     overlay:SetSize(overlaySize, overlaySize)
+
+                    if bar.group then
+                        bar.group:ReSkin(overlay)
+                    end
+
                     if bar.showTooltip then
                         overlay:SetMouseClickEnabled(false)
                     else
