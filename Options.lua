@@ -608,7 +608,7 @@ function BuffOverlay:CreatePriorityDialog(barName)
             hidden = true,
         },
         desc = {
-            name = format(L["This informational panel is the full list of spells currently enabled for %s in order of priority. Any aura changes made while this panel is open will be reflected here in real time."], self:Colorize((bar.name), "main")),
+            name = format(L["This informational panel is the full list of spells currently enabled for %s in order of priority. Any aura changes made while this panel is open will be reflected here in real time."], self:Colorize(bar.name, "main")),
             type = "description",
             order = 0,
         },
@@ -652,7 +652,7 @@ function BuffOverlay:CreatePriorityDialog(barName)
         end
     end
 
-    self.priorityListDialog.name = self:Colorize((bar.name), "main") .. " " .. L["Enabled Auras Priority List"]
+    self.priorityListDialog.name = self:Colorize(bar.name, "main") .. " " .. L["Enabled Auras Priority List"]
     self.priorityListDialog.args = spells
 end
 
@@ -783,7 +783,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                                 end
                             end
 
-                            self:Print(format(L["Copied settings, anchoring, and visibility tabs from %s to %s"], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize((bar.name), "accent")))
+                            self:Print(format(L["Copied settings, anchoring, and visibility tabs from %s to %s"], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize(bar.name, "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },
@@ -1211,7 +1211,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                                 AceRegistry:NotifyChange("BuffOverlayDialog")
                             end
 
-                            self:Print(format(L["Copied spells from %s to %s."], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize((bar.name), "accent")))
+                            self:Print(format(L["Copied spells from %s to %s."], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize(bar.name, "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },
