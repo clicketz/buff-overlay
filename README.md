@@ -17,30 +17,31 @@ You can have multiple (as many as you want) separate "bars" of auras on your fra
 
 # **Multi AddOn Support**
 
-AddOns supported as of `v11.9`:
+AddOns supported as of `v12.6`:
 
+- AltzUI
+- Aptechka
+- AshToAsh
+- Blizzard Raid Frames
+- Cell
 - ElvUI
-- VuhDo
+- GW2 UI
 - Grid
 - Grid2
 - HealBot
-- Cell
-- Aptechka
 - InvenRaidFrames3
-- Lime
-- Plexus
-- Tukui
-- Shadowed Unit Frames
-- ZPerl
-- PitBull4
-- NDui
-- oUF
 - KkthxUI
-- GW2 UI
-- AltzUI
-- AshToAsh
-- Blizzard Raid Frames
+- Lime
 - LunaUnitFrames
+- Masque
+- NDui
+- PitBull4
+- Plexus
+- Shadowed Unit Frames
+- Tukui
+- VuhDo
+- ZPerl
+- oUF
 
 # **Full In-Game UI**
 
