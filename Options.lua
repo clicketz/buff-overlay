@@ -866,7 +866,9 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         name = L["Icon Border"],
                         type = "toggle",
                         width = 0.75,
-                        desc = L["Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present. This will be automatically disabled if Masque is enabled for this bar."],
+                        desc = L["Adds a pixel border around the icon. This will also zoom the icon in slightly to remove any default borders that may be present."] ..
+                            "\n\n" ..
+                            L["(Note: This will be automatically disabled if Masque is enabled for this bar.)"],
                     },
                     iconBorderColor = {
                         order = 7,
