@@ -1296,7 +1296,7 @@ local function UpdateBorder(overlay)
 
     border:SetShown(bar.iconBorder)
 
-    UpdateGlowSize(overlay, bar.iconBorder and bar.iconBorderSize or 0)
+    UpdateGlowSize(overlay, bar.iconBorder and pixelSize or 0)
 end
 
 function BuffOverlay:SetupContainer(frame)
@@ -1531,18 +1531,21 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 if data then
                     local olay = self.overlays[overlayName .. overlayNum]
                     local glow = data[9].state[barName].glow
+                    local pixelBorderSize = bar.iconBorder and (olay.border.borderSize + 1) or 1.2
 
                     if glow.enabled then
                         local color = glow.color
                         if glow.type == "blizz" then
+                            olay.border:Hide()
                             LCG.ButtonGlow_Start(olay.glow, color)
                             LCG.PixelGlow_Stop(olay.glow)
                         elseif glow.type == "pixel" then
-                            LCG.PixelGlow_Start(olay.glow, color, glow.n, glow.freq, glow.length, glow.thickness, glow.xOff, glow.yOff, glow.border, glow.key)
+                            LCG.PixelGlow_Start(olay.glow, color, glow.n, glow.freq, glow.length, pixelBorderSize, glow.xOff, glow.yOff, glow.border, glow.key)
                             LCG.ButtonGlow_Stop(olay.glow)
                         end
                         olay.glow:Show()
                     elseif olay.glow:IsShown() then
+                        olay.border:SetShown(bar.iconBorder)
                         LCG.ButtonGlow_Stop(olay.glow)
                         LCG.PixelGlow_Stop(olay.glow)
                         olay.glow:Hide()
