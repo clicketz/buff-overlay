@@ -1383,7 +1383,6 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     end
 
                     overlay.bar = bar
-                    overlay.spacing = relativeSpacing
                     overlay.size = overlaySize
 
                     if overlay.size <= 0 then
@@ -1450,23 +1449,25 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     overlay:ClearAllPoints()
 
+                    UpdateBorder(overlay)
+
+                    overlay.spacing = relativeSpacing + (bar.iconBorder and (overlay.border.borderSize * 2) or 0)
+
                     if i == 1 then
                         overlay:SetPoint(bar.iconAnchor, frame.BuffOverlays, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
                     else
                         local prevOverlay = self.overlays[overlayName .. (i - 1)]
 
                         if bar.growDirection == "DOWN" then
-                            overlay:SetPoint("TOP", prevOverlay, "BOTTOM", 0, -relativeSpacing)
+                            overlay:SetPoint("TOP", prevOverlay, "BOTTOM", 0, -overlay.spacing)
                         elseif bar.growDirection == "LEFT" then
-                            overlay:SetPoint("BOTTOMRIGHT", prevOverlay, "BOTTOMLEFT", -relativeSpacing, 0)
+                            overlay:SetPoint("BOTTOMRIGHT", prevOverlay, "BOTTOMLEFT", -overlay.spacing, 0)
                         elseif bar.growDirection == "UP" or bar.growDirection == "VERTICAL" then
-                            overlay:SetPoint("BOTTOM", prevOverlay, "TOP", 0, relativeSpacing)
+                            overlay:SetPoint("BOTTOM", prevOverlay, "TOP", 0, overlay.spacing)
                         else
-                            overlay:SetPoint("BOTTOMLEFT", prevOverlay, "BOTTOMRIGHT", relativeSpacing, 0)
+                            overlay:SetPoint("BOTTOMLEFT", prevOverlay, "BOTTOMRIGHT", overlay.spacing, 0)
                         end
                     end
-
-                    UpdateBorder(overlay)
 
                     self.overlays[overlayName .. i] = overlay
                 end
