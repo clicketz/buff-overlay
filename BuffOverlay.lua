@@ -880,8 +880,10 @@ function BuffOverlay:OnInitialize()
     self.eventHandler:RegisterEvent("PLAYER_LOGIN")
     self.eventHandler:RegisterEvent("PLAYER_ENTERING_WORLD")
     self.eventHandler:RegisterEvent("GROUP_ROSTER_UPDATE")
+    self.eventHandler:RegisterEvent("UI_SCALE_CHANGED")
     self.eventHandler:SetScript("OnEvent", function(_, event)
         if event == "PLAYER_LOGIN" then
+            self.pixelFactor = PixelUtil.GetPixelToUIUnitFactor()
             self:InitFrames()
             Masque = LibStub("Masque", true)
         elseif event == "GROUP_ROSTER_UPDATE" then
@@ -899,6 +901,8 @@ function BuffOverlay:OnInitialize()
             C_Timer.After(0, function()
                 self:UpdateUnits()
             end)
+        elseif event == "UI_SCALE_CHANGED" then
+            self.pixelFactor = PixelUtil.GetPixelToUIUnitFactor()
         end
     end)
 
@@ -1286,7 +1290,7 @@ local function UpdateBorder(overlay)
     local size = bar.iconBorderSize - 1
     local borderColor = bar.iconBorderColor
 
-    local pixelFactor = PixelUtil.GetPixelToUIUnitFactor()
+    local pixelFactor = BuffOverlay.pixelFactor
     local pixelSize = (pixelFactor / 2) + (pixelFactor * size)
 
     border:SetBorderSizes(pixelSize, pixelSize, pixelSize, pixelSize)
@@ -1450,7 +1454,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     UpdateBorder(overlay)
 
-                    overlay.spacing = relativeSpacing + (bar.iconBorder and (overlay.border.borderSize * 2) or 0)
+                    overlay.spacing = relativeSpacing + (bar.iconBorder and ((overlay.border.borderSize * 3) / bar.iconScale) or 0)
 
                     if i == 1 then
                         overlay:SetPoint(bar.iconAnchor, frame.BuffOverlays, bar.iconRelativePoint, bar.iconXOff, bar.iconYOff)
