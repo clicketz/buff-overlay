@@ -1220,18 +1220,17 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
     overlay:Show()
 end
 
-local function UpdateGlowSize(overlay, size)
+local function UpdateGlowSize(overlay)
     local glow = overlay.glow
-    size = size / 2
-    glow:SetPoint("TOPLEFT", -size, size)
-    glow:SetPoint("BOTTOMRIGHT", size, -size)
+    local w, h = overlay:GetSize()
+    glow:SetSize(w * 1.3, h * 1.3)
 end
 
 local function SetupGlow(overlay)
     if not overlay.glow then
         -- Use this frame to ensure the glow is always on top
         local glow = CreateFrame("Frame", nil, overlay)
-        glow:SetAllPoints()
+        glow:SetPoint("CENTER", overlay, "CENTER", 0, 0)
         glow:SetFrameLevel(overlay:GetFrameLevel() + 6)
         overlay.glow = glow
     end
@@ -1296,7 +1295,7 @@ local function UpdateBorder(overlay)
 
     border:SetShown(bar.iconBorder)
 
-    UpdateGlowSize(overlay, bar.iconBorder and pixelSize or 0)
+    UpdateGlowSize(overlay)
 end
 
 function BuffOverlay:SetupContainer(frame)
@@ -1539,16 +1538,16 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         if glow.type == "blizz" then
                             olay.border:Hide()
                             LCG.ButtonGlow_Start(olay.glow, color)
-                            LCG.PixelGlow_Stop(olay.glow)
+                            LCG.PixelGlow_Stop(olay)
                         elseif glow.type == "pixel" then
-                            LCG.PixelGlow_Start(olay.glow, color, glow.n, glow.freq, glow.length, pixelBorderSize, glow.xOff, glow.yOff, glow.border, glow.key)
+                            LCG.PixelGlow_Start(olay, color, glow.n, glow.freq, glow.length, pixelBorderSize, glow.xOff, glow.yOff, glow.border, glow.key)
                             LCG.ButtonGlow_Stop(olay.glow)
                         end
                         olay.glow:Show()
                     elseif olay.glow:IsShown() then
                         olay.border:SetShown(bar.iconBorder)
                         LCG.ButtonGlow_Stop(olay.glow)
-                        LCG.PixelGlow_Stop(olay.glow)
+                        LCG.PixelGlow_Stop(olay)
                         olay.glow:Hide()
                     end
 
