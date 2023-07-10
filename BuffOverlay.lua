@@ -237,21 +237,13 @@ function BuffOverlay:Print(...)
 end
 
 local function GetFirstUnusedNum()
-    local nums = {}
+    local num = 1
 
-    for name in pairs(BuffOverlay.db.profile.bars) do
-        rawset(nums, #nums + 1, tonumber(string.match(name, "%d+")))
+    while BuffOverlay.db.profile.bars["Bar" .. num] do
+        num = num + 1
     end
 
-    table_sort(nums)
-
-    for i, num in ipairs(nums) do
-        if i ~= num then
-            return i
-        end
-    end
-
-    return #nums + 1
+    return num
 end
 
 local function masqueCallback()
