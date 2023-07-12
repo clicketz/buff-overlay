@@ -1536,7 +1536,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
         if ShouldShow(bar, frameType) and not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local overlayNum = 1
-            local activeOverlays = nil
+            local activeOverlays = 0
 
             if #self.priority[barName] > 1 then
                 table_sort(self.priority[barName], sortAuras)
@@ -1581,26 +1581,22 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     end
 
                     SetOverlayAura(olay, data[1], data[3], data[4], data[5], data[6], data[7], data[8], data[10])
-                else
-                    if not activeOverlays then
-                        activeOverlays = overlayNum - 1
-                    end
 
+                    activeOverlays = activeOverlays + 1
+                else
                     olay:Hide()
                 end
 
                 overlayNum = overlayNum + 1
             end
 
-            overlayNum = activeOverlays
-
-            if overlayNum > 0 and (bar.growDirection == "HORIZONTAL" or bar.growDirection == "VERTICAL") then
+            if activeOverlays > 0 and (bar.growDirection == "HORIZONTAL" or bar.growDirection == "VERTICAL") then
                 local overlay1 = self.overlays[overlayName .. 1]
                 local width, height = overlay1:GetSize()
                 local point, relativeTo, relativePoint, xOfs, yOfs = overlay1:GetPoint()
 
-                local x = bar.growDirection == "HORIZONTAL" and (-(width / 2) * (overlayNum - 1) + bar.iconXOff - (((overlayNum - 1) / 2) * overlay1.spacing)) or xOfs
-                local y = bar.growDirection == "VERTICAL" and (-(height / 2) * (overlayNum - 1) + bar.iconYOff - (((overlayNum - 1) / 2) * overlay1.spacing)) or yOfs
+                local x = bar.growDirection == "HORIZONTAL" and (-(width / 2) * (activeOverlays - 1) + bar.iconXOff - (((activeOverlays - 1) / 2) * overlay1.spacing)) or xOfs
+                local y = bar.growDirection == "VERTICAL" and (-(height / 2) * (activeOverlays - 1) + bar.iconYOff - (((activeOverlays - 1) / 2) * overlay1.spacing)) or yOfs
 
                 overlay1:SetPoint(point, relativeTo, relativePoint, x, y)
             end
