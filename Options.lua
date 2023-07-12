@@ -482,6 +482,7 @@ local function GetSpells(class, barName)
                                         if BuffOverlay.db.profile.buffs[k].UpdateChildren then
                                             BuffOverlay.db.profile.buffs[k]:UpdateChildren()
                                         end
+                                        BuffOverlay:HideGlows()
                                         BuffOverlay:RefreshOverlays(true, barName, true)
                                     end,
                                 },
