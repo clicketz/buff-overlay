@@ -591,6 +591,7 @@ local function GetSpells(class, barName)
                                 },
                                 customColor = {
                                     name = L["Custom Glow Color"],
+                                    desc = L["Toggle whether or not to use a custom color for glow."],
                                     type = "toggle",
                                     order = 7,
                                     width = 0.75,
