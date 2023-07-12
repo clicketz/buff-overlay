@@ -141,7 +141,7 @@ local auraState = {
         yOff = 0,       -- y offset
         border = false, -- show a border
         key = nil,      -- key used to register the glow for multiple glows
-        type = "blizz", -- blizz / pixel
+        type = "blizz", -- blizz / pixel / oldBlizz
     },
     ownOnly = false,
 }
@@ -1533,17 +1533,36 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         local color = glow.color
                         if glow.type == "blizz" then
                             olay.border:Hide()
-                            LCG.ButtonGlow_Start(olay.glow, color)
+                            if isRetail then
+                                LCG.ProcGlow_Start(olay, { color = color, startAnim = false, xOffset = 1, yOffset = 1 })
+                            else
+                                LCG.ButtonGlow_Start(olay.glow, color)
+                            end
                             LCG.PixelGlow_Stop(olay)
                         elseif glow.type == "pixel" then
                             LCG.PixelGlow_Start(olay, color, glow.n, glow.freq, glow.length, pixelBorderSize, glow.xOff, glow.yOff, glow.border, glow.key)
-                            LCG.ButtonGlow_Stop(olay.glow)
+                            if isRetail then
+                                LCG.ProcGlow_Stop(olay)
+                            else
+                                LCG.ButtonGlow_Stop(olay.glow)
+                            end
+                        elseif glow.type == "oldBlizz" then
+                            olay.border:Hide()
+                            LCG.ButtonGlow_Start(olay.glow, color)
+                            LCG.PixelGlow_Stop(olay)
+                            if isRetail then
+                                LCG.ProcGlow_Stop(olay)
+                            end
                         end
                         olay.glow:Show()
-                    elseif olay.glow:IsShown() then
+                    else
                         olay.border:SetShown(bar.iconBorder)
-                        LCG.ButtonGlow_Stop(olay.glow)
                         LCG.PixelGlow_Stop(olay)
+                        if isRetail then
+                            LCG.ProcGlow_Stop(olay)
+                        else
+                            LCG.ButtonGlow_Stop(olay.glow)
+                        end
                         olay.glow:Hide()
                     end
 

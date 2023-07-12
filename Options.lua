@@ -472,6 +472,7 @@ local function GetSpells(class, barName)
                                     values = {
                                         ["blizz"] = L["Action Button"],
                                         ["pixel"] = L["Pixel"],
+                                        ["oldBlizz"] = isRetail and L["Legacy Blizzard"] or nil,
                                     },
                                     get = function()
                                         return BuffOverlay.db.profile.buffs[k].state[barName].glow.type
