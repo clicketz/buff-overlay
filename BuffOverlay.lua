@@ -1536,6 +1536,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
         if ShouldShow(bar, frameType) and not (barNameToApply and barName ~= barNameToApply) then
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
             local overlayNum = 1
+            local activeOverlays = nil
 
             if #self.priority[barName] > 1 then
                 table_sort(self.priority[barName], sortAuras)
@@ -1581,13 +1582,17 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     SetOverlayAura(olay, data[1], data[3], data[4], data[5], data[6], data[7], data[8], data[10])
                 else
+                    if not activeOverlays then
+                        activeOverlays = overlayNum - 1
+                    end
+
                     olay:Hide()
                 end
 
                 overlayNum = overlayNum + 1
             end
 
-            overlayNum = overlayNum - 1
+            overlayNum = activeOverlays
 
             if overlayNum > 0 and (bar.growDirection == "HORIZONTAL" or bar.growDirection == "VERTICAL") then
                 local overlay1 = self.overlays[overlayName .. 1]
