@@ -87,9 +87,9 @@ local defaultBarSettings = {
         ["party"] = true,
         ["tank"] = true,
         ["pet"] = true,
-        ["blizz"] = true,
         ["assist"] = true,
         ["player"] = true,
+        ["arena"] = true,
     }
 }
 
@@ -1573,18 +1573,6 @@ end
 -- For Blizzard Frames
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     if not frame.buffFrames then return end
-
-    if BuffOverlay.frames and not BuffOverlay.frames[frame] then
-        BuffOverlay.frames[frame] = {
-            unit = "displayedUnit",
-            blizz = true,
-            type = "blizz",
-        }
-    end
-
-    if BuffOverlay.blizzFrames and not BuffOverlay.blizzFrames[frame] then
-        BuffOverlay.blizzFrames[frame] = true
-    end
 
     BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
 end)
