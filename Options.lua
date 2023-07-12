@@ -398,7 +398,7 @@ local function GetSpells(class, barName)
                             width = 0.1,
                             hasAlpha = true,
                             hidden = function()
-                                return not BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled
+                                return not BuffOverlay.db.profile.buffs[k].state[barName].glow.customColor
                             end,
                             get = function()
                                 return unpack(BuffOverlay.db.profile.buffs[k].state[barName].glow.color)
@@ -586,6 +586,22 @@ local function GetSpells(class, barName)
                                                     end
                                                 end
                                             end
+                                        end
+                                        BuffOverlay:RefreshOverlays(true, barName, true)
+                                    end,
+                                },
+                                customColor = {
+                                    name = L["Custom Glow Color"],
+                                    type = "toggle",
+                                    order = 7,
+                                    width = 0.75,
+                                    get = function()
+                                        return BuffOverlay.db.profile.buffs[k].state[barName].glow.customColor
+                                    end,
+                                    set = function(_, value)
+                                        BuffOverlay.db.profile.buffs[k].state[barName].glow.customColor = value
+                                        if BuffOverlay.db.profile.buffs[k].UpdateChildren then
+                                            BuffOverlay.db.profile.buffs[k]:UpdateChildren()
                                         end
                                         BuffOverlay:RefreshOverlays(true, barName, true)
                                     end,

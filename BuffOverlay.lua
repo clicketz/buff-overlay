@@ -133,6 +133,7 @@ local auraState = {
     glow = {
         enabled = false,
         color = { 1, 1, 1, 1 },
+        customColor = false,
         n = 8,          -- number of lines
         freq = 0.25,    -- frequency of the lines
         length = nil,   -- length of each line
@@ -1549,7 +1550,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     local pixelBorderSize = bar.iconBorder and (olay.border.borderSize + 1) or 1.2
 
                     if glow.enabled then
-                        local color = glow.color
+                        local color = glow.customColor and glow.color or nil
 
                         if olay.glowing ~= glow.type then
                             olay:StopAllGlows()
