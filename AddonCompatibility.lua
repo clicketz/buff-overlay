@@ -20,7 +20,7 @@ BuffOverlay.frames = {}
     type:   The filter type of frame. This is used to determine which bars to show/hide when the user changes
             visibility settings.
 
-            Current valid types are "raid", "party", "pet", "tank", "assist", and "player". If adding more types,
+            Current valid types are "arena", "raid", "party", "pet", "tank", "assist", and "player". If adding more types,
             be sure to update the defaultBarSettings table in BuffOverlay.lua.
 
     unit:   The name of the key that the addon uses to identify the frame's corresponding displayed unit.
@@ -293,6 +293,34 @@ local addonFrameInfo = {
     },
 }
 
+local blizzardFrameInfo = {
+    {
+        frame = "^CompactRaidGroup%d+Member%d+",
+        type = "raid",
+        unit = "displayedUnit",
+    },
+    {
+        frame = "^CompactRaidFrame%d+",
+        type = "raid",
+        unit = "displayedUnit",
+    },
+    {
+        frame = "^CompactPartyFrameMember%d+$",
+        type = "party",
+        unit = "displayedUnit",
+    },
+    {
+        frame = "^CompactPartyFramePet%d+$",
+        type = "pet",
+        unit = "displayedUnit",
+    },
+    {
+        frame = "^CompactArenaFrameMember%d+$",
+        type = "arena",
+        unit = "displayedUnit",
+    },
+}
+
 local function AddOnsExist()
     local addonsExist = false
     for addon, info in pairs(addonFrameInfo) do
@@ -429,6 +457,30 @@ function BuffOverlay:InitFrames()
     end)
 end
 
+-- Blizzard Frames are handled separately because we do not need to scan for them.
+hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
+    if not frame.buffFrames then return end
+
+    if not BuffOverlay.frames[frame] then
+        local name = frame:GetName()
+
+        for _, info in pairs(blizzardFrameInfo) do
+            if name:match(info.frame) then
+                BuffOverlay.frames[frame] = { unit = info.unit, type = info.type, blizz = true }
+                break
+            end
+        end
+    end
+
+    if not BuffOverlay.blizzFrames[frame] then
+        BuffOverlay.blizzFrames[frame] = true
+    end
+end)
+
+-- We obtain frame references entirely from this CreateFrame hook. If an addon does not
+-- give the frames they create a unique name, we cannot get the reference here (since we rely on
+-- looking the frame up in the global table to get the reference) and therefore it needs
+-- to be handled on an addon-specific basis.
 hooksecurefunc("CreateFrame", function(frameType, frameName)
     if not addOnsExist then return end
 

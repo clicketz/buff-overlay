@@ -1111,7 +1111,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                         name = L["Frame Types"],
                         type = "multiselect",
                         width = 0.9,
-                        desc = L["Show overlays on this frame type.\n\nBlizzard frames do not currently support separate types."],
+                        desc = L["Show overlays on this frame type."],
                         values = function()
                             local t = {}
                             for k in pairs(bar.frameTypes) do
