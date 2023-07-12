@@ -300,7 +300,7 @@ local blizzardFrameInfo = {
         unit = "displayedUnit",
     },
     {
-        frame = "^CompactRaidFrame%d+",
+        frame = "^CompactRaidFrame%d+$",
         type = "raid",
         unit = "displayedUnit",
     },
@@ -317,6 +317,11 @@ local blizzardFrameInfo = {
     {
         frame = "^CompactArenaFrameMember%d+$",
         type = "arena",
+        unit = "displayedUnit",
+    },
+    {
+        frame = "^CompactArenaFramePet%d+$",
+        type = "pet",
         unit = "displayedUnit",
     },
 }
