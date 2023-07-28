@@ -150,6 +150,10 @@ local auraState = {
 local broker = LDB:NewDataObject("BuffOverlay", {
     type = "launcher",
     text = "BuffOverlay",
+    label = "BuffOverlayLDB",
+    suffix = "",
+    tooltip = GameTooltip,
+    value = version,
     -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
     icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo",
     OnTooltipShow = function(tooltip)
@@ -158,6 +162,13 @@ local broker = LDB:NewDataObject("BuffOverlay", {
         tooltip:AddLine(format(L["%s to toggle options window."], BuffOverlay:Colorize(L["Left-click"])), 1, 1, 1, false)
         tooltip:AddLine(format(L["%s to toggle test icons."], BuffOverlay:Colorize(L["Right-click"])), 1, 1, 1, false)
         tooltip:AddLine(format(L["%s to toggle the minimap icon."], BuffOverlay:Colorize(L["Shift+Right-click"])), 1, 1, 1, false)
+    end,
+    OnEnter = function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_NONE")
+        GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
+        GameTooltip:ClearLines()
+        self.OnTooltipShow(GameTooltip)
+        GameTooltip:Show()
     end,
     OnClick = function(self, button)
         if button == "LeftButton" then
