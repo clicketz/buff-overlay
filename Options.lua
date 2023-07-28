@@ -358,7 +358,7 @@ local function GetSpells(class, barName)
                                 return description
                             end,
                             get = function(info)
-                                info.option.width = BuffOverlay.db.profile.buffs[k].state[barName].glow.customColor and (optionsWidth - 0.1) or optionsWidth
+                                info.option.width = (BuffOverlay.db.profile.buffs[k].state[barName].glow.customColor and BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled) and (optionsWidth - 0.1) or optionsWidth
                                 return BuffOverlay.db.profile.buffs[k].state[barName].enabled
                             end,
                             set = function(_, value)
@@ -398,7 +398,7 @@ local function GetSpells(class, barName)
                             width = 0.1,
                             hasAlpha = true,
                             hidden = function()
-                                return not BuffOverlay.db.profile.buffs[k].state[barName].glow.customColor
+                                return not (BuffOverlay.db.profile.buffs[k].state[barName].glow.customColor and BuffOverlay.db.profile.buffs[k].state[barName].glow.enabled)
                             end,
                             get = function()
                                 return unpack(BuffOverlay.db.profile.buffs[k].state[barName].glow.color)
