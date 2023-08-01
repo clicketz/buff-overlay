@@ -76,7 +76,17 @@ local addonFrameInfo = {
     },
     ["HealBot"] = {
         {
-            frame = "^HealBot_Action_HealUnit",
+            frame = "^HealBot_Action_HealUnit%d+$",
+            type = "raid",
+            unit = "unit",
+        },
+        {
+            frame = "^HealBot_HealUnit%d+$",
+            type = "raid",
+            unit = "unit",
+        },
+        {
+            frame = "^hbTest_HealUnit%d+$",
             type = "raid",
             unit = "unit",
         },
