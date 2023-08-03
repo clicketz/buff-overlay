@@ -305,7 +305,7 @@ local addonFrameInfo = {
 
 local blizzardFrameInfo = {
     {
-        frame = "^CompactRaidGroup%d+Member%d+",
+        frame = "^CompactRaidGroup%d+Member%d+$",
         type = "raid",
         unit = "displayedUnit",
     },
