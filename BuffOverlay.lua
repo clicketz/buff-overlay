@@ -1460,6 +1460,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay:SetFrameLevel(math_max(frame:GetFrameLevel() + 20, 999))
                         overlay.stack:SetFrameLevel(overlay:GetFrameLevel() + 10)
                         overlay.SetFrameLevel = nop
+                        overlay.stack.SetFrameLevel = nop
                     end
 
                     if overlay.cooldown.SetFrameLevel ~= nop then
