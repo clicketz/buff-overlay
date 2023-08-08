@@ -84,6 +84,7 @@ BuffOverlay.defaultSpells = {
     [642] = { class = "PALADIN", prio = 10 },    --Divine Shield
     [228050] = { class = "PALADIN", prio = 10 }, --Guardian of the Forgotten Queen
     [1022] = { class = "PALADIN", prio = 10 },   --Blessing of Protection
+    [25771] = { class = "PALADIN", prio = 20 },  --Forbearance
     [6940] = { class = "PALADIN", prio = 50 },   --Blessing of Sacrifice
         [199448] = { parent = 6940 },            --Blessing of Ultimate Sacrifice
     [498] = { class = "PALADIN", prio = 50 },    --Divine Protection
