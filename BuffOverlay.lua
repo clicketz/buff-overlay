@@ -270,6 +270,7 @@ function BuffOverlay:AddBar()
 
     local bar = self.db.profile.bars[barName]
     bar.name = barName
+    bar.id = barName
     self:AddBarToOptions(bar, barName)
 
     for _, v in pairs(self.db.profile.buffs) do
@@ -763,6 +764,10 @@ local function ValidateBarAttributes()
             bar.name = barName
         end
 
+        if not bar.id then
+            bar.id = barName
+        end
+
         for attr, val in pairs(defaultBarSettings) do
             if bar[attr] == nil then
                 if type(val) == "table" then
@@ -784,7 +789,7 @@ local function ValidateBarAttributes()
         end
 
         for attribute in pairs(bar) do
-            if attribute ~= "name" then
+            if attribute ~= "name" and attribute ~= "id" then
                 if defaultBarSettings[attribute] == nil then
                     bar[attribute] = nil
                 elseif type(defaultBarSettings[attribute]) == "table" then
@@ -945,17 +950,17 @@ function BuffOverlay:RefreshOverlays(full, barName)
     end
 
     if full then
-        for k in pairs(self.overlays) do
+        for _, overlay in pairs(self.overlays) do
             if barName then
-                if k:match("BuffOverlay" .. barName) then
-                    self.overlays[k]:StopAllGlows()
-                    self.overlays[k]:Hide()
-                    self.overlays[k].needsUpdate = true
+                if overlay.bar.id == barName then
+                    overlay:StopAllGlows()
+                    overlay:Hide()
+                    overlay.needsUpdate = true
                 end
             else
-                self.overlays[k]:StopAllGlows()
-                self.overlays[k]:Hide()
-                self.overlays[k].needsUpdate = true
+                overlay:StopAllGlows()
+                overlay:Hide()
+                overlay.needsUpdate = true
             end
         end
     end
