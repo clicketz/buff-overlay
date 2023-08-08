@@ -484,7 +484,7 @@ local function GetSpells(class, barName)
                                         if BuffOverlay.db.profile.buffs[k].UpdateChildren then
                                             BuffOverlay.db.profile.buffs[k]:UpdateChildren()
                                         end
-                                        BuffOverlay:RefreshOverlays(true, barName, true)
+                                        BuffOverlay:RefreshOverlays(true, barName)
                                     end,
                                 },
                                 space = {
@@ -588,7 +588,7 @@ local function GetSpells(class, barName)
                                                 end
                                             end
                                         end
-                                        BuffOverlay:RefreshOverlays(true, barName, true)
+                                        BuffOverlay:RefreshOverlays(true, barName)
                                     end,
                                 },
                                 customColor = {
@@ -605,7 +605,7 @@ local function GetSpells(class, barName)
                                         if BuffOverlay.db.profile.buffs[k].UpdateChildren then
                                             BuffOverlay.db.profile.buffs[k]:UpdateChildren()
                                         end
-                                        BuffOverlay:RefreshOverlays(true, barName, true)
+                                        BuffOverlay:RefreshOverlays(true, barName)
                                     end,
                                 },
                             },
