@@ -907,6 +907,7 @@ function BuffOverlay:OnInitialize()
             end)
         elseif event == "UI_SCALE_CHANGED" then
             self.pixelFactor = PixelUtil.GetPixelToUIUnitFactor()
+            self:RefreshOverlays(true)
         end
     end)
 
