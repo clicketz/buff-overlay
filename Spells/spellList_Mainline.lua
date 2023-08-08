@@ -59,6 +59,7 @@ BuffOverlay.defaultSpells = {
 
     -- Mage
     [45438] = { class = "MAGE", prio = 10 },  --Ice Block
+    [41425] = { class = "MAGE", prio = 20 },  --Hypothermia
     [66] = { class = "MAGE", prio = 50 },     --Invisibility
         [32612] = { parent = 66 },
     [198158] = { class = "MAGE", prio = 50 }, --Mass Invisibility
