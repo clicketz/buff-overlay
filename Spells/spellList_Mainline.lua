@@ -42,13 +42,14 @@ BuffOverlay.defaultSpells = {
     [5215] = { class = "DRUID", prio = 70 },   --Prowl
 
     -- Evoker
+    [378441] = { class = "EVOKER", prio = 10 }, --Time Stop
     [363916] = { class = "EVOKER", prio = 50 }, --Obsidian Scales
     [357170] = { class = "EVOKER", prio = 50 }, --Time Dilation
-    [378441] = { class = "EVOKER", prio = 10 }, --Time Stop
     [383005] = { class = "EVOKER", prio = 50 }, --Chrono Loop
     [374348] = { class = "EVOKER", prio = 50 }, --Renewing Blaze
     [370960] = { class = "EVOKER", prio = 50 }, --Emerald Communion
     [363534] = { class = "EVOKER", prio = 50 }, --Rewind
+    [404381] = { class = "EVOKER", prio = 50 }, --Defy Fate
 
     -- Hunter
     [186265] = { class = "HUNTER", prio = 10 }, --Aspect of the Turtle
