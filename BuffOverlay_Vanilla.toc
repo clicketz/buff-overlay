@@ -1,0 +1,22 @@
+## Interface: 11404
+## Title: BuffOverlay
+## Notes: Overlays chosen auras on top of raid/party frames.
+## Author: clicket
+## Version: @project-version@
+## X-Website: https://github.com/clicketz/buff-overlay
+## X-Curse-Project-ID: 296067
+## X-WoWI-ID: 24683
+## X-Wago-ID: RBKpvqNE
+## DefaultState: Enabled
+## SavedVariables: BuffOverlayDB
+
+Border.xml
+embeds.xml
+
+Init.lua
+locales.xml
+
+Spells\spellList_Vanilla.lua
+AddonCompatibility.lua
+BuffOverlay.lua
+Options.lua
