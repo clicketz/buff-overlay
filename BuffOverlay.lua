@@ -147,13 +147,9 @@ local auraState = {
     ownOnly = false,
 }
 
-local broker = LDB:NewDataObject("BuffOverlay", {
+local ldbData = {
     type = "launcher",
     text = "BuffOverlay",
-    label = "BuffOverlayLDB",
-    suffix = "",
-    tooltip = GameTooltip,
-    value = version,
     -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
     icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo",
     OnTooltipShow = function(tooltip)
@@ -163,14 +159,7 @@ local broker = LDB:NewDataObject("BuffOverlay", {
         tooltip:AddLine(format(L["%s to toggle test icons."], BuffOverlay:Colorize(L["Right-click"])), 1, 1, 1, false)
         tooltip:AddLine(format(L["%s to toggle the minimap icon."], BuffOverlay:Colorize(L["Shift+Right-click"])), 1, 1, 1, false)
     end,
-    OnEnter = function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_NONE")
-        GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
-        GameTooltip:ClearLines()
-        self.OnTooltipShow(GameTooltip)
-        GameTooltip:Show()
-    end,
-    OnClick = function(self, button)
+    OnClick = function(clickedFrame, button)
         if button == "LeftButton" then
             BuffOverlay:ToggleOptions()
         elseif button == "RightButton" then
@@ -185,10 +174,9 @@ local broker = LDB:NewDataObject("BuffOverlay", {
             end
         end
     end,
-    OnLeave = function()
-        GameTooltip:Hide()
-    end,
-})
+}
+
+local broker = LDB:NewDataObject("BuffOverlay", ldbData)
 
 if isRetail then
     AddonCompartmentFrame:RegisterAddon({
