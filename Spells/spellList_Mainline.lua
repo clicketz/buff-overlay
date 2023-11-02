@@ -67,7 +67,7 @@ BuffOverlay.defaultSpells = {
         [32612] = { parent = 66 },
     [414664] = { class = "MAGE", prio = 50 }, --Mass Invisibility
     [198111] = { class = "MAGE", prio = 50 }, --Temporal Shield
-    [110960] = { class = "MAGE", prio = 50 }, --Greater Invisibility
+    [113862] = { class = "MAGE", prio = 50 }, --Greater Invisibility
     [342246] = { class = "MAGE", prio = 50 }, --Alter Time
         [110909] = { parent = 342246 },
         [108978] = { parent = 342246 },
