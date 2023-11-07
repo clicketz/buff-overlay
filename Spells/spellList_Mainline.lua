@@ -151,6 +151,7 @@ BuffOverlay.defaultSpells = {
     [12975] = { class = "WARRIOR", prio = 50 },  --Last Stand
     [190456] = { class = "WARRIOR", prio = 50 }, --Ignore Pain
     [213871] = { class = "WARRIOR", prio = 50 }, --Bodyguard
+    [424655] = { class = "WARRIOR", prio = 50 }, --Safeguard
 
     -- Racials
     [58984] = { class = "MISC", prio = 70 }, --Shadowmeld
