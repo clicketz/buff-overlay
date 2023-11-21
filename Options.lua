@@ -1251,7 +1251,7 @@ function BuffOverlay:AddBarToOptions(bar, barName)
                             end
 
                             for k, v in pairs(self.db.profile.buffs) do
-                                self.db.profile.buffs[k].enabled[barName] = true
+                                self.db.profile.buffs[k].state[barName].enabled = true
                                 if not v.parent and dialogIsOpen then
                                     AddToPriorityDialog(tostring(k))
                                 end
