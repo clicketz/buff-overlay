@@ -833,6 +833,7 @@ function BuffOverlay:OnInitialize()
     self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
     self.db.RegisterCallback(self, "OnProfileCopied", "FullRefresh")
     self.db.RegisterCallback(self, "OnProfileReset", "FullRefresh")
+    self.db.RegisterCallback(self, "OnDatabaseReset", "FullRefresh")
 
     if self.db.profile.welcomeMessage then
         self:Print(format(L["Type %s or %s to open the options panel or %s for more commands."], self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent"), self:Colorize("/bo help", "accent")))
@@ -846,15 +847,17 @@ function BuffOverlay:OnInitialize()
     self.blizzFrames = {}
 
     -- Clean up old DB entries
+    local reset = false
     for _, content in pairs(self.db.profiles) do
         for attr in pairs(defaultBarSettings) do
             if content[attr] ~= nil then
                 self:Print(format(L["There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing %s in chat."], self:Colorize("/bo", "accent")))
-                wipe(self.db.profile)
-                self.db:ResetProfile()
+                self.db:ResetDB("Default")
+                reset = true
                 break
             end
         end
+        if reset then break end
     end
 
     InitUnits()
