@@ -827,6 +827,24 @@ local function ValidateSpellIds()
     end
 end
 
+local function ValidateDatabase()
+    -- Clean up old DB entries
+    local reset = false
+    for _, content in pairs(BuffOverlay.db.profiles) do
+        for attr in pairs(defaultBarSettings) do
+            if content[attr] ~= nil then
+                BuffOverlay:Print(format(L["There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing %s in chat."], BuffOverlay:Colorize("/bo", "accent")))
+                BuffOverlay.db:ResetDB("Default")
+                reset = true
+                break
+            end
+        end
+        if reset then break end
+    end
+
+    BuffOverlay.db.global.dbVer = LATEST_DB_VERSION
+end
+
 function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
     LDBIcon:Register("BuffOverlay", broker, self.db.profile.minimap)
