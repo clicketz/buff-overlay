@@ -830,14 +830,9 @@ function BuffOverlay:OnInitialize()
 
     ValidateSpellIds()
 
-    if not self.registered then
-        self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
-        self.db.RegisterCallback(self, "OnProfileCopied", "FullRefresh")
-        self.db.RegisterCallback(self, "OnProfileReset", "FullRefresh")
-
-        self:Options()
-        self.registered = true
-    end
+    self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
+    self.db.RegisterCallback(self, "OnProfileCopied", "FullRefresh")
+    self.db.RegisterCallback(self, "OnProfileReset", "FullRefresh")
 
     if self.db.profile.welcomeMessage then
         self:Print(format(L["Type %s or %s to open the options panel or %s for more commands."], self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent"), self:Colorize("/bo help", "accent")))
@@ -904,6 +899,7 @@ function BuffOverlay:OnInitialize()
         end
     end)
 
+    self:Options()
     self:UpdateBuffs()
     UpdateAuraState()
 
