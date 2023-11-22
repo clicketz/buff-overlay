@@ -7,6 +7,8 @@ local LDBIcon = LibStub("LibDBIcon-1.0")
 local version = GetAddOnMetadata("BuffOverlay", "Version")
 local Masque
 
+local LATEST_DB_VERSION = 1.0
+
 -- Localization Table
 local L = BuffOverlay.L
 
@@ -104,6 +106,7 @@ local defaultSettings = {
     },
     global = {
         customBuffs = {},
+        dbVer = 0,
     },
 }
 
