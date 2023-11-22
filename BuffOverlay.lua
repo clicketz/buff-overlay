@@ -750,6 +750,10 @@ local function HideAllOverlays(frame)
 end
 
 local function ValidateBarAttributes()
+    if next(BuffOverlay.db.profile.bars) == nil then
+        BuffOverlay:AddBar()
+    end
+
     for barName, bar in pairs(BuffOverlay.db.profile.bars) do
         if not bar.name then
             bar.name = barName
@@ -850,6 +854,8 @@ function BuffOverlay:OnInitialize()
     LDBIcon:Register("BuffOverlay", broker, self.db.profile.minimap)
 
     ValidateSpellIds()
+    ValidateDatabase()
+    ValidateBarAttributes()
 
     self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
     self.db.RegisterCallback(self, "OnProfileCopied", "FullRefresh")
@@ -867,27 +873,7 @@ function BuffOverlay:OnInitialize()
     self.unitFrames = {}
     self.blizzFrames = {}
 
-    -- Clean up old DB entries
-    local reset = false
-    for _, content in pairs(self.db.profiles) do
-        for attr in pairs(defaultBarSettings) do
-            if content[attr] ~= nil then
-                self:Print(format(L["There has been a major update and unfortunately your profiles need to be reset. Upside though, you can now add BuffOverlay aura bars in multiple locations on your frames! Check it out by typing %s in chat."], self:Colorize("/bo", "accent")))
-                self.db:ResetDB("Default")
-                reset = true
-                break
-            end
-        end
-        if reset then break end
-    end
-
     InitUnits()
-
-    if next(self.db.profile.bars) == nil then
-        self:AddBar()
-    end
-
-    ValidateBarAttributes()
 
     -- EventHandler for third-party addons
     -- Note: More events get added in InitFrames()
