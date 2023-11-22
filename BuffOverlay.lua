@@ -853,8 +853,8 @@ function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
     LDBIcon:Register("BuffOverlay", broker, self.db.profile.minimap)
 
-    ValidateSpellIds()
     ValidateDatabase()
+    ValidateSpellIds()
     ValidateBarAttributes()
 
     self.db.RegisterCallback(self, "OnProfileChanged", "FullRefresh")
