@@ -262,7 +262,7 @@ function BuffOverlay:AddBar()
     local bar = self.db.profile.bars[barName]
     bar.name = barName
     bar.id = barName
-    self:AddBarToOptions(bar, barName)
+    self:TryAddBarToOptions(bar, barName)
 
     for _, v in pairs(self.db.profile.buffs) do
         if v.state[barName] == nil then
@@ -853,6 +853,13 @@ function BuffOverlay:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("BuffOverlayDB", defaultSettings, true)
     LDBIcon:Register("BuffOverlay", broker, self.db.profile.minimap)
 
+    self.numGroupMembers = GetNumGroupMembers()
+    self.overlays = {}
+    self.priority = {}
+    self.units = {}
+    self.unitFrames = {}
+    self.blizzFrames = {}
+
     ValidateDatabase()
     ValidateSpellIds()
     ValidateBarAttributes()
@@ -866,13 +873,7 @@ function BuffOverlay:OnInitialize()
         self:Print(format(L["Type %s or %s to open the options panel or %s for more commands."], self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent"), self:Colorize("/bo help", "accent")))
     end
 
-    self.numGroupMembers = GetNumGroupMembers()
-    self.overlays = {}
-    self.priority = {}
-    self.units = {}
-    self.unitFrames = {}
-    self.blizzFrames = {}
-
+    self:Options()
     InitUnits()
 
     -- EventHandler for third-party addons
@@ -909,7 +910,6 @@ function BuffOverlay:OnInitialize()
         end
     end)
 
-    self:Options()
     self:UpdateBuffs()
     UpdateAuraState()
 
@@ -1379,7 +1379,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
             end
 
             local overlayName = frameName .. "BuffOverlay" .. barName .. "Icon"
-            local relativeSpacing = overlaySize * (bar.iconSpacing / self.options.args.bars.args[barName].args.settings.args.iconSpacing.softMax)
+            local relativeSpacing = overlaySize * (bar.iconSpacing / 20)
 
             for i = 1, bar.iconCount do
                 local overlay = self.overlays[overlayName .. i]

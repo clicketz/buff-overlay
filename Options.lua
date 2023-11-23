@@ -698,10 +698,12 @@ local function GetClasses(barName)
 end
 
 function BuffOverlay:UpdateSpellOptionsTable()
-    for barName in pairs(self.db.profile.bars) do
-        for k, v in pairs(GetClasses(barName)) do
-            if self.options.args.bars.args[barName] then
-                self.options.args.bars.args[barName].args.spells.args[k] = v
+    if self.options then
+        for barName in pairs(self.db.profile.bars) do
+            for k, v in pairs(GetClasses(barName)) do
+                if self.options.args.bars.args[barName] then
+                    self.options.args.bars.args[barName].args.spells.args[k] = v
+                end
             end
         end
     end
@@ -1350,6 +1352,15 @@ function BuffOverlay:AddBarToOptions(bar, barName)
     self:UpdateSpellOptionsTable()
 end
 
+local barCache = {}
+function BuffOverlay:TryAddBarToOptions(bar, barName)
+    if self.options then
+        self:AddBarToOptions(bar, barName)
+    else
+        barCache[bar] = barName
+    end
+end
+
 function BuffOverlay:UpdateBarOptionsTable()
     local options = self.options.args.bars.args
 
@@ -1858,6 +1869,12 @@ function BuffOverlay:Options()
         type = "group",
         args = {},
     }
+
+    -- Add any bar attempted to be added to options
+    -- before options were initialized
+    for bar, barName in pairs(barCache) do
+        self:AddBarToOptions(bar, barName)
+    end
 
     self:UpdateBarOptionsTable()
 
