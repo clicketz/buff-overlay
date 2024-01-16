@@ -1,4 +1,4 @@
-## Interface: 11404
+## Interface: 11500
 ## Title: BuffOverlay
 ## Notes: Overlays chosen auras on top of raid/party frames.
 ## Author: clicket
