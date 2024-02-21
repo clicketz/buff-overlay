@@ -2,7 +2,7 @@
 
 [![Release](https://img.shields.io/github/v/release/clicketz/buff-overlay?display_name=tag&include_prereleases)](https://github.com/clicketz/buff-overlay/releases/latest "Release") [![Build](https://img.shields.io/github/actions/workflow/status/clicketz/buff-overlay/build.yml?branch=master)](https://github.com/clicketz/buff-overlay/actions?workflow=Giftwrap "Build") [![Bugs](https://img.shields.io/github/issues/clicketz/buff-overlay/bug)](https://github.com/clicketz/buff-overlay/labels/bug "Bugs") [![Features](https://img.shields.io/github/issues/clicketz/buff-overlay/enhancement?label=feature%20requests)](https://github.com/clicketz/buff-overlay/labels/enhancement "Enhancements")
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/Q5Q3UQXLI)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/clicket)
 
 ![BuffOverlay](https://i.imgur.com/NRKVqfA.png "BuffOverlay")
 
