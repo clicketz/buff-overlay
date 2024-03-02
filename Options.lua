@@ -20,7 +20,6 @@ local pairs = pairs
 local type = type
 local tonumber = tonumber
 local tostring = tostring
-local Spell = Spell
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CopyTable(CLASS_SORT_ORDER)
 do
@@ -30,12 +29,23 @@ end
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
-local spellDescriptions = {}
 local optionsDisabled = {}
 
 local customSpellDescriptions = {
     [362486] = 353114, -- Keeper of the Grove
 }
+
+-- Fix for Spell:CreateFromSpellID tainting the spellbook and potentially blocking action bars
+-- See: https://github.com/Stanzilla/WoWUIBugs/issues/373 for more information
+-- Credit to: https://github.com/jordonwow/omnibar/pull/246
+local spellDescriptions = CreateFrame("Frame")
+spellDescriptions:SetScript("OnEvent", function(self, event, spellId, success)
+    if success then
+        local id = customSpellDescriptions[spellId] or spellId
+        self[spellId] = GetSpellDescription(id)
+    end
+end)
+spellDescriptions:RegisterEvent("SPELL_DATA_LOAD_RESULT")
 
 local customSpellNames = {
     [228050] = GetSpellInfo(228049),
@@ -320,11 +330,9 @@ local function GetSpells(class, barName)
                     or icon and format("%s%s", BuffOverlay:GetIconString(icon), k) or spellIdStr
 
                 if spellName then
-                    local id = customSpellDescriptions[k] or k
-                    local spell = Spell:CreateFromSpellID(id)
-                    spell:ContinueOnSpellLoad(function()
-                        spellDescriptions[k] = spell:GetSpellDescription()
-                    end)
+                    if not spellDescriptions[k] then
+                        C_Spell.RequestLoadSpellData(k)
+                    end
                 end
 
                 spells[spellIdStr] = {
