@@ -58,7 +58,6 @@ BuffOverlay.defaultSpells = {
 
     -- Rogue
     [5277] = { class = "ROGUE", prio = 50 }, --Evasion
-        [26669] = { parent = 5277 },
     [14278] = { class = "ROGUE", prio = 50 }, --Ghostly Strike
     [1856] = { class = "ROGUE", prio = 50 }, --Vanish
         [1857] = { parent = 1856 },
