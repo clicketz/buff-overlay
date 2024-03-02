@@ -55,6 +55,7 @@ globals = {
     "GetCVarBool",
     "GetLocale",
     "GetNumGroupMembers",
+    "GetSpellDescription",
     "GetSpellInfo",
     "GetSpellTexture",
     "GetTime",
