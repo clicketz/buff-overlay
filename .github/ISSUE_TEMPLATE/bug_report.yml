@@ -34,6 +34,7 @@ body:
     options:
       - Retail
       - Vanilla Classic
+      - Vanilla Classic Season of Discovery
       - The Burning Crusade Classic
       - Wrath of the Lich King Classic
   validations:
