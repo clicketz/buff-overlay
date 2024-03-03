@@ -35,7 +35,7 @@ local customSpellDescriptions = {
     [362486] = 353114, -- Keeper of the Grove
 }
 
--- Fix for Spell:CreateFromSpellID tainting the spellbook and potentially blocking action bars
+-- Fix for ContinueOnSpellLoad tainting the spellbook and potentially blocking action bars
 -- See: https://github.com/Stanzilla/WoWUIBugs/issues/373 for more information
 -- Credit to: https://github.com/jordonwow/omnibar/pull/246
 local spellDescriptions = CreateFrame("Frame")
