@@ -42,7 +42,6 @@ BuffOverlay.defaultSpells = {
     -- Paladin
     [642] = { class = "PALADIN", prio = 10 },  --Divine Shield
     [1022] = { class = "PALADIN", prio = 10 }, --Blessing of Protection
-    [19753] = { class = "PALADIN", prio = 10 }, --Divine Intervention
     [25771] = { class = "PALADIN", prio = 20 }, --Forbearance
     [498] = { class = "PALADIN", prio = 50 },   --Divine Protection
     [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
