@@ -37,7 +37,6 @@ BuffOverlay.defaultSpells = {
     [41425] = { class = "MAGE", prio = 20 }, --Hypothermia
     [66] = { class = "MAGE", prio = 50 },    --Invisibility
     [543] = { class = "MAGE", prio = 50 },   --Fire Ward
-    [6143] = { class = "MAGE", prio = 50 }, --Frost Ward
 
     -- Paladin
     [642] = { class = "PALADIN", prio = 10 },  --Divine Shield
