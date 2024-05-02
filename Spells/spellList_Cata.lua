@@ -31,6 +31,7 @@ BuffOverlay.defaultSpells = {
     [26064] = { class = "HUNTER", prio = 50 }, --Shell Shield (Pet)
     [53476] = { class = "HUNTER", prio = 50 }, --Intervene (Pet)
     [53480] = { class = "HUNTER", prio = 50 }, --Roar of Sacrifice (Pet)
+    [51753] = { class = "HUNTER", prio = 70 }, --Camouflage
 
     -- Mage
     [45438] = { class = "MAGE", prio = 10 }, --Ice Block
