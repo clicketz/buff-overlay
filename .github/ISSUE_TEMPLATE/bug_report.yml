@@ -37,6 +37,7 @@ body:
       - Vanilla Classic Season of Discovery
       - The Burning Crusade Classic
       - Wrath of the Lich King Classic
+      - Cataclysm Classic
   validations:
     required: true
 
