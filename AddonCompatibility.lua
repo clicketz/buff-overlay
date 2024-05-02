@@ -1,6 +1,6 @@
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
-local _G, pairs, IsAddOnLoaded, next, type = _G, pairs, IsAddOnLoaded, next, type
+local pairs, IsAddOnLoaded, next, type = pairs, IsAddOnLoaded, next, type
 local addOnsExist = true
 local enabledPatterns = {}
 local framesToFind = {}
@@ -512,3 +512,10 @@ hooksecurefunc("CreateFrame", function(frameType, frameName)
         end
     end
 end)
+
+-- HACK: Fix for Blizzard bug introduced in Cata classic which breaks LibDialog. Hopefully will get fixed in the future.
+do
+    if not _G.StaticPopup_DisplayedFrames then
+        _G.StaticPopup_DisplayedFrames = {}
+    end
+end

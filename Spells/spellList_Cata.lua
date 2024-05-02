@@ -89,10 +89,3 @@ BuffOverlay.defaultSpells = {
         [L["Drink"]] = { parent = L["Eating/Drinking"] },        --Drink
         [L["Refreshment"]] = { parent = L["Eating/Drinking"] },  --Refreshment
 }
-
--- HACK: Fix for Blizzard bug introduced in Cata classic which breaks LibDialog. Hopefully will get fixed in the future.
-do
-    if not _G.StaticPopup_DisplayedFrames then
-        _G.StaticPopup_DisplayedFrames = {}
-    end
-end
