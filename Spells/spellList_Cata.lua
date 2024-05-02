@@ -58,6 +58,8 @@ BuffOverlay.defaultSpells = {
     [31224] = { class = "ROGUE", prio = 10 }, --Cloak of Shadows
     [45182] = { class = "ROGUE", prio = 50 }, --Cheating Death
     [5277] = { class = "ROGUE", prio = 50 },  --Evasion
+    [74001] = { class = "ROGUE", prio = 50 }, -- Combat Readiness
+    [74002] = { class = "ROGUE", prio = 50 }, -- Combat Insight
     [1784] = { class = "ROGUE", prio = 70 },  --Stealth
 
     -- Shaman
