@@ -8,6 +8,7 @@
 ## X-WoWI-ID: 24683
 ## X-Wago-ID: RBKpvqNE
 ## DefaultState: Enabled
+## IconTexture: Interface\AddOns\BuffOverlay\Media\Textures\logo_transparent
 ## SavedVariables: BuffOverlayDB
 
 Border.xml
