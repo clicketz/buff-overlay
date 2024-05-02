@@ -45,7 +45,6 @@ BuffOverlay.defaultSpells = {
     [25771] = { class = "PALADIN", prio = 20 }, --Forbearance
     [498] = { class = "PALADIN", prio = 50 },   --Divine Protection
     [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
-    [31852] = { class = "PALADIN", prio = 50 }, --Ardent Defender
     [64205] = { class = "PALADIN", prio = 50 }, --Divine Sacrifice
 
     -- Priest
