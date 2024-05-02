@@ -46,6 +46,7 @@ BuffOverlay.defaultSpells = {
     [498] = { class = "PALADIN", prio = 50 },   --Divine Protection
     [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
     [64205] = { class = "PALADIN", prio = 50 }, --Divine Sacrifice
+    [86657] = { class = "PALADIN", prio = 50 }, --Guardian of the Ancient Kings(Prot/Ancient Guardian)
 
     -- Priest
     [47788] = { class = "PRIEST", prio = 10 }, --Guardian Spirit
