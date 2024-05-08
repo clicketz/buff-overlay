@@ -15,6 +15,9 @@ externals:
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1
   Libs/LibDBIcon-1.0: https://repos.curseforge.com/wow/libdbicon-1-0/trunk
   Libs/LibCustomGlow-1.0: https://github.com/Stanzilla/LibCustomGlow
+  Libs/TaintLess:
+    url: https://www.townlong-yak.com/addons.git/taintless
+    commit: default
 
 manual-changelog:
   filename: CHANGELOG.md
