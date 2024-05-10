@@ -9,9 +9,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      
+
       - name: Lua check
         uses: nebularg/actions-luacheck@v1
         with:
+          config: https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
           args: "--no-color --codes -q"
           annotate: warning

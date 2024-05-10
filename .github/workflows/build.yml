@@ -26,6 +26,7 @@ jobs:
       - name: Luacheck
         uses: nebularg/actions-luacheck@v1
         with:
+          config: https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
           args: "--no-color -q"
           annotate: warning
 
