@@ -1,3 +1,4 @@
+---@class BuffOverlay: AceModule
 BuffOverlay = LibStub("AceAddon-3.0"):NewAddon("BuffOverlay", "AceConsole-3.0")
 
 -- Localization Table

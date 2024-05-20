@@ -1,3 +1,4 @@
+---@class BuffOverlay: AceModule
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
 local pairs, IsAddOnLoaded, next, type = pairs, IsAddOnLoaded, next, type

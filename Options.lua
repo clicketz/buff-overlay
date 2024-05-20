@@ -1,3 +1,4 @@
+---@class BuffOverlay: AceModule
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local LibDialog = LibStub("LibDialog-1.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")

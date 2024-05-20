@@ -1,3 +1,4 @@
+---@class BuffOverlay: AceModule
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceRegistry = LibStub("AceConfigRegistry-3.0")
@@ -1382,6 +1383,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
             local relativeSpacing = overlaySize * (bar.iconSpacing / 20)
 
             for i = 1, bar.iconCount do
+                ---@class overlay
                 local overlay = self.overlays[overlayName .. i]
 
                 if not overlay
