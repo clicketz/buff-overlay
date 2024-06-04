@@ -5,7 +5,7 @@ local AceRegistry = LibStub("AceConfigRegistry-3.0")
 local LDB = LibStub("LibDataBroker-1.1")
 local LCG = LibStub("LibCustomGlow-1.0")
 local LDBIcon = LibStub("LibDBIcon-1.0")
-local version = GetAddOnMetadata("BuffOverlay", "Version")
+local version = C_AddOns.GetAddOnMetadata("BuffOverlay", "Version")
 local Masque
 
 local LATEST_DB_VERSION = 1.0
