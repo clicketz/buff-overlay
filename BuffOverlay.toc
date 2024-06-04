@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 11502, 100207, 40400
 ## Title: BuffOverlay
 ## Notes: Overlays chosen auras on top of raid/party frames.
 ## Author: clicket
@@ -17,7 +17,12 @@ embeds.xml
 Init.lua
 locales.xml
 
-Spells\spellList_Mainline.lua
+Spells\Mainline.lua
+Spells\Vanilla.lua
+Spells\TBC.lua
+Spells\Wrath.lua
+Spells\Cata.lua
+
 AddonCompatibility.lua
 BuffOverlay.lua
 Options.lua
