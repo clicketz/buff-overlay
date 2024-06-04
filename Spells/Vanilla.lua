@@ -1,3 +1,5 @@
+if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then return end
+
 ---@class BuffOverlay: AceModule
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 local L = BuffOverlay.L
