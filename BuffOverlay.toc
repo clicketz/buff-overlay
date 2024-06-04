@@ -12,10 +12,10 @@
 ## SavedVariables: BuffOverlayDB
 
 Border.xml
-embeds.xml
+Embeds.xml
 
 Init.lua
-locales.xml
+Locales.xml
 
 Spells\Mainline.lua
 Spells\Vanilla.lua
