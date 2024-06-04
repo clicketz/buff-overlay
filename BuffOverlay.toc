@@ -3,6 +3,7 @@
 ## Notes: Overlays chosen auras on top of raid/party frames.
 ## Author: clicket
 ## Version: @project-version@
+## X-Date: @project-date-iso@
 ## X-Website: https://github.com/clicketz/buff-overlay
 ## X-Curse-Project-ID: 296067
 ## X-WoWI-ID: 24683
