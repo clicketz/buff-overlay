@@ -1,8 +1,15 @@
 if WOW_PROJECT_ID ~= WOW_PROJECT_BURNING_CRUSADE_CLASSIC then return end
 
----@class BuffOverlay: AceModule
-local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
-local L = BuffOverlay.L
+local addonName = ... ---@type string
+
+---@class BuffOverlay: AceAddon
+local addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
+
+---@class Localization: AceModule
+local L = addon:GetModule('Localization')
+
+---@class Spells: AceModule
+local spells = addon:GetModule('Spells')
 
 --[[------------------------------------------------
 
@@ -12,10 +19,9 @@ local L = BuffOverlay.L
 
  Use the /buffoverlay or /bo command.
 
-------------------------------------------------]]--
-
+------------------------------------------------]]
 -- Lower prio = shown above other buffs
-BuffOverlay.defaultSpells = {
+spells.default = {
     -- Druid
     [22812] = { class = "DRUID", prio = 50 }, --Barkskin
     [5215] = { class = "DRUID", prio = 70 },

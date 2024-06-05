@@ -1,8 +1,15 @@
 if WOW_PROJECT_ID ~= WOW_PROJECT_WRATH_CLASSIC then return end
 
----@class BuffOverlay: AceModule
-local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
-local L = BuffOverlay.L
+local addonName = ... ---@type string
+
+---@class BuffOverlay: AceAddon
+local addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
+
+---@class Localization: AceModule
+local L = addon:GetModule('Localization')
+
+---@class Spells: AceModule
+local spells = addon:GetModule('Spells')
 
 --[[------------------------------------------------
 
@@ -14,7 +21,7 @@ local L = BuffOverlay.L
 
 ------------------------------------------------]]
 -- Lower prio = shown above other buffs
-BuffOverlay.defaultSpells = {
+spells.default = {
     -- Death Knight
     [48707] = { class = "DEATHKNIGHT", prio = 50 }, --Anti-Magic Shell
     [47484] = { class = "DEATHKNIGHT", prio = 50 }, --Huddle (Ghoul)
