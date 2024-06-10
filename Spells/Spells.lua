@@ -1,27 +1,49 @@
-local addonName = ... ---@type string
+local addonName = ...
 
 ---@class BuffOverlay: AceAddon
-local addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
+local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Spells: AceModule
 ---@field private default table<number, table>
-local spells = addon:NewModule('Spells')
+local Spells = Addon:NewModule('Spells')
 
-spells.default = {}
+---@class Database: AceModule
+local DB = Addon:GetModule('Database')
 
-function spells:Add(class, spellId, prio)
+Spells.default = {}
+
+---Add a spell to the default
+---@param class string class name
+---@param spellId number
+---@param prio number priority: lower number has higher priority
+function Spells:AddDefault(class, spellId, prio)
     self.default[spellId] = {
         class = class,
         prio = prio,
     }
 end
 
-function spells:AddChild(spellId, parentId)
+function Spells:AddChild(spellId, parentId)
     self.default[spellId] = {
         parent = parentId,
     }
 end
 
-function spells:Get(spellId)
+function Spells:Get(spellId)
     return self.default[spellId]
+end
+
+---@param spellId number
+---@param tbl table
+function Spells:Set(spellId, tbl)
+    self.default[spellId] = tbl
+end
+
+---@param spellId number
+function Spells:Remove(spellId)
+    self.default[spellId] = nil
+end
+
+function Spells:GetAllDefault()
+    return Spells.default
 end
