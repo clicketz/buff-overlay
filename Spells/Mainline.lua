@@ -6,7 +6,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Localization: AceModule
-local Localization = addon:GetModule('Localization')
+local Localization = Addon:GetModule('Localization')
 local L = Localization.L
 
 ---@class Spells: AceModule

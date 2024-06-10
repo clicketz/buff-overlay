@@ -18,6 +18,18 @@ local Util = Addon:GetModule('Util')
 ---@class Options: AceModule
 local Options = Addon:GetModule('Options')
 
+---@class Overlay: AceModule
+local Overlay = Addon:GetModule('Overlay')
+
+---@class Test: AceModule
+local Test = Addon:GetModule('Test')
+
+local Masque
+
+local function masqueCallback()
+    Overlay:RefreshOverlays(true)
+end
+
 ---@return number
 function Bar:GetFirstUnusedNum(bars)
     local num = 1
@@ -59,6 +71,7 @@ end
 function Bar:Delete(name)
     local bars = DB:GetBars()
     local auras = DB:GetAuras()
+    local testBarNames = Test:GetTestBarNames()
 
     if bars[name].group then
         bars[name].group:Delete()
@@ -75,4 +88,8 @@ function Bar:Delete(name)
     end
 
     self:RefreshOverlays(true)
+end
+
+function Bar:OnEnable()
+    Masque = LibStub("Masque", true)
 end

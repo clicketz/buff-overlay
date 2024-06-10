@@ -63,7 +63,7 @@ end
 ---@return number
 function Util:round(num, numDecimalPlaces)
     local mult = 10 ^ (numDecimalPlaces or 0)
-    return math_floor(num * mult + 0.5) / mult
+    return math.floor(num * mult + 0.5) / mult
 end
 
 function Util:GetIconString(icon, iconSize)

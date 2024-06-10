@@ -24,6 +24,13 @@ local LDB = Addon:GetModule('LDB')
 ---@class Bar: AceModule
 local Bar = Addon:GetModule('Bar')
 
+---@class Test: AceModule
+local Test = Addon:GetModule('Test')
+
+---@class Localization: AceModule
+local Localization = addon:GetModule('Localization')
+local L = Localization.L
+
 ---@return DatabaseDefaults
 function DB:GetData()
     return self.data
@@ -267,7 +274,7 @@ function DB:UpdateCustomAuras()
             aura:UpdateChildren()
         end
 
-        InsertTestBuff(spellId)
+        Test:InsertAura(spellId)
     end
 
     self:UpdateSpellOptionsTable()
@@ -331,7 +338,7 @@ function DB:ValidateAuraData()
                     end
                 end
             else
-                InsertTestBuff(k)
+                Test:InsertAura(k)
             end
 
             -- Check to see if any children were deleted and update DB accordingly
@@ -377,7 +384,7 @@ function DB:CreateAuraTable()
             end
         end
         newdb = true
-        ValidateBuffData()
+        self:ValidateAuraData()
     end
 
     return newdb

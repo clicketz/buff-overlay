@@ -15,6 +15,9 @@ local Util = Addon:GetModule('Util')
 ---@class Constants: AceModule
 local Const = Addon:GetModule('Constants')
 
+---@class Compatibility: AceModule
+local Compat = Addon:GetModule('Compatibility')
+
 local testModeEnabled = false
 local testAuras = {}
 local testAuraIds = {}
@@ -44,7 +47,7 @@ function Test:GetTestBarNames()
     return testBarNames
 end
 
-function Test:InsertBuff(spellId)
+function Test:InsertAura(spellId)
     local tex = GetSpellTexture(spellId)
     if tex and not testAuraIds[spellId] then
         rawset(testAuras, #testAuras + 1, { spellId, tex })
@@ -60,7 +63,7 @@ function Test:UnitAura(_, index, filter)
         return key, icon, 3, nil, 60, GetTime() + 60, "player", nil, nil, testSingleAura
     else
         local buff = testAuras[index]
-        local dispelType = Const.DISPEL_TYPES[math_rand(1, 5)]
+        local dispelType = Const.DISPEL_TYPES[math.rand(1, 5)]
 
         if not buff then return end
 
@@ -117,7 +120,7 @@ end)
 ---@param barName string
 ---@param singleAura number
 function Test:Toggle(barName, singleAura)
-    Compatibility:UpdateUnits()
+    Compat:UpdateUnits()
 
     testSingleAura = singleAura
 

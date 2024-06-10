@@ -9,6 +9,9 @@ local Compat = Addon:NewModule('Compatibility')
 ---@class Data: AceModule
 local Data = Addon:GetModule('Data')
 
+---@class Overlay: AceModule
+local Overlay = Addon:GetModule('Overlay')
+
 local addOnsExist = true
 local enabledPatterns = {}
 local framesToFind = {}
@@ -449,7 +452,7 @@ local function updateUnits()
         Data:AddUnitFrame(frame, unit)
     end
 
-    Compat:RefreshOverlays()
+    Overlay:RefreshOverlays()
 end
 
 function Compat:UpdateUnits()

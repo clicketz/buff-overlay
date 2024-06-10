@@ -24,7 +24,16 @@ local Test = Addon:GetModule('Test')
 ---@class Data: AceModule
 local Data = Addon:GetModule('Data')
 
+---@class Util: AceModule
+local Util = Addon:GetModule('Util')
+
+---@class Glow: AceModule
+local Glow = Addon:GetModule('Glow')
+
+local LCG = LibStub("LibCustomGlow-1.0")
+
 local priority = {}
+local Masque
 
 local function ShouldShow(bar, frameType)
     if not bar.frameTypes[frameType] then
@@ -52,6 +61,14 @@ local function ShouldShow(bar, frameType)
     end
 
     return true
+end
+
+local function masqueCallback()
+    Overlay:RefreshOverlays(true)
+end
+
+local function sortAuras(a, b)
+    return a[2] < b[2]
 end
 
 local function SetAura(overlay, index, icon, count, duration, expirationTime, dispelType, filter, spellId)
@@ -99,7 +116,7 @@ end
 
 function Aura:Update(frame, unit, barNameToApply)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
-    if string_find(unit, "target") or unit == "focus" then return end
+    if string.find(unit, "target") or unit == "focus" then return end
 
     if not frame.BuffOverlays then
         Overlay:SetupContainer(frame)
@@ -109,8 +126,8 @@ function Aura:Update(frame, unit, barNameToApply)
     local frameName = frame:GetName()
     local frameType = self.frames[frame] and self.frames[frame].type
     local frameWidth, frameHeight = frame:GetSize()
-    local overlaySize = round(math_min(frameHeight, frameWidth) * 0.33, 1)
-    local UnitAura = Test:IsEnabled() and UnitAuraTest or C_UnitAuras.GetAuraDataByIndex
+    local overlaySize = Util:round(math.min(frameHeight, frameWidth) * 0.33, 1)
+    local UnitAura = Test:IsEnabled() and Test.UnitAura or C_UnitAuras.GetAuraDataByIndex
     local testBarNames = Test:GetTestBarNames()
 
     local bars = next(testBarNames) ~= nil and testBarNames or DB:GetBars()
@@ -138,7 +155,7 @@ function Aura:Update(frame, unit, barNameToApply)
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
                         overlay.stack = CreateFrame("Frame", overlayName .. i .. "StackCount", overlay)
                         overlay.barName = barName
-                        SetupGlow(overlay)
+                        Glow:Setup(overlay)
                     end
 
                     if bar.group and not overlay.__MSQ_Enabled then
@@ -195,7 +212,7 @@ function Aura:Update(frame, unit, barNameToApply)
 
                     -- Fix for addons that recursively change its children's frame levels
                     if overlay.SetFrameLevel ~= nop then
-                        overlay:SetFrameLevel(math_max(frame:GetFrameLevel() + 20, 999))
+                        overlay:SetFrameLevel(math.max(frame:GetFrameLevel() + 20, 999))
                         overlay.stack:SetFrameLevel(overlay:GetFrameLevel() + 10)
                         overlay.SetFrameLevel = nop
                         overlay.stack.SetFrameLevel = nop
@@ -289,7 +306,7 @@ function Aura:Update(frame, unit, barNameToApply)
             local activeOverlays = 0
 
             if #priority[barName] > 1 then
-                table_sort(priority[barName], sortAuras)
+                table.sort(priority[barName], sortAuras)
             end
 
             while overlayNum <= bar.iconCount do
@@ -309,7 +326,7 @@ function Aura:Update(frame, unit, barNameToApply)
 
                         if glow.type == "blizz" then
                             olay.border:Hide()
-                            if isRetail then
+                            if Const.IS_RETAIL then
                                 LCG.ProcGlow_Start(olay, { color = color, startAnim = false, xOffset = 1, yOffset = 1 })
                             else
                                 LCG.ButtonGlow_Start(olay.glow, color)
@@ -352,4 +369,8 @@ function Aura:Update(frame, unit, barNameToApply)
             end
         end
     end
+end
+
+function Aura:OnEnable()
+    Masque = LibStub("Masque", true)
 end

@@ -78,7 +78,7 @@ function Data:AddFrame(frame, unit, type, blizz)
 end
 
 function Data:FrameExists(frame)
-    return framesPerUnit[unit][frame] ~= nil
+    return frames[frame] ~= nil
 end
 
 function Data:GetUnits()

@@ -30,11 +30,17 @@ local Test = Addon:GetModule('Test')
 ---@class GUI: AceModule
 local GUI = Addon:GetModule('GUI')
 
+---@class Localization: AceModule
+local Localization = addon:GetModule('Localization')
+local L = Localization.L
+
 local db = DB:GetData()
 local LibDialog = LibStub("LibDialog-1.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
+
+local optionsDisabled = {}
 
 local CLASS_SORT_ORDER = CopyTable(CLASS_SORT_ORDER)
 do
@@ -131,7 +137,7 @@ local deleteSpellDelegate = {
                     db.profile.auras[spellId] = nil
                 end
 
-                customIcons[spellId] = nil
+                Const.CUSTOM_ICONS[spellId] = nil
 
                 if db.profile.auras[spellId] and db.profile.auras[spellId].children then
                     db.profile.auras[spellId]:UpdateChildren()
@@ -162,7 +168,7 @@ local deleteSpellDelegate = {
 }
 
 -- Change the path for the new options menu in 10.0
-local path = isRetail and L["Options > Gameplay > Action Bars > Show Numbers for Cooldowns"] or L["Interface > ActionBars > Show Numbers for Cooldowns"]
+local path = Const.IS_RETAIL and L["Options > Gameplay > Action Bars > Show Numbers for Cooldowns"] or L["Interface > ActionBars > Show Numbers for Cooldowns"]
 
 LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
     text = format(L["In order for %s setting to work in BuffOverlay, cooldown text needs to be enabled in Blizzard settings. You can find this setting located at:%s%s%sWould you like BuffOverlay to enable this setting for you?%s"], Util:Colorize(L["Show Blizzard Cooldown Text"], "main"), "\n\n", Util:Colorize(path), "\n\n", "\n\n"),
@@ -202,7 +208,7 @@ LibDialog:Register("ShowVersion", {
     editboxes = {
         {
             auto_focus = false,
-            text = format("%s", version),
+            text = format("%s", Const.VERSION),
             width = 200,
         },
     },
@@ -267,8 +273,8 @@ local function GetSpells(class, barName)
                 local spellName, _, icon = GetSpellInfo(k)
                 local spellIdStr = tostring(k)
 
-                if customIcons[k] then
-                    icon = customIcons[k]
+                if Const.CUSTOM_ICONS[k] then
+                    icon = Const.CUSTOM_ICONS[k]
                 end
 
                 if not spellName then
@@ -276,11 +282,11 @@ local function GetSpells(class, barName)
                 end
 
                 if not icon then
-                    icon = customIcons["?"]
+                    icon = Const.CUSTOM_ICONS["?"]
                 end
 
-                if customSpellNames[k] then
-                    spellName = customSpellNames[k]
+                if Const.CUSTOM_SPELL_NAMES[k] then
+                    spellName = Const.CUSTOM_SPELL_NAMES[k]
                 end
 
                 local formattedName = (spellName and icon) and format("%s%s", Util:GetIconString(icon), spellName)
@@ -439,7 +445,7 @@ local function GetSpells(class, barName)
                                     values = {
                                         ["blizz"] = L["Action Button"],
                                         ["pixel"] = L["Pixel"],
-                                        ["oldBlizz"] = isRetail and L["Legacy Blizzard"] or nil,
+                                        ["oldBlizz"] = Const.IS_RETAIL and L["Legacy Blizzard"] or nil,
                                     },
                                     get = function()
                                         return db.profile.auras[k].state[barName].glow.type
@@ -644,7 +650,7 @@ end
 local function GetClasses(barName)
     local classes = {}
     classes["MISC"] = {
-        name = format("%s %s", Util:GetIconString(customIcons["Cogwheel"], 15), Util:Colorize(MISCELLANEOUS, "MISC")),
+        name = format("%s %s", Util:GetIconString(Const.CUSTOM_ICONS["Cogwheel"], 15), Util:Colorize(MISCELLANEOUS, "MISC")),
         order = 99,
         type = "group",
         args = GetSpells("MISC", barName),
@@ -653,7 +659,7 @@ local function GetClasses(barName)
     for i = 1, MAX_CLASSES do
         local className = CLASS_SORT_ORDER[i]
         classes[className] = {
-            name = format("%s %s", Util:GetIconString(classIcons[className], 15), Util:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className)),
+            name = format("%s %s", Util:GetIconString(Const.CLASS_ICONS[className], 15), Util:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className)),
             order = i,
             type = "group",
             args = GetSpells(className, barName),
@@ -1365,8 +1371,8 @@ local customSpellInfo = {
         func = function(info)
             local spellId = tonumber(info[#info - 1])
             local spellName, _, icon = GetSpellInfo(spellId)
-            if customIcons[spellId] then
-                icon = customIcons[spellId]
+            if Const.CUSTOM_ICONS[spellId] then
+                icon = Const.CUSTOM_ICONS[spellId]
             end
             local text = format("%s\n\n%s %s\n\n", L["Are you sure you want to delete this spell?"], Util:GetIconString(icon, 20), spellName)
             if Spells.default[spellId] then
@@ -1390,10 +1396,10 @@ local customSpellInfo = {
             local classes = {}
             -- Use "_MISC" to put Miscellaneous at the end of the list since Ace sorts the dropdown by key. (Hacky, but it works)
             -- _MISC gets converted in the setters/getters, so it won't affect other structures.
-            classes["_MISC"] = format("%s %s", Util:GetIconString(customIcons["Cogwheel"], 15), Util:Colorize(MISCELLANEOUS, "MISC"))
+            classes["_MISC"] = format("%s %s", Util:GetIconString(Const.CUSTOM_ICONS["Cogwheel"], 15), Util:Colorize(MISCELLANEOUS, "MISC"))
             for i = 1, MAX_CLASSES do
                 local className = CLASS_SORT_ORDER[i]
-                classes[className] = format("%s %s", Util:GetIconString(classIcons[className], 15), Util:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
+                classes[className] = format("%s %s", Util:GetIconString(Const.CLASS_ICONS[className], 15), Util:Colorize(LOCALIZED_CLASS_NAMES_MALE[className], className))
             end
             return classes
         end,
@@ -1497,8 +1503,8 @@ local customSpellInfo = {
 
             return icon
                 or select(3, GetSpellInfo(spellId))
-                or customIcons[info[#info - 1]]
-                or customIcons["?"]
+                or Const.CUSTOM_ICONS[info[#info - 1]]
+                or Const.CUSTOM_ICONS["?"]
         end,
         imageCoords = { 0.08, 0.92, 0.08, 0.92 },
     },
@@ -1664,8 +1670,8 @@ local customSpells = {
 
             local name, _, icon = GetSpellInfo(spellId)
 
-            if customIcons[spellId] then
-                icon = customIcons[spellId]
+            if Const.CUSTOM_ICONS[spellId] then
+                icon = Const.CUSTOM_ICONS[spellId]
             end
 
             if name then
@@ -1753,7 +1759,7 @@ function Options:OnInitialize()
             logo = {
                 order = 1,
                 type = "description",
-                name = self:Colorize(L["Author"]) .. ": " .. C_AddOns.GetAddOnMetadata(addonName, "Author") .. "\n" .. self:Colorize(GAME_VERSION_LABEL) .. ": " .. version .. "\n\n",
+                name = self:Colorize(L["Author"]) .. ": " .. Const.AUTHOR .. "\n" .. self:Colorize(GAME_VERSION_LABEL) .. ": " .. Const.VERSION .. "\n\n",
                 fontSize = "medium",
                 -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
                 image = "Interface\\AddOns\\" .. addonName .. "\\Media\\Textures\\logo_transparent",
@@ -1866,7 +1872,7 @@ function Options:OnInitialize()
     title:SetPoint("TOP", 0, -70)
 
     local ver = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-    ver:SetText(version)
+    ver:SetText(Const.VERSION)
     ver:SetFont("Fonts\\FRIZQT__.TTF", 48, "OUTLINE")
     ver:ClearAllPoints()
     ver:SetPoint("TOP", title, "BOTTOM", 0, -20)
@@ -1901,7 +1907,7 @@ function Options:OnInitialize()
     bg:SetAlpha(0.2)
     bg:SetTexCoord(0, 1, 1, 0)
 
-    if isRetail then
+    if Const.IS_RETAIL then
         local category = Settings.RegisterCanvasLayoutCategory(panel, addonName)
         Settings.RegisterAddOnCategory(category)
     else

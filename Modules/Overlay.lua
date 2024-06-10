@@ -42,6 +42,14 @@ function Overlay:SetupContainer(frame)
     frame.BuffOverlays:SetAllPoints()
 end
 
+local function HideAllOverlays(frame)
+    if not frame.BuffOverlays then return end
+
+    for _, child in ipairs({ frame.BuffOverlays:GetChildren() }) do
+        child:Hide()
+    end
+end
+
 function Overlay:RefreshOverlays(full, barName)
     local auras = DB:GetAuras()
     local overlays = Overlay:GetAllOverlays()

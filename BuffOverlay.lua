@@ -9,6 +9,10 @@ local DB = Addon:GetModule('Database')
 ---@class Util: AceModule
 local Util = Addon:GetModule('Util')
 
+---@class Localization: AceModule
+local Localization = addon:GetModule('Localization')
+local L = Localization.L
+
 function Addon:OnInitialize()
     SLASH_BuffOverlay1 = "/bo"
     SLASH_BuffOverlay2 = "/buffoverlay"
