@@ -12,18 +12,28 @@
 ## DefaultState: Enabled
 ## SavedVariables: BuffOverlayDB
 
-Border.xml
 Embeds.xml
 
-Init.lua
-Locales.xml
-
-Spells\Mainline.lua
-Spells\Vanilla.lua
-Spells\TBC.lua
-Spells\Wrath.lua
-Spells\Cata.lua
-
-AddonCompatibility.lua
 BuffOverlay.lua
-Options.lua
+
+Modules\Aura.lua
+Modules\Bar.lua
+Modules\Compatibility.lua
+Modules\Constants.lua
+Modules\Data.lua
+Modules\Database.lua
+Modules\Debug.lua
+Modules\Event.lua
+Modules\Glow.lua
+Modules\GUI.lua
+Modules\Ldb.lua
+Modules\Localization.lua
+Modules\Options.lua
+Modules\Overlay.lua
+Modules\Spells.lua
+Modules\Test.lua
+Modules\Util.lua
+
+Mixins\Border.xml
+Locales\Locales.xml
+Spells\Spells.xml
