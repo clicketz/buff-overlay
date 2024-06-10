@@ -9,6 +9,10 @@ local Util = Addon:NewModule('Util')
 ---@class Constants: AceModule
 local Const = Addon:GetModule('Constants')
 
+---@class Localization: AceModule
+local Localization = Addon:GetModule('Localization')
+local L = Localization.L
+
 --[[
     Need a local version of Blizzard's AuraUtil.ForEachAura due to it not existing on classic flavors.
 ]]

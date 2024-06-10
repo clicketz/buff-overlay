@@ -42,7 +42,7 @@ function Overlay:SetupContainer(frame)
     frame.BuffOverlays:SetAllPoints()
 end
 
-local function HideAllOverlays(frame)
+function Overlay:HideAllOverlays(frame)
     if not frame.BuffOverlays then return end
 
     for _, child in ipairs({ frame.BuffOverlays:GetChildren() }) do
@@ -80,7 +80,7 @@ function Overlay:RefreshOverlays(full, barName)
             if frame:IsShown() then
                 self:ApplyOverlay(frame, unit, barName)
             else
-                HideAllOverlays(frame)
+                self:HideAllOverlays(frame)
             end
         end
     end
@@ -89,7 +89,7 @@ function Overlay:RefreshOverlays(full, barName)
         if frame:IsShown() then
             self:ApplyOverlay(frame, frame.displayedUnit, barName)
         else
-            HideAllOverlays(frame)
+            self:HideAllOverlays(frame)
         end
     end
 end

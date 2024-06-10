@@ -18,6 +18,13 @@ local Const = Addon:GetModule('Constants')
 ---@class Compatibility: AceModule
 local Compat = Addon:GetModule('Compatibility')
 
+---@class Overlay: AceModule
+local Overlay = Addon:GetModule('Overlay')
+
+---@class Localization: AceModule
+local Localization = Addon:GetModule('Localization')
+local L = Localization.L
+
 local testModeEnabled = false
 local testAuras = {}
 local testAuraIds = {}
@@ -63,7 +70,7 @@ function Test:UnitAura(_, index, filter)
         return key, icon, 3, nil, 60, GetTime() + 60, "player", nil, nil, testSingleAura
     else
         local buff = testAuras[index]
-        local dispelType = Const.DISPEL_TYPES[math.rand(1, 5)]
+        local dispelType = Const.DISPEL_TYPES[math.random(1, 5)]
 
         if not buff then return end
 
@@ -246,14 +253,14 @@ function Test:Toggle(barName, singleAura)
         for _, frames in pairs(self.unitFrames) do
             for frame in pairs(frames) do
                 if frame:IsShown() then
-                    HideAllOverlays(frame)
+                    Overlay:HideAllOverlays(frame)
                 end
             end
         end
 
         for frame in pairs(self.blizzFrames) do
             if frame:IsShown() then
-                HideAllOverlays(frame)
+                Overlay:HideAllOverlays(frame)
             end
         end
     end

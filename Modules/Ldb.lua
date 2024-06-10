@@ -18,6 +18,13 @@ local Util = Addon:GetModule('Util')
 ---@class Test: AceModule
 local Test = Addon:GetModule('Test')
 
+---@class Constants: AceModule
+local Const = Addon:GetModule('Constants')
+
+---@class Localization: AceModule
+local Localization = Addon:GetModule('Localization')
+local L = Localization.L
+
 local LibDataBroker = LibStub("LibDataBroker-1.1")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 local AceRegistry = LibStub("AceConfigRegistry-3.0")
@@ -28,7 +35,7 @@ local ldbData = {
     -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
     icon = "Interface\\AddOns\\" .. addonName .. "\\Media\\Textures\\logo",
     OnTooltipShow = function(tooltip)
-        tooltip:AddDoubleLine(Util:Colorize(addonName, "main"), Util:Colorize(version, "accent"))
+        tooltip:AddDoubleLine(Util:Colorize(addonName, "main"), Util:Colorize(Const.VERSION, "accent"))
         tooltip:AddLine(" ")
         tooltip:AddLine(format(L["%s to toggle options window."], Util:Colorize(L["Left-click"])), 1, 1, 1, false)
         tooltip:AddLine(format(L["%s to toggle test icons."], Util:Colorize(L["Right-click"])), 1, 1, 1, false)

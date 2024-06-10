@@ -114,6 +114,44 @@ local function SetAura(overlay, index, icon, count, duration, expirationTime, di
     overlay:Show()
 end
 
+local function UpdateBorder(overlay)
+    local bar = overlay.bar
+
+    if overlay.__MSQ_Enabled and bar.iconBorder then
+        bar.iconBorder = false
+    end
+
+    -- zoomed in/out
+    if bar.iconBorder then
+        overlay.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    else
+        overlay.icon:SetTexCoord(0, 1, 0, 1)
+    end
+
+    if not overlay.border then
+        overlay.border = CreateFrame("Frame", nil, overlay, "BuffOverlayBorderTemplate")
+        overlay.border:SetFrameLevel(overlay:GetFrameLevel() + 5)
+        overlay.border.SetFrameLevel = nop
+
+        DisablePixelSnap(overlay)
+    end
+
+    local border = overlay.border
+    local size = bar.iconBorderSize - 1
+    local borderColor = bar.iconBorderColor
+
+    local pixelFactor = BuffOverlay.pixelFactor
+    local pixelSize = (pixelFactor / 2) + (pixelFactor * size)
+
+    border:SetBorderSizes(pixelSize, pixelSize, pixelSize, pixelSize)
+    border:SetVertexColor(borderColor.r, borderColor.g, borderColor.b, borderColor.a)
+    border:UpdateSizes()
+
+    border:SetShown(bar.iconBorder)
+
+    Glow:UpdateSize(overlay)
+end
+
 function Aura:Update(frame, unit, barNameToApply)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string.find(unit, "target") or unit == "focus" then return end
@@ -267,7 +305,7 @@ function Aura:Update(frame, unit, barNameToApply)
     end
 
     -- TODO: Optimize this with new UNIT_AURA event payload
-    for _, filter in ipairs(filters) do
+    for _, filter in ipairs(Const.FILTERS) do
         for i = 1, 40 do
             local spellName, icon, count, dispelType, duration, expirationTime, source, _, _, spellId = UnitAura(unit, i, filter)
             if spellId then

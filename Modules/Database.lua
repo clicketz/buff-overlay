@@ -28,7 +28,7 @@ local Bar = Addon:GetModule('Bar')
 local Test = Addon:GetModule('Test')
 
 ---@class Localization: AceModule
-local Localization = addon:GetModule('Localization')
+local Localization = Addon:GetModule('Localization')
 local L = Localization.L
 
 ---@return DatabaseDefaults

@@ -31,7 +31,7 @@ local Test = Addon:GetModule('Test')
 local GUI = Addon:GetModule('GUI')
 
 ---@class Localization: AceModule
-local Localization = addon:GetModule('Localization')
+local Localization = Addon:GetModule('Localization')
 local L = Localization.L
 
 local db = DB:GetData()
@@ -52,7 +52,7 @@ Options.data = {}
 local spellDescriptions = CreateFrame("Frame")
 spellDescriptions:SetScript("OnEvent", function(self, event, spellId, success)
     if success then
-        local id = customSpellDescriptions[spellId] or spellId
+        local id = Const.CUSTOM_SPELL_DESCRIPTIONS[spellId] or spellId
         self[spellId] = GetSpellDescription(id)
     end
 end)

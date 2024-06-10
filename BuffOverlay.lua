@@ -10,7 +10,7 @@ local DB = Addon:GetModule('Database')
 local Util = Addon:GetModule('Util')
 
 ---@class Localization: AceModule
-local Localization = addon:GetModule('Localization')
+local Localization = Addon:GetModule('Localization')
 local L = Localization.L
 
 function Addon:OnInitialize()
