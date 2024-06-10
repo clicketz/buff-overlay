@@ -1,11 +1,5 @@
 if (GAME_LOCALE or GetLocale()) ~= "esMX" then return end
 
-local addonName = ... ---@type string
+local L = BuffOverlay.L
 
----@class BuffOverlay: AceAddon
-local addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
-
----@class Localization: AceModule
-local L = addon:GetModule('Localization')
-
---@localization(locale="esMX", format="lua_additive_table", table-name="L.data", handle-subnamespaces="none")@
+--@localization(locale="esMX", format="lua_additive_table", handle-subnamespaces="none")@

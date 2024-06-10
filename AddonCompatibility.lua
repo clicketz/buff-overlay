@@ -1,39 +1,31 @@
-local addonName = ...
+---@class BuffOverlay: AceModule
+local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
----@class BuffOverlay: AceAddon
-local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
-
----@class Compatibility: AceModule
-local Compat = Addon:NewModule('Compatibility')
-
----@class Data: AceModule
-local Data = Addon:GetModule('Data')
-
----@class Overlay: AceModule
-local Overlay = Addon:GetModule('Overlay')
-
+local pairs, IsAddOnLoaded, next, type = pairs, IsAddOnLoaded, next, type
 local addOnsExist = true
 local enabledPatterns = {}
 local framesToFind = {}
 local tempFrameCache = {}
 
+BuffOverlay.frames = {}
+
 --[[ addonFrameInfo
 
-    key:
-        The name of the addon. This key checked with IsAddOnLoaded, so it must match the name of the addon's .toc file exactly.
+    key:    The name of the addon. This key checked with IsAddOnLoaded, so it must match the name of the
+            addon's .toc file exactly.
 
-    frame:
-        The pattern to match the frame name against. Be as specific as possible, preferrably with beginnings (^) and endings ($) as we want to minimize the number of frames we need to process and avoid attaching to incorrect frames.
+    frame:  The pattern to match the frame name against. Be as specific as possible, preferrably with beginnings (^)
+            and endings ($) as we want to minimize the number of frames we need to process and avoid attaching
+            to incorrect frames.
 
-    type:
-        The filter type of frame. This is used to determine which bars to show/hide when the user changes visibility settings.
+    type:   The filter type of frame. This is used to determine which bars to show/hide when the user changes
+            visibility settings.
 
-        Current valid types are "arena", "raid", "party", "pet", "tank", "assist", and "player". If adding more types, be sure to update the defaultBarSettings table in BuffOverlay.lua.
+            Current valid types are "arena", "raid", "party", "pet", "tank", "assist", and "player". If adding more types,
+            be sure to update the defaultBarSettings table in BuffOverlay.lua.
 
-    unit:
-        The name of the key that the addon uses to identify the frame's corresponding displayed unit.
+    unit:   The name of the key that the addon uses to identify the frame's corresponding displayed unit.
 ]]
-
 local addonFrameInfo = {
     ["ElvUI"] = {
         {
@@ -348,7 +340,7 @@ local blizzardFrameInfo = {
 local function AddOnsExist()
     local addonsExist = false
     for addon, info in pairs(addonFrameInfo) do
-        if C_AddOns.IsAddOnLoaded(addon) then
+        if IsAddOnLoaded(addon) then
             for _, frameInfo in pairs(info) do
                 enabledPatterns[frameInfo.frame] = { unit = frameInfo.unit, type = frameInfo.type }
             end
@@ -375,7 +367,7 @@ local function AddOnsExist()
                     for _, child in pairs(children) do
                         local name = child:GetName()
                         if name and name:match("^CPPFets_PlayerPetButton$") then
-                            Compat.frames[child] = { unit = "unit", type = "pet" }
+                            BuffOverlay.frames[child] = { unit = "unit", type = "pet" }
                             break
                         end
                     end
@@ -385,7 +377,7 @@ local function AddOnsExist()
     end
 
     -- Fix for AshToAsh
-    if C_AddOns.IsAddOnLoaded("AshToAsh") and C_AddOns.IsAddOnLoaded("Scorpio") then
+    if IsAddOnLoaded("AshToAsh") and IsAddOnLoaded("Scorpio") then
         -- Declare a ui style property to receive the unit from the unit frame
         Scorpio.UI.Property {
             name = "BuffOverlayUnit",
@@ -395,7 +387,7 @@ local function AddOnsExist()
                 if unit and unit ~= "clear" then
                     local frame = Scorpio.UI.GetRawUI(self)
 
-                    if not Compat.frames[frame] then
+                    if not BuffOverlay.frames[frame] then
                         tempFrameCache[frame] = frame:GetName()
                     end
 
@@ -416,15 +408,15 @@ local function AddOnsExist()
     end
 
     addOnsExist = addonsExist
-    Addon.addons = addonsExist
+    BuffOverlay.addons = addonsExist
     return addonsExist
 end
 
-local function parseFrameCache()
+local function cleanFrameCache()
     for frame, name in pairs(tempFrameCache) do
         for addOnFramePattern, data in pairs(enabledPatterns) do
             if name:match(addOnFramePattern) then
-                Data:AddFrame(frame, data.unit, data.type, false)
+                BuffOverlay.frames[frame] = { unit = data.unit, type = data.type }
                 break
             end
         end
@@ -434,28 +426,29 @@ local function parseFrameCache()
 end
 
 local function updateUnits()
-    parseFrameCache()
+    cleanFrameCache()
 
     if next(framesToFind) ~= nil then
         for f, data in pairs(framesToFind) do
             local frame = _G[f]
-            if frame then
-                Data:AddFrame(frame, data.unit, data.type, false)
+            if frame and not BuffOverlay.frames[frame] then
+                BuffOverlay.frames[frame] = { unit = data.unit, type = data.type }
                 framesToFind[f] = nil
             end
         end
     end
 
-    for frame, data in pairs(Compat.frames) do
+    for frame, data in pairs(BuffOverlay.frames) do
         local unit = frame[data.unit] or SecureButton_GetUnit(frame)
 
-        Data:AddUnitFrame(frame, unit)
+        if unit and not data.blizz then
+            BuffOverlay:AddUnitFrame(frame, unit)
+        end
     end
-
-    Overlay:RefreshOverlays()
+    BuffOverlay:RefreshOverlays()
 end
 
-function Compat:UpdateUnits()
+function BuffOverlay:UpdateUnits()
     if not addOnsExist then return end
     -- Some addons take a second to load their frames fully.
     -- updateUnits() is cheap so we'll just run it twice.
@@ -463,7 +456,7 @@ function Compat:UpdateUnits()
     C_Timer.After(1, updateUnits)
 end
 
-function Compat:InitFrames()
+function BuffOverlay:InitFrames()
     -- Double wait to make sure all addons are loaded.
     -- PLAYER_LOGIN fires too early.
     C_Timer.After(0, function()
@@ -484,18 +477,20 @@ end
 hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
     if not frame.buffFrames then return end
 
-    if not Compat.frames[frame] then
+    if not BuffOverlay.frames[frame] then
         local name = frame:GetName()
 
         for _, info in pairs(blizzardFrameInfo) do
             if name:match(info.frame) then
-                Data:AddFrame(frame, info.unit, info.type, true)
+                BuffOverlay.frames[frame] = { unit = info.unit, type = info.type, blizz = true }
                 break
             end
         end
     end
 
-    Data:AddBlizzardFrame(frame)
+    if not BuffOverlay.blizzFrames[frame] then
+        BuffOverlay.blizzFrames[frame] = true
+    end
 end)
 
 -- We obtain frame references entirely from this CreateFrame hook. If an addon does not

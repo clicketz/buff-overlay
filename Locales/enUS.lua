@@ -1,11 +1,4 @@
-local addonName = ... ---@type string
-
----@class BuffOverlay: AceAddon
-local addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
-
----@class Localization: AceModule
-local Localization = addon:GetModule('Localization')
-local L = Localization.L
+local L = BuffOverlay.L
 
 --@localization(locale="enUS", format="lua_additive_table", handle-subnamespaces="none")@
 

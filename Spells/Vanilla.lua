@@ -1,15 +1,8 @@
 if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC then return end
 
-local addonName = ... ---@type string
-
----@class BuffOverlay: AceAddon
-local addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
-
----@class Localization: AceModule
-local L = addon:GetModule('Localization')
-
----@class Spells: AceModule
-local spells = addon:GetModule('Spells')
+---@class BuffOverlay: AceModule
+local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
+local L = BuffOverlay.L
 
 --[[------------------------------------------------
 
@@ -19,9 +12,10 @@ local spells = addon:GetModule('Spells')
 
  Use the /buffoverlay or /bo command.
 
-------------------------------------------------]]
+------------------------------------------------]]--
+
 -- Lower prio = shown above other buffs
-spells.default = {
+BuffOverlay.defaultSpells = {
     -- Druid
     [22812] = { class = "DRUID", prio = 50 }, --Barkskin
         [22826] = { parent = 22812 },

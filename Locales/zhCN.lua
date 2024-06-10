@@ -1,11 +1,5 @@
 if (GAME_LOCALE or GetLocale()) ~= "zhCN" then return end
 
-local addonName = ... ---@type string
+local L = BuffOverlay.L
 
----@class BuffOverlay: AceAddon
-local addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
-
----@class Localization: AceModule
-local L = addon:GetModule('Localization')
-
---@localization(locale="zhCN", format="lua_additive_table", table-name="L.data", handle-subnamespaces="none")@
+--@localization(locale="zhCN", format="lua_additive_table", handle-subnamespaces="none")@
