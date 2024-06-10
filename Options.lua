@@ -32,10 +32,12 @@ local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 
 local optionsDisabled = {}
 
+--d
 local customSpellDescriptions = {
     [362486] = 353114, -- Keeper of the Grove
 }
 
+--d
 -- Fix for ContinueOnSpellLoad tainting the spellbook and potentially blocking action bars
 -- See: https://github.com/Stanzilla/WoWUIBugs/issues/373 for more information
 -- Credit to: https://github.com/jordonwow/omnibar/pull/246
@@ -48,16 +50,19 @@ spellDescriptions:SetScript("OnEvent", function(self, event, spellId, success)
 end)
 spellDescriptions:RegisterEvent("SPELL_DATA_LOAD_RESULT")
 
+--d
 local customSpellNames = {
     [228050] = GetSpellInfo(228049),
 }
 
+--d
 BuffOverlay.customIcons = {
     [L["Eating/Drinking"]] = 134062,
     ["?"] = 134400,
     ["Cogwheel"] = 136243,
 }
 
+--d
 BuffOverlay.ignoreParentIcons = {
     [L["Eating/Drinking"]] = true,
     [197268] = true, -- Ray of Hope
@@ -65,6 +70,7 @@ BuffOverlay.ignoreParentIcons = {
 
 local customIcons = BuffOverlay.customIcons
 
+--d
 local classIcons = {
     ["DEATHKNIGHT"] = 135771,
     ["DEMONHUNTER"] = 1260827,
@@ -81,6 +87,7 @@ local classIcons = {
     ["WARRIOR"] = 626008,
 }
 
+--d
 local deleteSpellDelegate = {
     buttons = {
         {
@@ -158,10 +165,12 @@ local deleteSpellDelegate = {
     end,
 }
 
+--d
 local function IsDifferentDialogBar(barName)
     return BuffOverlay.priorityListDialog.args.bar.name ~= barName
 end
 
+--d
 local deleteBarDelegate = {
     buttons = {
         {
@@ -190,6 +199,7 @@ local deleteBarDelegate = {
     end,
 }
 
+--d
 -- Change the path for the new options menu in 10.0
 local path = isRetail and L["Options > Gameplay > Action Bars > Show Numbers for Cooldowns"] or L["Interface > ActionBars > Show Numbers for Cooldowns"]
 
@@ -221,6 +231,7 @@ LibDialog:Register("ConfirmEnableBlizzardCooldownText", {
     end,
 })
 
+--d
 LibDialog:Register("ShowVersion", {
     text = format(L["%s%sCopy this version number and send it to the author if you need help with a bug."], BuffOverlay:Colorize(GAME_VERSION_LABEL, "main"), "\n"),
     buttons = {
@@ -244,10 +255,12 @@ LibDialog:Register("ShowVersion", {
     end,
 })
 
+--d
 function BuffOverlay:ShowVersion()
     LibDialog:Spawn("ShowVersion")
 end
 
+--d
 function BuffOverlay:GetIconString(icon, iconSize)
     local size = iconSize or 0
     local ltTexel = 0.08 * 256
@@ -260,6 +273,7 @@ function BuffOverlay:GetIconString(icon, iconSize)
     return format("|T%s:%d:%d:0:0:256:256:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
 end
 
+--d
 local function AddToPriorityDialog(spellIdStr, remove)
     local list = BuffOverlay.priorityListDialog.args
     local spellId = tonumber(spellIdStr) or spellIdStr
@@ -294,6 +308,7 @@ local function AddToPriorityDialog(spellIdStr, remove)
     end
 end
 
+--d
 local function GetSpells(class, barName)
     local spells = {}
     local optionsWidth = 0.975
@@ -627,6 +642,7 @@ local function GetSpells(class, barName)
     return spells
 end
 
+--d
 function BuffOverlay:CreatePriorityDialog(barName)
     local bar = self.db.profile.bars[barName]
 
@@ -1665,6 +1681,7 @@ local customSpellInfo = {
     },
 }
 
+--d
 local customSpells = {
     spellId_info = {
         order = 1,
@@ -1741,6 +1758,7 @@ local customSpells = {
     }
 }
 
+--d
 function BuffOverlay:AddToCustom(spellId)
     local spellIdStr = tostring(spellId)
     local name, _, icon = GetSpellInfo(spellId)
@@ -1770,6 +1788,7 @@ function BuffOverlay:AddToCustom(spellId)
     end
 end
 
+--d
 function BuffOverlay:Options()
     for spellId, v in pairs(self.db.global.customBuffs) do
         if not v.parent then
