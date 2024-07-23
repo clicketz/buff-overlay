@@ -5,7 +5,7 @@ local AceRegistry = LibStub("AceConfigRegistry-3.0")
 local LDB = LibStub("LibDataBroker-1.1")
 local LCG = LibStub("LibCustomGlow-1.0")
 local LDBIcon = LibStub("LibDBIcon-1.0")
-local version = GetAddOnMetadata("BuffOverlay", "Version")
+local version = C_AddOns.GetAddOnMetadata("BuffOverlay", "Version")
 local Masque
 
 local LATEST_DB_VERSION = 1.0
@@ -19,8 +19,8 @@ local C_Spell = C_Spell
 local C_Timer = C_Timer
 local PixelUtil = PixelUtil
 local CopyTable = CopyTable
-local GetSpellTexture = GetSpellTexture
-local GetSpellInfo = GetSpellInfo
+local GetSpellTexture = (C_Spell and C_Spell.GetSpellTexture) or GetSpellTexture
+local GetSpellInfo = BuffOverlay.GetSpellInfo
 local UnitIsPlayer = UnitIsPlayer
 local InCombatLockdown = InCombatLockdown
 local GetNumGroupMembers = GetNumGroupMembers
@@ -310,7 +310,7 @@ local function InsertTestBuff(spellId)
     end
 end
 
-local function UnitAuraTest(_, index, filter)
+local function UnitAuraTest(unit, index, filter)
     if testSingleAura then
         local icon = BuffOverlay.customIcons[testSingleAura] or select(3, GetSpellInfo(testSingleAura)) or BuffOverlay.customIcons["?"]
         local key = testSingleAura
@@ -1183,7 +1183,7 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
 
     overlay.icon:SetTexture(icon)
 
-    if (count > 1) then
+    if count > 1 then
         local countText = count
         if (count >= 100) then
             countText = BUFF_STACKS_OVERFLOW
@@ -1354,6 +1354,16 @@ local function ShouldShow(bar, frameType)
     return true
 end
 
+BuffOverlay.UnitAura = function(unit, index, filter)
+    local aura = C_UnitAuras.GetAuraDataByIndex(unit, index, filter)
+
+    if aura then
+        return aura.name, aura.icon, aura.applications, aura.dispelName, aura.duration, aura.expirationTime, aura.sourceUnit, nil, nil, aura.spellId
+    else
+        return nil
+    end
+end
+
 function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     if not frame or not unit or frame:IsForbidden() or not frame:IsShown() then return end
     if string_find(unit, "target") or unit == "focus" then return end
@@ -1366,7 +1376,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
     local frameType = self.frames[frame] and self.frames[frame].type
     local frameWidth, frameHeight = frame:GetSize()
     local overlaySize = round(math_min(frameHeight, frameWidth) * 0.33, 1)
-    local UnitAura = self.test and UnitAuraTest or UnitAura
+    local UnitAura = self.test and UnitAuraTest or self.UnitAura
 
     local bars = next(testBarNames) ~= nil and testBarNames or self.db.profile.bars
 

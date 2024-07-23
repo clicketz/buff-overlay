@@ -4,12 +4,13 @@ local LibDialog = LibStub("LibDialog-1.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local AceRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfig = LibStub("AceConfig-3.0")
-local version = GetAddOnMetadata("BuffOverlay", "Version")
+local version = C_AddOns.GetAddOnMetadata("BuffOverlay", "Version")
 
 -- Localization Table
 local L = BuffOverlay.L
 
-local GetSpellInfo = GetSpellInfo
+local GetSpellInfo = BuffOverlay.GetSpellInfo
+local GetSpellDescription = GetSpellDescription or C_Spell.GetSpellDescription
 local GetCVarBool = GetCVarBool
 local SetCVar = SetCVar
 local InCombatLockdown = InCombatLockdown
@@ -24,7 +25,6 @@ local tostring = tostring
 local MAX_CLASSES = MAX_CLASSES
 local CLASS_SORT_ORDER = CopyTable(CLASS_SORT_ORDER)
 do
-    -- Why oh why is this "sort order" table not actually sorted Blizzard?
     table.sort(CLASS_SORT_ORDER)
 end
 local LOCALIZED_CLASS_NAMES_MALE = LOCALIZED_CLASS_NAMES_MALE
@@ -1793,7 +1793,7 @@ function BuffOverlay:Options()
             logo = {
                 order = 1,
                 type = "description",
-                name = self:Colorize(L["Author"]) .. ": " .. GetAddOnMetadata("BuffOverlay", "Author") .. "\n" .. self:Colorize(GAME_VERSION_LABEL) .. ": " .. version .. "\n\n",
+                name = self:Colorize(L["Author"]) .. ": " .. C_AddOns.GetAddOnMetadata("BuffOverlay", "Author") .. "\n" .. self:Colorize(GAME_VERSION_LABEL) .. ": " .. version .. "\n\n",
                 fontSize = "medium",
                 -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
                 image = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo_transparent",
