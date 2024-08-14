@@ -81,3 +81,19 @@ function Util:GetIconString(icon, iconSize)
 
     return format("|T%s:%d:%d:0:0:256:256:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
 end
+
+function Util:GetSpellInfo(spellId)
+    if not spellID then
+        return nil
+    end
+
+    -- Classic flavors still use old GetSpellInfo
+    if GetSpellInfo then
+        return GetSpellInfo(spellID)
+    end
+
+    local spellInfo = C_Spell.GetSpellInfo(spellID)
+    if spellInfo then
+        return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
+    end
+end
