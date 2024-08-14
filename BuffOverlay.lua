@@ -1,7 +1,7 @@
-local addonName, ns = ...
+local addonName, addon = ...
 
 ---@class BuffOverlay: AceModule
-local Addon = LibStub("AceAddon-3.0"):NewAddon(ns, addonName)
+local Addon = LibStub("AceAddon-3.0"):NewAddon(addon, addonName)
 
 ---@class Database: AceModule
 local DB = Addon:GetModule('Database')
@@ -19,11 +19,11 @@ function Addon:OnInitialize()
     function SlashCmdList.BuffOverlay(msg)
         if msg == "help" or msg == "?" then
             self:Print(L["Command List"])
-            print(format(L["%s or %s: Toggles the options panel."], self:Colorize("/buffoverlay", "accent"), self:Colorize("/bo", "accent")))
-            print(format(L["%s %s: Shows test icons on all visible raid/party frames."], self:Colorize("/bo", "accent"), self:Colorize("test", "value")))
-            print(format(L["%s %s: Toggles the minimap icon."], self:Colorize("/bo", "accent"), self:Colorize("minimap", "value")))
-            print(format(L["%s %s: Shows a copyable version string for bug reports."], self:Colorize("/bo", "accent"), self:Colorize("version", "value")))
-            print(format(L["%s %s: Resets current profile to default settings. This does not remove any custom auras."], self:Colorize("/bo", "accent"), self:Colorize("reset", "value")))
+            print(format(L["%s or %s: Toggles the options panel."], Util:Colorize("/buffoverlay", "accent"), Util:Colorize("/bo", "accent")))
+            print(format(L["%s %s: Shows test icons on all visible raid/party frames."], Util:Colorize("/bo", "accent"), self:Colorize("test", "value")))
+            print(format(L["%s %s: Toggles the minimap icon."], Util:Colorize("/bo", "accent"), Util:Colorize("minimap", "value")))
+            print(format(L["%s %s: Shows a copyable version string for bug reports."], Util:Colorize("/bo", "accent"), Util:Colorize("version", "value")))
+            print(format(L["%s %s: Resets current profile to default settings. This does not remove any custom auras."], Util:Colorize("/bo", "accent"), Util:Colorize("reset", "value")))
         elseif msg == "test" then
             self:Test()
         elseif msg == "reset" or msg == "default" then
