@@ -1,4 +1,4 @@
-## Interface: 11502, 100207, 40400
+## Interface: 11503, 100207, 110000, 40400, 30403, 20504
 ## Title: BuffOverlay
 ## Notes: Overlays chosen auras on top of raid/party frames.
 ## Author: clicket
@@ -14,26 +14,9 @@
 
 Embeds.xml
 
-BuffOverlay.lua
+Core\Init.lua
 
-Modules\Aura.lua
-Modules\Bar.lua
-Modules\Compatibility.lua
-Modules\Constants.lua
-Modules\Data.lua
-Modules\Database.lua
-Modules\Debug.lua
-Modules\Event.lua
-Modules\Glow.lua
-Modules\GUI.lua
-Modules\Ldb.lua
-Modules\Localization.lua
-Modules\Options.lua
-Modules\Overlay.lua
-Modules\Spells.lua
-Modules\Test.lua
-Modules\Util.lua
-
+Modules\Modules.xml
 Mixins\Border.xml
 Locales\Locales.xml
 Spells\Spells.xml
