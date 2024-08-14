@@ -1,0 +1,19 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\FrameXML\UI.xsd">
+    <Script file="Modules\Aura.lua"/>
+    <Script file="Modules\Bar.lua"/>
+    <Script file="Modules\Compatibility.lua"/>
+    <Script file="Modules\Constants.lua"/>
+    <Script file="Modules\Data.lua"/>
+    <Script file="Modules\Database.lua"/>
+    <Script file="Modules\Debug.lua"/>
+    <Script file="Modules\Event.lua"/>
+    <Script file="Modules\Glow.lua"/>
+    <Script file="Modules\GUI.lua"/>
+    <Script file="Modules\Ldb.lua"/>
+    <Script file="Modules\Localization.lua"/>
+    <Script file="Modules\Options.lua"/>
+    <Script file="Modules\Overlay.lua"/>
+    <Script file="Modules\Spells.lua"/>
+    <Script file="Modules\Test.lua"/>
+    <Script file="Modules\Util.lua"/>
+</Ui>
