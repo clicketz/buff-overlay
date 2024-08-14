@@ -338,7 +338,7 @@ function Aura:Update(frame, unit, barNameToApply)
                     local castByPlayerOrPlayerPet = source == "player" or source == "pet" or source == "vehicle"
 
                     if aura.parent and not self.ignoreParentIcons[aura.parent] then
-                        icon = self.customIcons[aura.parent] or select(3, GetSpellInfo(aura.parent)) or icon
+                        icon = self.customIcons[aura.parent] or select(3, Util:GetSpellInfo(aura.parent)) or icon
                     elseif self.customIcons[spellId] then
                         icon = self.customIcons[spellId]
                     end
