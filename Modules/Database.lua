@@ -36,6 +36,10 @@ function DB:GetData()
     return self.data
 end
 
+function DB:Reset()
+    self.data:ResetDB("Default")
+end
+
 function DB:GetCustomAuras()
     return self.data.global.customAuras
 end
@@ -115,7 +119,9 @@ function DB:InsertCustomChild(childId, parentId)
     local pId = (custom[childId] and custom[childId].parent) or (self.data.profile.auras[childId] and self.data.profile.auras[childId].parent)
 
     if pId then
-        local name, _, icon = GetSpellInfo(pId)
+        local spellInfo = C_Spell.GetSpellInfo(pId)
+        local name = spellInfo.name
+        local icon = spellInfo.iconID
         Util:Print(format(L["%s is already being tracked under %s %s."], Util:Colorize(childId), Util:GetIconString(icon, 20), name))
     else
         local name, _, icon = GetSpellInfo(childId)
