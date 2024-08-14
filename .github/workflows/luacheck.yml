@@ -16,3 +16,9 @@ jobs:
           config: https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
           args: "--no-color --codes -q"
           annotate: warning
+
+      - name: Generate Changelog
+        run: ./generate_changelog.sh
+
+      - name: Show Changelog
+        run: cat CHANGELOG.md
