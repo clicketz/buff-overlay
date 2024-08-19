@@ -19,6 +19,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: https://github.com/actions/checkout/issues/290
+        run:
+          git fetch --tags --force
 
       - name: Luacheck
         uses: nebularg/actions-luacheck@v1
