@@ -182,7 +182,7 @@ local ldbData = {
 
 local broker = LDB:NewDataObject("BuffOverlay", ldbData)
 
-if isRetail then
+if AddonCompartmentFrame then
     AddonCompartmentFrame:RegisterAddon({
         text = "BuffOverlay",
         icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo_transparent",

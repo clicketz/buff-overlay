@@ -1941,10 +1941,6 @@ function BuffOverlay:Options()
     bg:SetAlpha(0.2)
     bg:SetTexCoord(0, 1, 1, 0)
 
-    if isRetail then
-        local category = Settings.RegisterCanvasLayoutCategory(panel, "BuffOverlay")
-        Settings.RegisterAddOnCategory(category)
-    else
-        InterfaceOptions_AddCategory(panel)
-    end
+    local category = Settings.RegisterCanvasLayoutCategory(panel, "BuffOverlay")
+    Settings.RegisterAddOnCategory(category)
 end
