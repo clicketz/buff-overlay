@@ -161,7 +161,7 @@ BuffOverlay.defaultSpells = {
 
     -- Misc
     [L["Eating/Drinking"]] = { class = "MISC", prio = 90 },      --Food umbrella
-        [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
+        [L["Food and Drink"]] = { parent = L["Eating/Drinking"] }, --Food and Drink
         [L["Food"]] = { parent = L["Eating/Drinking"] },         --Food
         [L["Drink"]] = { parent = L["Eating/Drinking"] },        --Drink
         [L["Refreshment"]] = { parent = L["Eating/Drinking"] },  --Refreshment
