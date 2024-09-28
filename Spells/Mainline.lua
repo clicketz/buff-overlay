@@ -160,12 +160,13 @@ BuffOverlay.defaultSpells = {
     [58984] = { class = "MISC", prio = 70 }, --Shadowmeld
 
     -- Misc
-    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 },      --Food umbrella
-        [L["Food & Drink"]] = { parent = L["Eating/Drinking"] }, --Food & Drink
-        [L["Food"]] = { parent = L["Eating/Drinking"] },         --Food
-        [L["Drink"]] = { parent = L["Eating/Drinking"] },        --Drink
-        [L["Refreshment"]] = { parent = L["Eating/Drinking"] },  --Refreshment
-        [185710] = { parent = L["Eating/Drinking"] },            --Sugar-Crusted Fish Feast
+    [L["Eating/Drinking"]] = { class = "MISC", prio = 90 },        --Food umbrella
+        [L["Food & Drink"]] = { parent = L["Eating/Drinking"] },   --Food & Drink
+        [L["Food and Drink"]] = { parent = L["Eating/Drinking"] }, --Food and Drink
+        [L["Food"]] = { parent = L["Eating/Drinking"] },           --Food
+        [L["Drink"]] = { parent = L["Eating/Drinking"] },          --Drink
+        [L["Refreshment"]] = { parent = L["Eating/Drinking"] },    --Refreshment
+        [185710] = { parent = L["Eating/Drinking"] },              --Sugar-Crusted Fish Feast
         [L["NewFood"]] = L["NewFood"] ~= "Remove" and { parent = L["Eating/Drinking"] } or nil,
         [L["NewDrink"]] = L["NewDrink"] ~= "Remove" and { parent = L["Eating/Drinking"] } or nil,
     [320224] = { class = "MISC", prio = 70 }, -- Podtender
