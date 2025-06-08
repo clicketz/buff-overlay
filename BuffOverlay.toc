@@ -22,7 +22,7 @@ Spells\Vanilla.lua
 Spells\TBC.lua
 Spells\Wrath.lua
 Spells\Cata.lua
-Spells\Mop.lua
+Spells\Mists.lua
 
 AddonCompatibility.lua
 BuffOverlay.lua
