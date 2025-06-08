@@ -158,10 +158,9 @@ local ldbData = {
     icon = "Interface\\AddOns\\BuffOverlay\\Media\\Textures\\logo",
     OnTooltipShow = function(tooltip)
         tooltip:AddDoubleLine(BuffOverlay:Colorize("BuffOverlay", "main"), BuffOverlay:Colorize(version, "accent"))
-        tooltip:AddLine(" ")
-        tooltip:AddLine(format(L["%s to toggle options window."], BuffOverlay:Colorize(L["Left-click"])), 1, 1, 1, false)
-        tooltip:AddLine(format(L["%s to toggle test icons."], BuffOverlay:Colorize(L["Right-click"])), 1, 1, 1, false)
-        tooltip:AddLine(format(L["%s to toggle the minimap icon."], BuffOverlay:Colorize(L["Shift+Right-click"])), 1, 1, 1, false)
+        tooltip:AddLine(format(L["%s to toggle options window."], BuffOverlay:GetIconString("NPE_LeftClick", 22, true)), 1, 1, 1, false)
+        tooltip:AddLine(format(L["%s to toggle test icons."], BuffOverlay:GetIconString("NPE_RightClick", 22, true)), 1, 1, 1, false)
+        tooltip:AddLine(format(L["%s %s to toggle the minimap icon."], BuffOverlay:Colorize(L["SHIFT +"]), BuffOverlay:GetIconString("NPE_RightClick", 22, true)), 1, 1, 1, false)
     end,
     OnClick = function(clickedFrame, button)
         if button == "LeftButton" then

@@ -248,16 +248,18 @@ function BuffOverlay:ShowVersion()
     LibDialog:Spawn("ShowVersion")
 end
 
-function BuffOverlay:GetIconString(icon, iconSize)
-    local size = iconSize or 0
-    local ltTexel = 0.08 * 256
-    local rbTexel = 0.92 * 256
+function BuffOverlay:GetIconString(icon, iconSize, atlas)
+    local size = iconSize or 12
+
+    if atlas then
+        return CreateAtlasMarkup(icon, size, size)
+    end
 
     if not icon then
         icon = customIcons["?"]
     end
 
-    return format("|T%s:%d:%d:0:0:256:256:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
+    return CreateTextureMarkup(icon, 256, 256, size, size, 0.08, 0.92, 0.08, 0.92)
 end
 
 local function AddToPriorityDialog(spellIdStr, remove)
