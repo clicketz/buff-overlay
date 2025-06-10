@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Constants: AceModule
-local Const = Addon:NewModule('Constants')
+local Const = Addon:GetModule('Constants')
 
 ---@class Localization: AceModule
 local Localization = Addon:GetModule('Localization')
@@ -14,6 +14,8 @@ Const.LATEST_DB_VERSION = 1.1
 Const.IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
 Const.AUTHOR = C_AddOns.GetAddOnMetadata(addonName, "Author")
 Const.VERSION = C_AddOns.GetAddOnMetadata(addonName, "Version")
+
+Const.pixelFactor = PixelUtil.GetPixelToUIUnitFactor()
 
 Const.BAR_SETTINGS = {
     iconCount = 4,
@@ -119,7 +121,7 @@ Const.CUSTOM_SPELL_DESCRIPTIONS = {
 }
 
 Const.CUSTOM_SPELL_NAMES = {
-    [228050] = GetSpellInfo(228049),
+    [228050] = C_Spell.GetSpellName(228049),
 }
 
 Const.CUSTOM_ICONS = {

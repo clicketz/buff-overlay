@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Compatibility: AceModule
-local Compat = Addon:NewModule('Compatibility')
+local Compat = Addon:GetModule('Compatibility')
 
 ---@class Data: AceModule
 local Data = Addon:GetModule('Data')
@@ -347,6 +347,8 @@ local blizzardFrameInfo = {
 
 local function AddOnsExist()
     local addonsExist = false
+    local frames = Data:GetFrames()
+
     for addon, info in pairs(addonFrameInfo) do
         if C_AddOns.IsAddOnLoaded(addon) then
             for _, frameInfo in pairs(info) do
@@ -375,7 +377,7 @@ local function AddOnsExist()
                     for _, child in pairs(children) do
                         local name = child:GetName()
                         if name and name:match("^CPPFets_PlayerPetButton$") then
-                            Compat.frames[child] = { unit = "unit", type = "pet" }
+                            frames[child] = { unit = "unit", type = "pet" }
                             break
                         end
                     end
@@ -386,6 +388,7 @@ local function AddOnsExist()
 
     -- Fix for AshToAsh
     if C_AddOns.IsAddOnLoaded("AshToAsh") and C_AddOns.IsAddOnLoaded("Scorpio") then
+        local frames = Data:GetFrames()
         -- Declare a ui style property to receive the unit from the unit frame
         Scorpio.UI.Property {
             name = "BuffOverlayUnit",
@@ -395,7 +398,7 @@ local function AddOnsExist()
                 if unit and unit ~= "clear" then
                     local frame = Scorpio.UI.GetRawUI(self)
 
-                    if not Compat.frames[frame] then
+                    if not frames[frame] then
                         tempFrameCache[frame] = frame:GetName()
                     end
 
@@ -484,7 +487,9 @@ end
 hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
     if not frame.buffFrames then return end
 
-    if not Compat.frames[frame] then
+    local frames = Data:GetBlizzFrames()
+
+    if not frames[frame] then
         local name = frame:GetName()
 
         for _, info in pairs(blizzardFrameInfo) do

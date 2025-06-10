@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class LDB: AceModule
-local LDB = Addon:NewModule('LDB')
+local LDB = Addon:GetModule('LDB')
 
 ---@class Database: AceModule
 local DB = Addon:GetModule('Database')

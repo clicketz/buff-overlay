@@ -5,7 +5,7 @@ local AceConfigDialog = LibStub("AceConfigDialog-3.0")
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class GUI: AceModule
-local GUI = Addon:NewModule('GUI')
+local GUI = Addon:GetModule('GUI')
 
 function GUI:Open()
     AceConfigDialog:Open(addonName)

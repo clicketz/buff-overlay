@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Aura: AceModule
-local Aura = Addon:NewModule('Aura')
+local Aura = Addon:GetModule('Aura')
 
 ---@class Database: AceModule
 local DB = Addon:GetModule('Database')
@@ -163,7 +163,7 @@ local function UpdateBorder(overlay)
     local size = bar.iconBorderSize - 1
     local borderColor = bar.iconBorderColor
 
-    local pixelFactor = BuffOverlay.pixelFactor
+    local pixelFactor = Const.pixelFactor
     local pixelSize = (pixelFactor / 2) + (pixelFactor * size)
 
     border:SetBorderSizes(pixelSize, pixelSize, pixelSize, pixelSize)
@@ -184,8 +184,9 @@ function Aura:Update(frame, unit, barNameToApply)
     end
 
     local overlays = Overlay:GetAllOverlays()
+    local frames = Data:GetFrames()
     local frameName = frame:GetName()
-    local frameType = self.frames[frame] and self.frames[frame].type
+    local frameType = frames[frame] and frames[frame].type
     local frameWidth, frameHeight = frame:GetSize()
     local overlaySize = Util:round(math.min(frameHeight, frameWidth) * 0.33, 1)
     local UnitAura = Test:IsEnabled() and Test.UnitAura or C_UnitAuras.GetAuraDataByIndex

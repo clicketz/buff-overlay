@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Glow: AceModule
-local Glow = Addon:NewModule('Glow')
+local Glow = Addon:GetModule('Glow')
 
 ---@class Overlay: AceModule
 local Overlay = Addon:GetModule('Overlay')

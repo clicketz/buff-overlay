@@ -5,7 +5,7 @@ local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Overlay: AceModule
 ---@field private frames table<string, table>
-local Overlay = Addon:NewModule('Overlay')
+local Overlay = Addon:GetModule('Overlay')
 
 ---@class Database: AceModule
 local DB = Addon:GetModule('Database')
@@ -52,7 +52,7 @@ end
 
 function Overlay:RefreshOverlays(full, barName)
     local auras = DB:GetAuras()
-    local overlays = Overlay:GetAllOverlays()
+    local overlays = self:GetAllOverlays()
 
     -- fix for resetting profile with buffs active
     if next(auras) == nil then
@@ -75,7 +75,7 @@ function Overlay:RefreshOverlays(full, barName)
         end
     end
 
-    for unit, frames in pairs(Data:GetAllFrames()) do
+    for unit, frames in pairs(Data:GetFrames()) do
         for frame in pairs(frames) do
             if frame:IsShown() then
                 self:ApplyOverlay(frame, unit, barName)
@@ -85,7 +85,7 @@ function Overlay:RefreshOverlays(full, barName)
         end
     end
 
-    for frame in pairs(self.blizzFrames) do
+    for frame in pairs(Data:GetBlizzFrames()) do
         if frame:IsShown() then
             self:ApplyOverlay(frame, frame.displayedUnit, barName)
         else

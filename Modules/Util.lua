@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Util: AceModule
-local Util = Addon:NewModule('Util')
+local Util = Addon:GetModule('Util')
 
 ---@class Constants: AceModule
 local Const = Addon:GetModule('Constants')
@@ -82,7 +82,7 @@ function Util:GetIconString(icon, iconSize)
     return format("|T%s:%d:%d:0:0:256:256:%d:%d:%d:%d|t", icon, size, size, ltTexel, rbTexel, ltTexel, rbTexel)
 end
 
-function Util:GetSpellInfo(spellId)
+function Util.GetSpellInfo(spellID)
     if not spellID then
         return nil
     end
@@ -96,4 +96,6 @@ function Util:GetSpellInfo(spellId)
     if spellInfo then
         return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
     end
+
+    return nil, nil, nil, nil, nil, nil, spellID, nil
 end

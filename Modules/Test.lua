@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Test: AceModule
-local Test = Addon:NewModule('Test')
+local Test = Addon:GetModule('Test')
 
 ---@class Data: AceModule
 local Data = Addon:GetModule('Data')
@@ -21,6 +21,9 @@ local Compat = Addon:GetModule('Compatibility')
 ---@class Overlay: AceModule
 local Overlay = Addon:GetModule('Overlay')
 
+---@class Util: AceModule
+local Util = Addon:GetModule('Util')
+
 ---@class Localization: AceModule
 local Localization = Addon:GetModule('Localization')
 local L = Localization.L
@@ -31,38 +34,39 @@ local testAuraIds = {}
 local testBarNames = {}
 local testSingleAura
 local testTextFrame
+local GetSpellInfo = Util.GetSpellInfo
 
-function Test:On()
+function Test.On()
     testModeEnabled = true
 end
 
-function Test:Off()
+function Test.Off()
     testModeEnabled = false
 end
 
 ---@return boolean
-function Test:IsEnabled()
+function Test.IsEnabled()
     return testModeEnabled
 end
 
 ---@return number
-function Test:GetSingleTestAura()
+function Test.GetSingleTestAura()
     return testSingleAura
 end
 
-function Test:GetTestBarNames()
+function Test.GetTestBarNames()
     return testBarNames
 end
 
-function Test:InsertAura(spellId)
-    local tex = GetSpellTexture(spellId)
+function Test.InsertAura(spellId)
+    local tex = C_Spell.GetSpellTexture(spellId)
     if tex and not testAuraIds[spellId] then
         rawset(testAuras, #testAuras + 1, { spellId, tex })
         rawset(testAuraIds, spellId, true)
     end
 end
 
-function Test:UnitAura(_, index, filter)
+function Test.UnitAura(_, index, filter)
     if testSingleAura then
         local icon = Const.CUSTOM_ICONS[testSingleAura] or select(3, GetSpellInfo(testSingleAura)) or Const.CUSTOM_ICONS["?"]
         local key = testSingleAura

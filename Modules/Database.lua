@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Database: AceModule
-local DB = Addon:NewModule('Database')
+local DB = Addon:GetModule('Database')
 
 ---@class Constants: AceModule
 local Const = Addon:GetModule('Constants')
@@ -27,9 +27,14 @@ local Bar = Addon:GetModule('Bar')
 ---@class Test: AceModule
 local Test = Addon:GetModule('Test')
 
+---@class Overlay: AceModule
+local Overlay = Addon:GetModule('Overlay')
+
 ---@class Localization: AceModule
 local Localization = Addon:GetModule('Localization')
 local L = Localization.L
+
+DB.data = LibStub("AceDB-3.0"):New(addonName .. "DB", Const.DB_DEFAULTS, true) --[[@as DatabaseDefaults]]
 
 ---@return DatabaseDefaults
 function DB:GetData()
@@ -280,11 +285,11 @@ function DB:UpdateCustomAuras()
             aura:UpdateChildren()
         end
 
-        Test:InsertAura(spellId)
+        Test.InsertAura(spellId)
     end
 
-    self:UpdateSpellOptionsTable()
-    self:RefreshOverlays()
+    Options:UpdateSpellOptionsTable()
+    Overlay:RefreshOverlays()
 end
 
 function DB:ValidateAuraData()
@@ -344,7 +349,7 @@ function DB:ValidateAuraData()
                     end
                 end
             else
-                Test:InsertAura(k)
+                Test.InsertAura(k)
             end
 
             -- Check to see if any children were deleted and update DB accordingly
@@ -571,8 +576,6 @@ function DB:FullRefresh()
 end
 
 function DB:OnInitialize()
-    self.data = LibStub("AceDB-3.0"):New(addonName .. "DB", Const.DB_DEFAULTS, true) --[[@as DatabaseDefaults]]
-
     self:Validate()
     self:ValidateSpellIds()
     self:ValidateBarAttributes()

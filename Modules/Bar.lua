@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Bar: AceModule
-local Bar = Addon:NewModule('Bar')
+local Bar = Addon:GetModule('Bar')
 
 ---@class Database: AceModule
 local DB = Addon:GetModule('Database')
@@ -65,7 +65,7 @@ function Bar:Add()
         bar.group:RegisterCallback(masqueCallback)
     end
 
-    self:RefreshOverlays(true)
+    Overlay:RefreshOverlays(true)
 end
 
 function Bar:Delete(name)

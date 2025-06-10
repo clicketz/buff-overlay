@@ -15,6 +15,7 @@
 Embeds.xml
 
 Core\Init.lua
+Core\Blizzard.lua
 
 Modules\Modules.xml
 Mixins\Border.xml

@@ -5,7 +5,7 @@ local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Spells: AceModule
 ---@field private default table<number, table>
-local Spells = Addon:NewModule('Spells')
+local Spells = Addon:GetModule('Spells')
 
 ---@class Database: AceModule
 local DB = Addon:GetModule('Database')

@@ -4,7 +4,7 @@ local addonName = ...
 local Addon = LibStub('AceAddon-3.0'):GetAddon(addonName)
 
 ---@class Options: AceModule
-local Options = Addon:NewModule('Options')
+local Options = Addon:GetModule('Options')
 
 ---@class Database: AceModule
 local DB = Addon:GetModule('Database')
@@ -42,6 +42,8 @@ local AceConfig = LibStub("AceConfig-3.0")
 
 local optionsDisabled = {}
 
+local GetSpellInfo = Util.GetSpellInfo
+
 local CLASS_SORT_ORDER = CopyTable(CLASS_SORT_ORDER)
 do
     table.sort(CLASS_SORT_ORDER)
@@ -53,7 +55,7 @@ local spellDescriptions = CreateFrame("Frame")
 spellDescriptions:SetScript("OnEvent", function(self, event, spellId, success)
     if success then
         local id = Const.CUSTOM_SPELL_DESCRIPTIONS[spellId] or spellId
-        self[spellId] = GetSpellDescription(id)
+        self[spellId] = C_Spell.GetSpellDescription(id)
     end
 end)
 spellDescriptions:RegisterEvent("SPELL_DATA_LOAD_RESULT")
@@ -590,7 +592,7 @@ local function GetSpells(class, barName)
 end
 
 function Options:CreatePriorityDialog(barName)
-    local bar = self.db.profile.bars[barName]
+    local bar = db.profile.bars[barName]
 
     local spells = {
         bar = {
@@ -612,7 +614,7 @@ function Options:CreatePriorityDialog(barName)
 
     for spellIdStr, info in pairs(GetSpells("MISC", barName)) do
         local spellId = tonumber(spellIdStr) or spellIdStr
-        if self.db.profile.buffs[spellId].state[barName].enabled then
+        if db.profile.buffs[spellId].state[barName].enabled then
             spells[spellIdStr] = {
                 name = self:Colorize(info.args.toggle.name, "MISC") .. " [" .. info.order .. "]",
                 image = info.args.toggle.image,
@@ -629,7 +631,7 @@ function Options:CreatePriorityDialog(barName)
         local className = CLASS_SORT_ORDER[i]
         for spellIdStr, info in pairs(GetSpells(className, barName)) do
             local spellId = tonumber(spellIdStr) or spellIdStr
-            if self.db.profile.buffs[spellId].state[barName].enabled then
+            if db.profile.buffs[spellId].state[barName].enabled then
                 spells[spellIdStr] = {
                     name = self:Colorize(info.args.toggle.name, className) .. " [" .. info.order .. "]",
                     image = info.args.toggle.image,
@@ -669,11 +671,11 @@ local function GetClasses(barName)
 end
 
 function Options:UpdateSpellOptionsTable()
-    if self.options then
-        for barName in pairs(self.db.profile.bars) do
+    if self.data and self.data.args then
+        for barName in pairs(db.profile.bars) do
             for k, v in pairs(GetClasses(barName)) do
-                if self.options.args.bars.args[barName] then
-                    self.options.args.bars.args[barName].args.spells.args[k] = v
+                if self.data.args.bars.args[barName] then
+                    self.data.args.bars.args[barName].args.spells.args[k] = v
                 end
             end
         end
@@ -689,7 +691,7 @@ local function HasLessThanTwoBars()
 end
 
 function Options:AddBarToOptions(bar, barName)
-    self.options.args.bars.args[barName] = {
+    self.data.args.bars.args[barName] = {
         name = bar.name,
         type = "group",
         childGroups = "tab",
@@ -701,7 +703,7 @@ function Options:AddBarToOptions(bar, barName)
                 width = 1,
                 set = function(info, val)
                     bar[info[#info]] = val
-                    self.options.args.bars.args[barName].name = val
+                    self.data.args.bars.args[barName].name = val
                     if AceConfigDialog.OpenFrames[addonName .. "Dialog"] and not IsDifferentDialogBar(barName) then
                         self.priorityListDialog.name = self:Colorize(val, "main") .. " " .. L["Enabled Auras Priority List"]
                         self.priorityListDialog.args.desc.name = format(L["This informational panel is the full list of spells currently enabled for %s in order of priority. Any aura changes made while this panel is open will be reflected here in real time."], self:Colorize((val or barName), "main"))
@@ -735,12 +737,12 @@ function Options:AddBarToOptions(bar, barName)
                 order = 2,
                 width = 0.75,
                 func = function()
-                    if self.test then
-                        if self:GetSingleTestAura() ~= nil then
-                            self:Test()
+                    if Test.IsEnabled() then
+                        if Test.GetSingleTestAura() ~= nil then
+                            Test.Off()
                         end
                     end
-                    self:Test(barName)
+                    Test:Toggle(barName)
                 end,
             },
             settings = {
@@ -761,7 +763,7 @@ function Options:AddBarToOptions(bar, barName)
                         width = 1,
                         values = function()
                             local values = {}
-                            for k, v in pairs(self.db.profile.bars) do
+                            for k, v in pairs(db.profile.bars) do
                                 if k ~= barName then
                                     values[k] = v.name or k
                                 end
@@ -770,13 +772,13 @@ function Options:AddBarToOptions(bar, barName)
                         end,
                         hidden = HasLessThanTwoBars,
                         set = function(info, val)
-                            for k, v in pairs(self.db.profile.bars[val]) do
+                            for k, v in pairs(db.profile.bars[val]) do
                                 if k ~= "name" then
                                     bar[k] = type(v) == "table" and CopyTable(v) or v
                                 end
                             end
 
-                            self:Print(format(L["Copied settings, anchoring, and visibility tabs from %s to %s"], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize(bar.name, "accent")))
+                            self:Print(format(L["Copied settings, anchoring, and visibility tabs from %s to %s"], self:Colorize((db.profile.bars[val].name), "accent"), self:Colorize(bar.name, "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },
@@ -1173,7 +1175,7 @@ function Options:AddBarToOptions(bar, barName)
                         width = 1,
                         values = function()
                             local values = {}
-                            for k, v in pairs(self.db.profile.bars) do
+                            for k, v in pairs(db.profile.bars) do
                                 if k ~= barName then
                                     values[k] = v.name or k
                                 end
@@ -1182,7 +1184,7 @@ function Options:AddBarToOptions(bar, barName)
                         end,
                         hidden = HasLessThanTwoBars,
                         set = function(info, val)
-                            for _, v in pairs(self.db.profile.buffs) do
+                            for _, v in pairs(db.profile.buffs) do
                                 v.state[barName] = CopyTable(v.state[val])
                             end
 
@@ -1197,7 +1199,7 @@ function Options:AddBarToOptions(bar, barName)
                                     self:CreatePriorityDialog(barName)
                                 end
 
-                                for k, v in pairs(self.db.profile.buffs) do
+                                for k, v in pairs(db.profile.buffs) do
                                     if not v.parent then
                                         AddToPriorityDialog(tostring(k), not v.state[barName].enabled)
                                     end
@@ -1206,7 +1208,7 @@ function Options:AddBarToOptions(bar, barName)
                                 AceRegistry:NotifyChange(addonName .. "Dialog")
                             end
 
-                            self:Print(format(L["Copied spells from %s to %s."], self:Colorize((self.db.profile.bars[val].name), "accent"), self:Colorize(bar.name, "accent")))
+                            self:Print(format(L["Copied spells from %s to %s."], self:Colorize((db.profile.bars[val].name), "accent"), self:Colorize(bar.name, "accent")))
                             self:RefreshOverlays(true, barName)
                         end,
                     },
@@ -1223,8 +1225,8 @@ function Options:AddBarToOptions(bar, barName)
                                 self:CreatePriorityDialog(barName)
                             end
 
-                            for k, v in pairs(self.db.profile.buffs) do
-                                self.db.profile.buffs[k].state[barName].enabled = true
+                            for k, v in pairs(db.profile.buffs) do
+                                db.profile.buffs[k].state[barName].enabled = true
                                 if not v.parent and dialogIsOpen then
                                     AddToPriorityDialog(tostring(k))
                                 end
@@ -1250,8 +1252,8 @@ function Options:AddBarToOptions(bar, barName)
                                 self:CreatePriorityDialog(barName)
                             end
 
-                            for k in pairs(self.db.profile.buffs) do
-                                self.db.profile.buffs[k].state[barName].enabled = false
+                            for k in pairs(db.profile.buffs) do
+                                db.profile.buffs[k].state[barName].enabled = false
 
                                 if dialogIsOpen then
                                     Options.priorityListDialog.args[tostring(k)] = nil
@@ -1325,7 +1327,7 @@ end
 
 local barCache = {}
 function Options:TryAddBarToOptions(bar, barName)
-    if self.options then
+    if self.data and self.data.args then
         self:AddBarToOptions(bar, barName)
     else
         barCache[bar] = barName
@@ -1333,7 +1335,7 @@ function Options:TryAddBarToOptions(bar, barName)
 end
 
 function Options:UpdateBarOptionsTable()
-    local options = self.options.args.bars.args
+    local options = self.data.args.bars.args
 
     for opt in pairs(options) do
         if opt ~= "addBar" and opt ~= "test" then
@@ -1341,8 +1343,8 @@ function Options:UpdateBarOptionsTable()
         end
     end
 
-    for name, bar in pairs(self.db.profile.bars) do
-        self:AddBarToOptions(bar, name)
+    for name, bar in pairs(db.profile.bars) do
+        self:TryAddBarToOptions(bar, name)
     end
 end
 
@@ -1737,6 +1739,7 @@ function Options:Get()
 end
 
 function Options:OnInitialize()
+    print(addonName .. " v" .. Const.VERSION .. " " .. L["Initializing Options..."])
     for spellId, v in pairs(db.global.customAuras) do
         if not v.parent then
             local name, _, icon = GetSpellInfo(spellId)
@@ -1753,13 +1756,13 @@ function Options:OnInitialize()
     self.data = {
         name = addonName,
         type = "group",
-        plugins = { profiles = { profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db) } },
+        plugins = { profiles = { profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(db) } },
         childGroups = "tab",
         args = {
             logo = {
                 order = 1,
                 type = "description",
-                name = self:Colorize(L["Author"]) .. ": " .. Const.AUTHOR .. "\n" .. self:Colorize(GAME_VERSION_LABEL) .. ": " .. Const.VERSION .. "\n\n",
+                name = Util:Colorize(L["Author"]) .. ": " .. Const.AUTHOR .. "\n" .. Util:Colorize(GAME_VERSION_LABEL) .. ": " .. Const.VERSION .. "\n\n",
                 fontSize = "medium",
                 -- "Logo" created by Marz Gallery @ https://www.flaticon.com/free-icons/nocturnal
                 image = "Interface\\AddOns\\" .. addonName .. "\\Media\\Textures\\logo_transparent",
@@ -1804,7 +1807,7 @@ function Options:OnInitialize()
                     local spellId = info[#info - 1]
                     spellId = tonumber(spellId)
                     if not spellId then return end
-                    return self.db.global.customAuras[spellId][option]
+                    return db.global.customAuras[spellId][option]
                 end,
             },
             globalSettings = {
@@ -1818,9 +1821,9 @@ function Options:OnInitialize()
                         type = "toggle",
                         width = "full",
                         desc = L["Toggle showing of the welcome message on login."],
-                        get = function(info) return self.db.profile[info[#info]] end,
+                        get = function(info) return db.profile[info[#info]] end,
                         set = function(info, val)
-                            self.db.profile[info[#info]] = val
+                            db.profile[info[#info]] = val
                         end,
                     },
                     minimap = {
@@ -1829,7 +1832,7 @@ function Options:OnInitialize()
                         type = "toggle",
                         width = "full",
                         desc = L["Toggle the minimap icon."],
-                        get = function(info) return not self.db.profile[info[#info]].hide end,
+                        get = function(info) return not db.profile[info[#info]].hide end,
                         set = function()
                             self:ToggleMinimapIcon()
                         end,
@@ -1848,13 +1851,14 @@ function Options:OnInitialize()
     -- Add any bar attempted to be added to options
     -- before options were initialized
     for bar, barName in pairs(barCache) do
-        self:AddBarToOptions(bar, barName)
+        self:TryAddBarToOptions(bar, barName)
     end
 
     self:UpdateBarOptionsTable()
 
     -- Main options dialog.
     AceConfig:RegisterOptionsTable(addonName, self.data)
+    print(addonName .. " v" .. Const.VERSION .. " " .. L["Options Loaded"])
     AceConfig:RegisterOptionsTable(addonName .. "Dialog", self.priorityListDialog)
     AceConfigDialog:SetDefaultSize(addonName, 635, 730)
     AceConfigDialog:SetDefaultSize(addonName .. "Dialog", 300, 730)
