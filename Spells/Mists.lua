@@ -94,6 +94,7 @@ BuffOverlay.defaultSpells = {
     [2565] = { class = "WARRIOR", prio = 50 },   --Shield Block
     [3411] = { class = "WARRIOR", prio = 50 },   --Intervene
     [12975] = { class = "WARRIOR", prio = 50 },  --Last Stand
+    [118038] = { class = "WARRIOR", prio = 50 }, --Die by the Sword
     [871] = { class = "WARRIOR", prio = 50 },    --Shield Wall
     [23920] = { class = "WARRIOR", prio = 50 },  --Spell Reflection
     [114028] = { class = "WARRIOR", prio = 50 }, --Mass Spell Reflection
