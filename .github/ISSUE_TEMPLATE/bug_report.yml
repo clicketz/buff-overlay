@@ -38,6 +38,7 @@ body:
       - The Burning Crusade Classic
       - Wrath of the Lich King Classic
       - Cataclysm Classic
+      - Mists of Pandaria Classic
   validations:
     required: true
 
