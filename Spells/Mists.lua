@@ -52,7 +52,6 @@ BuffOverlay.defaultSpells = {
     [115760] = { class = "MAGE", prio = 10 }, --Glyph of Ice Block
     [41425] = { class = "MAGE", prio = 20 },  --Hypothermia
     [66] = { class = "MAGE", prio = 50 },     --Invisibility
-    [543] = { class = "MAGE", prio = 50 },    --Fire Ward
 
     -- Monk
     [131523] = { class = "MONK", prio = 50 }, -- Zen Meditation
@@ -63,7 +62,6 @@ BuffOverlay.defaultSpells = {
     [25771] = { class = "PALADIN", prio = 20 }, --Forbearance
     [498] = { class = "PALADIN", prio = 50 },   --Divine Protection
     [31821] = { class = "PALADIN", prio = 50 }, --Aura Mastery
-    [64205] = { class = "PALADIN", prio = 50 }, --Divine Sacrifice
     [86657] = { class = "PALADIN", prio = 50 }, --Guardian of the Ancient Kings(Prot/Ancient Guardian)
 
     -- Priest
@@ -96,7 +94,6 @@ BuffOverlay.defaultSpells = {
     [2565] = { class = "WARRIOR", prio = 50 },   --Shield Block
     [3411] = { class = "WARRIOR", prio = 50 },   --Intervene
     [12975] = { class = "WARRIOR", prio = 50 },  --Last Stand
-    [20230] = { class = "WARRIOR", prio = 50 },  --Retaliation
     [871] = { class = "WARRIOR", prio = 50 },    --Shield Wall
     [23920] = { class = "WARRIOR", prio = 50 },  --Spell Reflection
     [114028] = { class = "WARRIOR", prio = 50 }, --Mass Spell Reflection
