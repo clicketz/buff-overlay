@@ -1484,7 +1484,8 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     end
 
                     overlay.count:SetScale(bar.stackCountScale * overlay.size / 20)
-                    overlay.count:ClearPointsOffset()
+                    overlay.count:SetJustifyH("RIGHT")
+                    overlay.count:SetJustifyV("BOTTOM")
                     overlay.count:SetParent(overlay.stack)
                     overlay.stack:SetShown(bar.showStackCount)
 
