@@ -27,3 +27,6 @@ BuffOverlay.GetSpellInfo = function(spellID)
         return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
     end
 end
+
+-- Initialize a spells table so a new game version doesn't break the addon.
+BuffOverlay.defaultSpells = {}

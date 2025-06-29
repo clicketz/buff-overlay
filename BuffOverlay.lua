@@ -664,6 +664,18 @@ end
 
 function BuffOverlay:CreateBuffTable()
     local newdb = false
+
+    -- If the defaultSpells table is empty, it likely means this is a new game version
+    -- and a new defaultSpells table needs to be created.
+    if not next(self.defaultSpells) then
+        if not self.printOnce then
+            self:Print(L["No default spells found. If this is a new game version, this is normal. Otherwise, please report this to the author."])
+            self.printOnce = true
+        end
+
+        return false
+    end
+
     -- If the current profile doesn't have any buffs saved use default list and save it
     if next(self.db.profile.buffs) == nil then
         for k, v in pairs(self.defaultSpells) do
