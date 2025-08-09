@@ -48,10 +48,11 @@ BuffOverlay.defaultSpells = {
     [51753] = { class = "HUNTER", prio = 70 }, --Camouflage
 
     -- Mage
-    [45438] = { class = "MAGE", prio = 10 },  --Ice Block
+    [45438]  = { class = "MAGE", prio = 10 },  --Ice Block
     [115760] = { class = "MAGE", prio = 10 }, --Glyph of Ice Block
     [41425] = { class = "MAGE", prio = 20 },  --Hypothermia
     [66] = { class = "MAGE", prio = 50 },     --Invisibility
+    [110909] = { class = "MAGE", prio = 50 }, --Alter Time
 
     -- Monk
     [131523] = { class = "MONK", prio = 50 }, -- Zen Meditation
