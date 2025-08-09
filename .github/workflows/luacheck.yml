@@ -13,7 +13,7 @@ jobs:
       - name: Lua check
         uses: nebularg/actions-luacheck@v1
         with:
-          config: https://raw.githubusercontent.com/clicketz/wow-luacheckrc/mainline/.luacheckrc
+          config: https://raw.githubusercontent.com/clicketz/wow-luacheck/refs/heads/main/.luacheckrc
           args: "--no-color --codes -q"
           annotate: warning
 
