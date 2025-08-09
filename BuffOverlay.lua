@@ -1414,6 +1414,8 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
                         overlay.stack = CreateFrame("Frame", overlayName .. i .. "StackCount", overlay)
+                        overlay.count:SetParent(overlay.stack)
+                        overlay.count:ClearPointsOffset()
                         overlay.barName = barName
                         SetupGlow(overlay)
                     end
@@ -1483,10 +1485,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay.cooldown.SetFrameLevel = nop
                     end
 
-                    overlay.count:SetScale(bar.stackCountScale * overlay.size / 20)
-                    overlay.count:SetJustifyH("RIGHT")
-                    overlay.count:SetJustifyV("BOTTOM")
-                    overlay.count:SetParent(overlay.stack)
+                    overlay.stack:SetScale(bar.stackCountScale * overlay.size / 20)
                     overlay.stack:SetShown(bar.showStackCount)
 
                     overlay:ClearAllPoints()
