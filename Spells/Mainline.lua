@@ -35,7 +35,6 @@ BuffOverlay.defaultSpells = {
     [263648] = { class = "DEMONHUNTER", prio = 50 }, --Soul Barrier
 
     -- Druid
-    [362486] = { class = "DRUID", prio = 10 }, --Tranquility (Druid PVP)
     [473909] = { class = "DRUID", prio = 50 }, --Ancient of Lore
     [22842] = { class = "DRUID", prio = 50 },  --Frenzied Regeneration
     [102342] = { class = "DRUID", prio = 50 }, --Ironbark
