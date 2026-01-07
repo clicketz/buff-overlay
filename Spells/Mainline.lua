@@ -35,8 +35,6 @@ BuffOverlay.defaultSpells = {
     [263648] = { class = "DEMONHUNTER", prio = 50 }, --Soul Barrier
 
     -- Druid
-    [203554] = { class = "DRUID", prio = 5 },  --Focused Growth
-        [347621] = { parent = 203554 },
     [362486] = { class = "DRUID", prio = 10 }, --Tranquility (Druid PVP)
     [473909] = { class = "DRUID", prio = 50 }, --Ancient of Lore
     [22842] = { class = "DRUID", prio = 50 },  --Frenzied Regeneration
