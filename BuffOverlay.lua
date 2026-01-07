@@ -6,7 +6,7 @@ local LDB = LibStub("LibDataBroker-1.1")
 local LCG = LibStub("LibCustomGlow-1.0")
 local LDBIcon = LibStub("LibDBIcon-1.0")
 local version = C_AddOns.GetAddOnMetadata("BuffOverlay", "Version")
-local Masque
+local Masque = LibStub("Masque", true)
 
 local LATEST_DB_VERSION = 1.0
 
@@ -1293,7 +1293,7 @@ end
 local function UpdateBorder(overlay)
     local bar = overlay.bar
 
-    if overlay.__MSQ_Enabled and bar.iconBorder then
+    if overlay.masqueEnabled and bar.iconBorder then
         bar.iconBorder = false
     end
 
@@ -1414,16 +1414,15 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     if not overlay then
                         overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
                         overlay.stack = CreateFrame("Frame", overlayName .. i .. "StackCount", overlay)
-                        overlay.count:SetParent(overlay.stack)
-                        overlay.count:ClearPointsOffset()
                         overlay.barName = barName
                         SetupGlow(overlay)
                     end
 
-                    if bar.group and not overlay.__MSQ_Enabled then
+                    if bar.group and not overlay._MSQ_CFG then
                         bar.group:AddButton(overlay)
                     end
 
+                    overlay.masqueEnabled = overlay._MSQ_CFG and (overlay._MSQ_CFG.Enabled and true or false) or false
                     overlay.bar = bar
                     overlay.size = overlaySize
 
@@ -1436,7 +1435,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 
                     overlay.cooldown:SetDrawSwipe(bar.showCooldownSpiral)
                     overlay.cooldown:SetHideCountdownNumbers(not bar.showCooldownNumbers)
-                    overlay.cooldown:SetScale(overlay.__MSQ_Enabled and 1 or (bar.cooldownNumberScale * overlaySize / 36))
+                    overlay.cooldown:SetScale(overlay.masqueEnabled and 1 or (bar.cooldownNumberScale * overlaySize / 36))
 
                     if bar.showTooltip and not overlay:GetScript("OnEnter") then
                         overlay:SetScript("OnEnter", function(s)
@@ -1485,7 +1484,10 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                         overlay.cooldown.SetFrameLevel = nop
                     end
 
-                    overlay.stack:SetScale(bar.stackCountScale * overlay.size / 20)
+                    overlay.count:SetScale(bar.stackCountScale * overlay.size / 20)
+                    overlay.count:SetJustifyH("RIGHT")
+                    overlay.count:SetJustifyV("BOTTOM")
+                    overlay.count:SetParent(overlay.stack)
                     overlay.stack:SetShown(bar.showStackCount)
 
                     overlay:ClearAllPoints()
