@@ -32,7 +32,7 @@ function BuffOverlay.CreateAuraButton(name)
 
     -- stack count
     f.count = f:CreateFontString(nil, "OVERLAY", "Number12Font")
-    f.count:SetPoint("BOTTOMRIGHT", 0, 2)
+    f.count:SetPoint("BOTTOMRIGHT", 0, 0)
 
     return f
 end
