@@ -1412,7 +1412,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 or overlay.size ~= overlaySize
                 then
                     if not overlay then
-                        overlay = BuffOverlay.CreateAuraButton(frame.BuffOverlays, overlayName .. i)
+                        overlay = BuffOverlay.CreateAuraButton(overlayName .. i)
                         overlay.stack = CreateFrame("Frame", overlayName .. i .. "StackCount", overlay)
                         overlay.barName = barName
                         SetupGlow(overlay)
