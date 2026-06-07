@@ -40,7 +40,6 @@ local math_floor = math.floor
 local math_min = math.min
 local math_max = math.max
 local math_rand = math.random
-local DebuffTypeColor = DebuffTypeColor
 local RAID_CLASS_COLORS = RAID_CLASS_COLORS
 
 local testBuffs = {}
@@ -49,6 +48,16 @@ local testBarNames = {}
 local testSingleAura
 local testTextFrame
 local isRetail = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+
+-- From AuraUtil
+local DebuffTypeColor = {
+    ["Magic"] = DEBUFF_TYPE_MAGIC_COLOR,
+    ["Curse"] = DEBUFF_TYPE_CURSE_COLOR,
+    ["Disease"] = DEBUFF_TYPE_DISEASE_COLOR,
+    ["Poison"] = DEBUFF_TYPE_POISON_COLOR,
+    ["Bleed"] = DEBUFF_TYPE_BLEED_COLOR,
+    ["None"] = DEBUFF_TYPE_NONE_COLOR,
+}
 
 local defaultBarSettings = {
     iconCount = 4,
@@ -121,7 +130,8 @@ local dispelTypes = {
     "Curse",
     "Disease",
     "Poison",
-    "none",
+    "Bleed",
+    "None",
 }
 
 local hexFontColors = {
@@ -317,7 +327,7 @@ local function UnitAuraTest(unit, index, filter)
         return key, icon, 3, nil, 60, GetTime() + 60, "player", nil, nil, testSingleAura
     else
         local buff = testBuffs[index]
-        local dispelType = dispelTypes[math_rand(1, 5)]
+        local dispelType = dispelTypes[math_rand(1, #dispelTypes)]
 
         if not buff then return end
 
@@ -1219,10 +1229,10 @@ local function SetOverlayAura(overlay, index, icon, count, duration, expirationT
 
     if overlay.border and bar.iconBorder then
         if bar.debuffIconBorderColorByDispelType and filter == "HARMFUL" then
-            local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"]
+            local color = DebuffTypeColor[dispelType] or DebuffTypeColor["None"]
             overlay.border:SetVertexColor(color.r, color.g, color.b, bar.iconBorderColor.a)
         elseif bar.buffIconBorderColorByDispelType and filter == "HELPFUL" then
-            local color = DebuffTypeColor[dispelType] or DebuffTypeColor["none"]
+            local color = DebuffTypeColor[dispelType] or DebuffTypeColor["None"]
             overlay.border:SetVertexColor(color.r, color.g, color.b, bar.iconBorderColor.a)
         else
             overlay.border:SetVertexColor(bar.iconBorderColor.r, bar.iconBorderColor.g, bar.iconBorderColor.b, bar.iconBorderColor.a)
