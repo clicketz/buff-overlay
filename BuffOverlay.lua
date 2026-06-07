@@ -1412,7 +1412,7 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                 or overlay.size ~= overlaySize
                 then
                     if not overlay then
-                        overlay = CreateFrame("Button", overlayName .. i, frame.BuffOverlays, "CompactAuraTemplate")
+                        overlay = BuffOverlay.CreateAuraButton(frame.BuffOverlays, overlayName .. i)
                         overlay.stack = CreateFrame("Frame", overlayName .. i .. "StackCount", overlay)
                         overlay.barName = barName
                         SetupGlow(overlay)
@@ -1485,8 +1485,6 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
                     end
 
                     overlay.count:SetScale(bar.stackCountScale * overlay.size / 20)
-                    overlay.count:SetJustifyH("RIGHT")
-                    overlay.count:SetJustifyV("BOTTOM")
                     overlay.count:SetParent(overlay.stack)
                     overlay.stack:SetShown(bar.showStackCount)
 
@@ -1634,8 +1632,11 @@ function BuffOverlay:ApplyOverlay(frame, unit, barNameToApply)
 end
 
 -- For Blizzard Frames
+-- NOTE: Removed in MOP Patch 5.5.4
+--[[
 hooksecurefunc("CompactUnitFrame_UpdateAuras", function(frame)
     if not frame.buffFrames then return end
 
     BuffOverlay:ApplyOverlay(frame, frame.displayedUnit)
 end)
+]]
