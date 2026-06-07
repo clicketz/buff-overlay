@@ -28,6 +28,7 @@ function BuffOverlay.CreateAuraButton(name)
     f.cooldown = CreateFrame("Cooldown", "$parentCooldown", f, "CooldownFrameTemplate")
     f.cooldown:SetAllPoints()
     f.cooldown:SetDrawEdge(false)
+    f.cooldown:SetReverse(true)
 
     -- stack count
     f.count = f:CreateFontString(nil, "OVERLAY", "Number12Font")
