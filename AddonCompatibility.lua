@@ -441,7 +441,8 @@ local function updateUnits()
     for frame, data in pairs(BuffOverlay.frames) do
         local unit = frame[data.unit] or SecureButton_GetUnit(frame)
 
-        if unit and not data.blizz then
+        -- if unit and not data.blizz then
+        if unit then
             BuffOverlay:AddUnitFrame(frame, unit)
         end
     end
@@ -475,7 +476,8 @@ end
 
 -- Blizzard Frames are handled separately because we do not need to scan for them.
 hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
-    if not frame.buffFrames then return end
+    -- HACK: Avoid processing nameplates
+    if not frame.powerBar then return end
 
     if not BuffOverlay.frames[frame] then
         local name = frame:GetName()
@@ -491,6 +493,8 @@ hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
     if not BuffOverlay.blizzFrames[frame] then
         BuffOverlay.blizzFrames[frame] = true
     end
+
+    updateUnits()
 end)
 
 -- We obtain frame references entirely from this CreateFrame hook. If an addon does not
