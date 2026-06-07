@@ -24,6 +24,7 @@ Spells\Wrath.lua
 Spells\Cata.lua
 Spells\Mists.lua
 
+Helpers.lua
 AddonCompatibility.lua
 BuffOverlay.lua
 Options.lua
