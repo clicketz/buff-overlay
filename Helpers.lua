@@ -1,8 +1,8 @@
 ---@class BuffOverlay: AceModule
 local BuffOverlay = LibStub("AceAddon-3.0"):GetAddon("BuffOverlay")
 
-function BuffOverlay.CreateAuraButton(name)
-    local f = CreateFrame("Button", name, UIParent)
+function BuffOverlay.CreateAuraButton(name, parent)
+    local f = CreateFrame("Button", name, parent)
     f:Hide()
 
     f.icon = f:CreateTexture(nil, "BACKGROUND")
