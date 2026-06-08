@@ -485,6 +485,7 @@ hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
         for _, info in pairs(blizzardFrameInfo) do
             if name:match(info.frame) then
                 BuffOverlay.frames[frame] = { unit = info.unit, type = info.type, blizz = true }
+                updateUnits()
                 break
             end
         end
@@ -493,8 +494,6 @@ hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
     if not BuffOverlay.blizzFrames[frame] then
         BuffOverlay.blizzFrames[frame] = true
     end
-
-    updateUnits()
 end)
 
 -- We obtain frame references entirely from this CreateFrame hook. If an addon does not
