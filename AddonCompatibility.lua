@@ -338,7 +338,9 @@ local blizzardFrameInfo = {
 }
 
 local function AddOnsExist()
-    local addonsExist = false
+    -- TODO: Remove addonsExist return entirely since CompactUnitFrame_UpdateAuras was removed by Blizzard.
+    -- always true for now
+    local addonsExist = true
     for addon, info in pairs(addonFrameInfo) do
         if IsAddOnLoaded(addon) then
             for _, frameInfo in pairs(info) do
