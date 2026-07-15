@@ -484,11 +484,18 @@ hooksecurefunc("CompactUnitFrame_SetUpFrame", function(frame)
     if not BuffOverlay.frames[frame] then
         local name = frame:GetName()
 
-        for _, info in pairs(blizzardFrameInfo) do
-            if name:match(info.frame) then
-                BuffOverlay.frames[frame] = { unit = info.unit, type = info.type, blizz = true }
-                updateUnits()
-                break
+        if name then
+            for _, info in pairs(blizzardFrameInfo) do
+                if name:match(info.frame) then
+                    BuffOverlay.frames[frame] = { unit = info.unit, type = info.type, blizz = true }
+
+                    local unit = frame[info.unit] or SecureButton_GetUnit(frame)
+                    if unit then
+                        BuffOverlay:AddUnitFrame(frame, unit)
+                        BuffOverlay:RefreshOverlays()
+                    end
+                    break
+                end
             end
         end
     end
