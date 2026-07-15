@@ -1,4 +1,4 @@
-## Interface: 11508, 110207, 50504, 40402, 30405, 20505
+## Interface: 11508, 110207, 50504, 40402, 30405, 20506
 ## Title: BuffOverlay
 ## Notes: Overlays chosen auras on top of raid/party frames.
 ## Author: clicket
